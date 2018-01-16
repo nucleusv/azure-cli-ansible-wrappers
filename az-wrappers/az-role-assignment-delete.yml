@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_role_assignment_delete
+   set_fact: 
+     az_role_assignment_delete:
+       input: 
+         ###  Optional parameter. Represent a user, group, or service principal. supported format: object id, user sign-in name, or service principal name.  ### 
+        'assignee': "{{ item['assignee'] | default('') }}" 
+         ###  Optional parameter. Space separated role assignment ids.  ### 
+        'ids': "{{ item['ids'] | default('') }}" 
+         ###  Optional parameter. Include assignments applied on parent scopes.  ### 
+        'include-inherited': "{{ item['include-inherited'] | default('') }}" 
+         ###  Optional parameter. Use it only if the role or assignment was added at the level of a resource group.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Role name or id.  ### 
+        'role': "{{ item['role'] | default('') }}" 
+         ###  Optional parameter. Scope at which the role assignment or definition applies to, e.g., /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333, /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup, or /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup/providers/Microsoft.Compute/virtualMachines/myVM.  ### 
+        'scope': "{{ item['scope'] | default('') }}" 
+ - debug: msg="{{ az_role_assignment_delete }}"          
+ - name: "az role assignment delete: Delete role assignments." 
+   command: |                                      
+     az role assignment delete                            
+                 {%if az_role_assignment_delete.input['assignee'] %} --assignee az_role_assignment_delete.input['assignee'] {%endif %} 
+                 {%if az_role_assignment_delete.input['ids'] %} --ids az_role_assignment_delete.input['ids'] {%endif %} 
+                 {%if az_role_assignment_delete.input['include-inherited'] %} --include-inherited az_role_assignment_delete.input['include-inherited'] {%endif %} 
+                 {%if az_role_assignment_delete.input['resource-group'] %} --resource-group az_role_assignment_delete.input['resource-group'] {%endif %} 
+                 {%if az_role_assignment_delete.input['role'] %} --role az_role_assignment_delete.input['role'] {%endif %} 
+                 {%if az_role_assignment_delete.input['scope'] %} --scope az_role_assignment_delete.input['scope'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_role_assignment_delete: "{{ az_role_assignment_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_role_assignment_delete }}" 

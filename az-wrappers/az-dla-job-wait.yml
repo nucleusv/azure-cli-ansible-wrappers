@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_dla_job_wait
+   set_fact: 
+     az_dla_job_wait:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. Job ID to poll for completion.  ### 
+        'job-id': "{{ item['job-id'] | default('') }}" 
+         ###  Optional parameter. The maximum amount of time to wait before erroring out. Default value is to never timeout. Any value <= 0 means never timeout.  ### 
+        'max-wait-time-sec': "{{ item['max-wait-time-sec'] | default('') }}" 
+         ###  Optional parameter. The polling interval between checks for the job status, in seconds.  ### 
+        'wait-interval-sec': "{{ item['wait-interval-sec'] | default('') }}" 
+ - debug: msg="{{ az_dla_job_wait }}"          
+ - name: "az dla job wait: Wait for a Data Lake Analytics job to finish." 
+   command: |                                      
+     az dla job wait                            
+                 --account {{ az_dla_job_wait.input['account'] }} 
+                 --job-id {{ az_dla_job_wait.input['job-id'] }} 
+                 {%if az_dla_job_wait.input['max-wait-time-sec'] %} --max-wait-time-sec az_dla_job_wait.input['max-wait-time-sec'] {%endif %} 
+                 {%if az_dla_job_wait.input['wait-interval-sec'] %} --wait-interval-sec az_dla_job_wait.input['wait-interval-sec'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dla_job_wait: "{{ az_dla_job_wait|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_job_wait }}" 

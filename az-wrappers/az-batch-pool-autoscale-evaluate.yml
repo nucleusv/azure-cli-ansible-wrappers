@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_batch_pool_autoscale_evaluate
+   set_fact: 
+     az_batch_pool_autoscale_evaluate:
+       input: 
+         ###  Required parameter. The formula for the desired number of compute nodes in the pool. The formula is validated and its results calculated, but it is not applied to the pool. To apply the formula to the pool, 'Enable automatic scaling on a pool'. For more information about specifying this formula, see Automatically scale compute nodes in an Azure Batch pool (<a href="https://azure.microsoft.com/en-us/documentation/articles/batch-automatic-scaling">https://azure.microsoft.com/en-us/documentation/articles/batch-automatic-scaling</a>).  ### 
+        'auto-scale-formula': "{{ item['auto-scale-formula'] | default('') }}" 
+         ###  Required parameter. The ID of the pool on which to evaluate the automatic scaling formula.  ### 
+        'pool-id': "{{ item['pool-id'] | default('') }}" 
+         ###  Optional parameter. Batch service endpoint. Alternatively, set by environment variable: AZURE_BATCH_ENDPOINT.  ### 
+        'account-endpoint': "{{ item['account-endpoint'] | default('') }}" 
+         ###  Optional parameter. Batch account key. Alternatively, set by environment variable: AZURE_BATCH_ACCESS_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Batch account name. Alternatively, set by environment variable: AZURE_BATCH_ACCOUNT.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+ - debug: msg="{{ az_batch_pool_autoscale_evaluate }}"          
+ - name: "az batch pool autoscale evaluate: Gets the result of evaluating an automatic scaling formula on the pool." 
+   command: |                                      
+     az batch pool autoscale evaluate                            
+                 --auto-scale-formula {{ az_batch_pool_autoscale_evaluate.input['auto-scale-formula'] }} 
+                 --pool-id {{ az_batch_pool_autoscale_evaluate.input['pool-id'] }} 
+                 {%if az_batch_pool_autoscale_evaluate.input['account-endpoint'] %} --account-endpoint az_batch_pool_autoscale_evaluate.input['account-endpoint'] {%endif %} 
+                 {%if az_batch_pool_autoscale_evaluate.input['account-key'] %} --account-key az_batch_pool_autoscale_evaluate.input['account-key'] {%endif %} 
+                 {%if az_batch_pool_autoscale_evaluate.input['account-name'] %} --account-name az_batch_pool_autoscale_evaluate.input['account-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_pool_autoscale_evaluate: "{{ az_batch_pool_autoscale_evaluate|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_pool_autoscale_evaluate }}" 

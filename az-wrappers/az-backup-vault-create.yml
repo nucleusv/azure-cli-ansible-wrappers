@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_backup_vault_create
+   set_fact: 
+     az_backup_vault_create:
+       input: 
+         ###  Required parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Required parameter. Name of the Recovery services vault.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_backup_vault_create }}"          
+ - name: "az backup vault create: Create a new Recovery Services vault." 
+   command: |                                      
+     az backup vault create                            
+                 --location {{ az_backup_vault_create.input['location'] }} 
+                 --name {{ az_backup_vault_create.input['name'] }} 
+                 --resource-group {{ az_backup_vault_create.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_backup_vault_create: "{{ az_backup_vault_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_backup_vault_create }}" 

@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_batch_account_login
+   set_fact: 
+     az_batch_account_login:
+       input: 
+         ###  Required parameter. Name of the Batch account.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the resource group.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Using Shared Key authentication, if not specified, it will use Azure Active Directory authentication.  ### 
+        'shared-key-auth': "{{ item['shared-key-auth'] | default('') }}" 
+         ###  Optional parameter. Display the credential information for the Batch account.  ### 
+        'show': "{{ item['show'] | default('') }}" 
+ - debug: msg="{{ az_batch_account_login }}"          
+ - name: "az batch account login: Log in to a Batch account through Azure Active Directory or Shared Key authentication." 
+   command: |                                      
+     az batch account login                            
+                 --name {{ az_batch_account_login.input['name'] }} 
+                 --resource-group {{ az_batch_account_login.input['resource-group'] }} 
+                 {%if az_batch_account_login.input['shared-key-auth'] %} --shared-key-auth az_batch_account_login.input['shared-key-auth'] {%endif %} 
+                 {%if az_batch_account_login.input['show'] %} --show az_batch_account_login.input['show'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_account_login: "{{ az_batch_account_login|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_account_login }}" 

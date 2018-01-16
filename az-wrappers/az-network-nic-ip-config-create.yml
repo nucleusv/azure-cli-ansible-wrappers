@@ -1,0 +1,53 @@
+
+
+ - name: Set input params for az_network_nic_ip_config_create
+   set_fact: 
+     az_network_nic_ip_config_create:
+       input: 
+         ###  Required parameter. The name of the IP configuration.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. The network interface (NIC).  ### 
+        'nic-name': "{{ item['nic-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Space separated list of application security groups.  ### 
+        'application-security-groups': "{{ item['application-security-groups'] | default('') }}" 
+         ###  Optional parameter. Space separated list of names or IDs of load balancer address pools to associate with the NIC. If names are used, --lb-name must be specified.  ### 
+        'lb-address-pools': "{{ item['lb-address-pools'] | default('') }}" 
+         ###  Optional parameter. Space separated list of names or IDs of load balancer inbound NAT rules to associate with the NIC. If names are used, --lb-name must be specified.  ### 
+        'lb-inbound-nat-rules': "{{ item['lb-inbound-nat-rules'] | default('') }}" 
+         ###  Optional parameter. The name of the load balancer to use when adding NAT rules or address pools by name (ignored when IDs are specified).  ### 
+        'lb-name': "{{ item['lb-name'] | default('') }}" 
+         ###  Optional parameter. Set to make this configuration the primary one for the NIC.  ### 
+        'make-primary': "{{ item['make-primary'] | default('') }}" 
+         ###  Optional parameter. Static private IP address to use.  ### 
+        'private-ip-address': "{{ item['private-ip-address'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'private-ip-address-version': "{{ item['private-ip-address-version'] | default('') }}" 
+         ###  Optional parameter. Name or ID of the public IP to use.  ### 
+        'public-ip-address': "{{ item['public-ip-address'] | default('') }}" 
+         ###  Optional parameter. Name or ID of an existing subnet. If name is specified, also specify --vnet-name.  ### 
+        'subnet': "{{ item['subnet'] | default('') }}" 
+         ###  Optional parameter. The virtual network (VNet) associated with the subnet (Omit if supplying a subnet id).  ### 
+        'vnet-name': "{{ item['vnet-name'] | default('') }}" 
+ - debug: msg="{{ az_network_nic_ip_config_create }}"          
+ - name: "az network nic ip-config create: Create an IP configuration." 
+   command: |                                      
+     az network nic ip-config create                            
+                 --name {{ az_network_nic_ip_config_create.input['name'] }} 
+                 --nic-name {{ az_network_nic_ip_config_create.input['nic-name'] }} 
+                 --resource-group {{ az_network_nic_ip_config_create.input['resource-group'] }} 
+                 {%if az_network_nic_ip_config_create.input['application-security-groups'] %} --application-security-groups az_network_nic_ip_config_create.input['application-security-groups'] {%endif %} 
+                 {%if az_network_nic_ip_config_create.input['lb-address-pools'] %} --lb-address-pools az_network_nic_ip_config_create.input['lb-address-pools'] {%endif %} 
+                 {%if az_network_nic_ip_config_create.input['lb-inbound-nat-rules'] %} --lb-inbound-nat-rules az_network_nic_ip_config_create.input['lb-inbound-nat-rules'] {%endif %} 
+                 {%if az_network_nic_ip_config_create.input['lb-name'] %} --lb-name az_network_nic_ip_config_create.input['lb-name'] {%endif %} 
+                 {%if az_network_nic_ip_config_create.input['make-primary'] %} --make-primary az_network_nic_ip_config_create.input['make-primary'] {%endif %} 
+                 {%if az_network_nic_ip_config_create.input['private-ip-address'] %} --private-ip-address az_network_nic_ip_config_create.input['private-ip-address'] {%endif %} 
+                 {%if az_network_nic_ip_config_create.input['private-ip-address-version'] %} --private-ip-address-version az_network_nic_ip_config_create.input['private-ip-address-version'] {%endif %} 
+                 {%if az_network_nic_ip_config_create.input['public-ip-address'] %} --public-ip-address az_network_nic_ip_config_create.input['public-ip-address'] {%endif %} 
+                 {%if az_network_nic_ip_config_create.input['subnet'] %} --subnet az_network_nic_ip_config_create.input['subnet'] {%endif %} 
+                 {%if az_network_nic_ip_config_create.input['vnet-name'] %} --vnet-name az_network_nic_ip_config_create.input['vnet-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_nic_ip_config_create: "{{ az_network_nic_ip_config_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_nic_ip_config_create }}" 

@@ -1,0 +1,65 @@
+
+
+ - name: Set input params for az_network_vnet_gateway_create
+   set_fact: 
+     az_network_vnet_gateway_create:
+       input: 
+         ###  Required parameter. Name of the VNet gateway.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Specify a single public IP (name or ID) for an active-standby gateway. Specify two space-separated public IPs for an active-active gateway.  ### 
+        'public-ip-addresses': "{{ item['public-ip-addresses'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name or ID of an existing virtual network which has a subnet named 'GatewaySubnet'.  ### 
+        'vnet': "{{ item['vnet'] | default('') }}" 
+         ###  Optional parameter. The gateway type.  ### 
+        'gateway-type': "{{ item['gateway-type'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+         ###  Optional parameter. VNet gateway SKU.  ### 
+        'sku': "{{ item['sku'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. VPN routing type.  ### 
+        'vpn-type': "{{ item['vpn-type'] | default('') }}" 
+         ###  Optional parameter. Autonomous System Number to use for the BGP settings.  ### 
+        'asn': "{{ item['asn'] | default('') }}" 
+         ###  Optional parameter. IP address to use for BGP peering.  ### 
+        'bgp-peering-address': "{{ item['bgp-peering-address'] | default('') }}" 
+         ###  Optional parameter. Weight (0-100) added to routes learned through BGP peering.  ### 
+        'peer-weight': "{{ item['peer-weight'] | default('') }}" 
+         ###  Optional parameter. Space separated list of CIDR prefixes representing the address space for the P2S client.  ### 
+        'address-prefixes': "{{ item['address-prefixes'] | default('') }}" 
+         ###  Optional parameter. Protocols to use for connecting.  ### 
+        'client-protocol': "{{ item['client-protocol'] | default('') }}" 
+         ###  Optional parameter. Radius secret to use for authentication.  ### 
+        'radius-secret': "{{ item['radius-secret'] | default('') }}" 
+         ###  Optional parameter. Radius server address to connect to.  ### 
+        'radius-server': "{{ item['radius-server'] | default('') }}" 
+ - debug: msg="{{ az_network_vnet_gateway_create }}"          
+ - name: "az network vnet-gateway create: Create a virtual network gateway." 
+   command: |                                      
+     az network vnet-gateway create                            
+                 --name {{ az_network_vnet_gateway_create.input['name'] }} 
+                 --public-ip-addresses {{ az_network_vnet_gateway_create.input['public-ip-addresses'] }} 
+                 --resource-group {{ az_network_vnet_gateway_create.input['resource-group'] }} 
+                 --vnet {{ az_network_vnet_gateway_create.input['vnet'] }} 
+                 {%if az_network_vnet_gateway_create.input['gateway-type'] %} --gateway-type az_network_vnet_gateway_create.input['gateway-type'] {%endif %} 
+                 {%if az_network_vnet_gateway_create.input['location'] %} --location az_network_vnet_gateway_create.input['location'] {%endif %} 
+                 {%if az_network_vnet_gateway_create.input['no-wait'] %} --no-wait az_network_vnet_gateway_create.input['no-wait'] {%endif %} 
+                 {%if az_network_vnet_gateway_create.input['sku'] %} --sku az_network_vnet_gateway_create.input['sku'] {%endif %} 
+                 {%if az_network_vnet_gateway_create.input['rtags'] %} --tags az_network_vnet_gateway_create.input['rtags'] {%endif %} 
+                 {%if az_network_vnet_gateway_create.input['vpn-type'] %} --vpn-type az_network_vnet_gateway_create.input['vpn-type'] {%endif %} 
+                 {%if az_network_vnet_gateway_create.input['asn'] %} --asn az_network_vnet_gateway_create.input['asn'] {%endif %} 
+                 {%if az_network_vnet_gateway_create.input['bgp-peering-address'] %} --bgp-peering-address az_network_vnet_gateway_create.input['bgp-peering-address'] {%endif %} 
+                 {%if az_network_vnet_gateway_create.input['peer-weight'] %} --peer-weight az_network_vnet_gateway_create.input['peer-weight'] {%endif %} 
+                 {%if az_network_vnet_gateway_create.input['address-prefixes'] %} --address-prefixes az_network_vnet_gateway_create.input['address-prefixes'] {%endif %} 
+                 {%if az_network_vnet_gateway_create.input['client-protocol'] %} --client-protocol az_network_vnet_gateway_create.input['client-protocol'] {%endif %} 
+                 {%if az_network_vnet_gateway_create.input['radius-secret'] %} --radius-secret az_network_vnet_gateway_create.input['radius-secret'] {%endif %} 
+                 {%if az_network_vnet_gateway_create.input['radius-server'] %} --radius-server az_network_vnet_gateway_create.input['radius-server'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_vnet_gateway_create: "{{ az_network_vnet_gateway_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_vnet_gateway_create }}" 

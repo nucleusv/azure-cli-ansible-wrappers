@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_iot_hub_job_cancel
+   set_fact: 
+     az_iot_hub_job_cancel:
+       input: 
+         ###  Required parameter. IoT Hub name.  ### 
+        'hub-name': "{{ item['hub-name'] | default('') }}" 
+         ###  Required parameter. Job Id.  ### 
+        'job-id': "{{ item['job-id'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_iot_hub_job_cancel }}"          
+ - name: "az iot hub job cancel: Cancel a job in an IoT hub." 
+   command: |                                      
+     az iot hub job cancel                            
+                 --hub-name {{ az_iot_hub_job_cancel.input['hub-name'] }} 
+                 --job-id {{ az_iot_hub_job_cancel.input['job-id'] }} 
+                 {%if az_iot_hub_job_cancel.input['resource-group'] %} --resource-group az_iot_hub_job_cancel.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_hub_job_cancel: "{{ az_iot_hub_job_cancel|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_hub_job_cancel }}" 

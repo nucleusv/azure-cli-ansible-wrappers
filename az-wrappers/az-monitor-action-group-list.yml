@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_monitor_action_group_list
+   set_fact: 
+     az_monitor_action_group_list:
+       input: 
+         ###  Optional parameter. Name of the resource group under which the action groups are being listed. If it is omitted, all the action groups under the current subscription are listed.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_monitor_action_group_list }}"          
+ - name: "az monitor action-group list: List action groups under a resource group or the current subscription." 
+   command: |                                      
+     az monitor action-group list                            
+                 {%if az_monitor_action_group_list.input['resource-group'] %} --resource-group az_monitor_action_group_list.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_monitor_action_group_list: "{{ az_monitor_action_group_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_monitor_action_group_list }}" 

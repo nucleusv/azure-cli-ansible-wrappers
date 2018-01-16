@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_network_vnet_gateway_list_bgp_peer_status
+   set_fact: 
+     az_network_vnet_gateway_list_bgp_peer_status:
+       input: 
+         ###  Required parameter. Name of the VNet gateway.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The IP address of the peer to retrieve the status of.  ### 
+        'peer': "{{ item['peer'] | default('') }}" 
+ - debug: msg="{{ az_network_vnet_gateway_list_bgp_peer_status }}"          
+ - name: "az network vnet-gateway list-bgp-peer-status: The GetBgpPeerStatus operation retrieves the status of all BGP peers." 
+   command: |                                      
+     az network vnet-gateway list-bgp-peer-status                            
+                 --name {{ az_network_vnet_gateway_list_bgp_peer_status.input['name'] }} 
+                 --resource-group {{ az_network_vnet_gateway_list_bgp_peer_status.input['resource-group'] }} 
+                 {%if az_network_vnet_gateway_list_bgp_peer_status.input['peer'] %} --peer az_network_vnet_gateway_list_bgp_peer_status.input['peer'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_vnet_gateway_list_bgp_peer_status: "{{ az_network_vnet_gateway_list_bgp_peer_status|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_vnet_gateway_list_bgp_peer_status }}" 

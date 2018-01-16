@@ -1,0 +1,35 @@
+
+
+ - name: Set input params for az_storage_queue_delete
+   set_fact: 
+     az_storage_queue_delete:
+       input: 
+         ###  Required parameter. The queue name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Specifies whether to throw an exception if the queue doesn't exist.  ### 
+        'fail-not-exist': "{{ item['fail-not-exist'] | default('') }}" 
+         ###  Optional parameter. Request timeout in seconds. Applies to each call to the service.  ### 
+        'timeout': "{{ item['timeout'] | default('') }}" 
+         ###  Optional parameter. Storage account key. Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Storage account name. Related environment variable: AZURE_STORAGE_ACCOUNT. Must be used in conjunction with either storage account key or a SAS token. If neither are present, the command will try to query the storage account key using the authenticated Azure account. If a large number of storage commands are executed the API quota may be hit.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+         ###  Optional parameter. Storage account connection string. Environment variable: AZURE_STORAGE_CONNECTION_STRING.  ### 
+        'connection-string': "{{ item['connection-string'] | default('') }}" 
+         ###  Optional parameter. A Shared Access Signature (SAS). Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_SAS_TOKEN.  ### 
+        'sas-token': "{{ item['sas-token'] | default('') }}" 
+ - debug: msg="{{ az_storage_queue_delete }}"          
+ - name: "az storage queue delete: Deletes the specified queue and any messages it contains." 
+   command: |                                      
+     az storage queue delete                            
+                 --name {{ az_storage_queue_delete.input['name'] }} 
+                 {%if az_storage_queue_delete.input['fail-not-exist'] %} --fail-not-exist az_storage_queue_delete.input['fail-not-exist'] {%endif %} 
+                 {%if az_storage_queue_delete.input['timeout'] %} --timeout az_storage_queue_delete.input['timeout'] {%endif %} 
+                 {%if az_storage_queue_delete.input['account-key'] %} --account-key az_storage_queue_delete.input['account-key'] {%endif %} 
+                 {%if az_storage_queue_delete.input['account-name'] %} --account-name az_storage_queue_delete.input['account-name'] {%endif %} 
+                 {%if az_storage_queue_delete.input['connection-string'] %} --connection-string az_storage_queue_delete.input['connection-string'] {%endif %} 
+                 {%if az_storage_queue_delete.input['sas-token'] %} --sas-token az_storage_queue_delete.input['sas-token'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_storage_queue_delete: "{{ az_storage_queue_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_storage_queue_delete }}" 

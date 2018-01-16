@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_backup_item_show
+   set_fact: 
+     az_backup_item_show:
+       input: 
+         ###  Required parameter. Name of the container.  ### 
+        'container-name': "{{ item['container-name'] | default('') }}" 
+         ###  Required parameter. Name of the backed up item. You can use the backup item list command to get the name of a backed up item.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the Recovery services vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+ - debug: msg="{{ az_backup_item_show }}"          
+ - name: "az backup item show: Show details of a particular backed up item." 
+   command: |                                      
+     az backup item show                            
+                 --container-name {{ az_backup_item_show.input['container-name'] }} 
+                 --name {{ az_backup_item_show.input['name'] }} 
+                 --resource-group {{ az_backup_item_show.input['resource-group'] }} 
+                 --vault-name {{ az_backup_item_show.input['vault-name'] }} 
+   register: output  
+ - set_fact: 
+    az_backup_item_show: "{{ az_backup_item_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_backup_item_show }}" 

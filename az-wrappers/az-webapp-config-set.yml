@@ -1,0 +1,62 @@
+
+
+ - name: Set input params for az_webapp_config_set
+   set_fact: 
+     az_webapp_config_set:
+       input: 
+         ###  Required parameter. Name of the web. You can configure the default using 'az configure --defaults web=<name>'.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Ensure webapp gets loaded all the time, rather unloaded after been idle. Recommended when you have continuous web jobs running.  ### 
+        'always-on': "{{ item['always-on'] | default('') }}" 
+         ###  Optional parameter. Enable or disable auto heal.  ### 
+        'auto-heal-enabled': "{{ item['auto-heal-enabled'] | default('') }}" 
+         ###  Optional parameter. The java container, e.g., Tomcat, Jetty.  ### 
+        'java-container': "{{ item['java-container'] | default('') }}" 
+         ###  Optional parameter. The version of the java container, e.g., '8.0.23' for Tomcat.  ### 
+        'java-container-version': "{{ item['java-container-version'] | default('') }}" 
+         ###  Optional parameter. The version used to run your web app if using Java, e.g., '1.7' for Java 7, '1.8' for Java 8.  ### 
+        'java-version': "{{ item['java-version'] | default('') }}" 
+         ###  Optional parameter. The runtime stack used for your linux-based webapp, e.g., "RUBY|2.3", "NODE|6.6", "PHP|5.6", "DOTNETCORE|1.1.0". See <a href="https://aka.ms/linux-stacks">https://aka.ms/linux-stacks</a> for more info.  ### 
+        'linux-fx-version': "{{ item['linux-fx-version'] | default('') }}" 
+         ###  Optional parameter. The version used to run your web app if using .NET Framework, e.g., 'v4.0' for .NET 4.6 and 'v3.0' for .NET 3.5.  ### 
+        'net-framework-version': "{{ item['net-framework-version'] | default('') }}" 
+         ###  Optional parameter. The version used to run your web app if using PHP, e.g., 5.5, 5.6, 7.0.  ### 
+        'php-version': "{{ item['php-version'] | default('') }}" 
+         ###  Optional parameter. The version used to run your web app if using Python, e.g., 2.7, 3.4.  ### 
+        'python-version': "{{ item['python-version'] | default('') }}" 
+         ###  Optional parameter. Enable or disable remote debugging.  ### 
+        'remote-debugging-enabled': "{{ item['remote-debugging-enabled'] | default('') }}" 
+         ###  Optional parameter. The name of the slot. Default to the productions slot if not specified.  ### 
+        'slot': "{{ item['slot'] | default('') }}" 
+         ###  Optional parameter. The startup file for linux hosted web apps, e.g. 'process.json' for Node.js web.  ### 
+        'startup-file': "{{ item['startup-file'] | default('') }}" 
+         ###  Optional parameter. Use 32 bits worker process or not.  ### 
+        'use-32bit-worker-process': "{{ item['use-32bit-worker-process'] | default('') }}" 
+         ###  Optional parameter. Enable or disable web sockets.  ### 
+        'web-sockets-enabled': "{{ item['web-sockets-enabled'] | default('') }}" 
+ - debug: msg="{{ az_webapp_config_set }}"          
+ - name: "az webapp config set: Set a web app's configuration." 
+   command: |                                      
+     az webapp config set                            
+                 --name {{ az_webapp_config_set.input['name'] }} 
+                 --resource-group {{ az_webapp_config_set.input['resource-group'] }} 
+                 {%if az_webapp_config_set.input['always-on'] %} --always-on az_webapp_config_set.input['always-on'] {%endif %} 
+                 {%if az_webapp_config_set.input['auto-heal-enabled'] %} --auto-heal-enabled az_webapp_config_set.input['auto-heal-enabled'] {%endif %} 
+                 {%if az_webapp_config_set.input['java-container'] %} --java-container az_webapp_config_set.input['java-container'] {%endif %} 
+                 {%if az_webapp_config_set.input['java-container-version'] %} --java-container-version az_webapp_config_set.input['java-container-version'] {%endif %} 
+                 {%if az_webapp_config_set.input['java-version'] %} --java-version az_webapp_config_set.input['java-version'] {%endif %} 
+                 {%if az_webapp_config_set.input['linux-fx-version'] %} --linux-fx-version az_webapp_config_set.input['linux-fx-version'] {%endif %} 
+                 {%if az_webapp_config_set.input['net-framework-version'] %} --net-framework-version az_webapp_config_set.input['net-framework-version'] {%endif %} 
+                 {%if az_webapp_config_set.input['php-version'] %} --php-version az_webapp_config_set.input['php-version'] {%endif %} 
+                 {%if az_webapp_config_set.input['python-version'] %} --python-version az_webapp_config_set.input['python-version'] {%endif %} 
+                 {%if az_webapp_config_set.input['remote-debugging-enabled'] %} --remote-debugging-enabled az_webapp_config_set.input['remote-debugging-enabled'] {%endif %} 
+                 {%if az_webapp_config_set.input['slot'] %} --slot az_webapp_config_set.input['slot'] {%endif %} 
+                 {%if az_webapp_config_set.input['startup-file'] %} --startup-file az_webapp_config_set.input['startup-file'] {%endif %} 
+                 {%if az_webapp_config_set.input['use-32bit-worker-process'] %} --use-32bit-worker-process az_webapp_config_set.input['use-32bit-worker-process'] {%endif %} 
+                 {%if az_webapp_config_set.input['web-sockets-enabled'] %} --web-sockets-enabled az_webapp_config_set.input['web-sockets-enabled'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_webapp_config_set: "{{ az_webapp_config_set|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_webapp_config_set }}" 

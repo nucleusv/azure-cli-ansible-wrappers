@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_network_lb_probe_delete
+   set_fact: 
+     az_network_lb_probe_delete:
+       input: 
+         ###  Required parameter. The name of the load balancer.  ### 
+        'lb-name': "{{ item['lb-name'] | default('') }}" 
+         ###  Required parameter. The name of the probe.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+ - debug: msg="{{ az_network_lb_probe_delete }}"          
+ - name: "az network lb probe delete: Delete a probe." 
+   command: |                                      
+     az network lb probe delete                            
+                 --lb-name {{ az_network_lb_probe_delete.input['lb-name'] }} 
+                 --name {{ az_network_lb_probe_delete.input['name'] }} 
+                 --resource-group {{ az_network_lb_probe_delete.input['resource-group'] }} 
+                 {%if az_network_lb_probe_delete.input['no-wait'] %} --no-wait az_network_lb_probe_delete.input['no-wait'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_lb_probe_delete: "{{ az_network_lb_probe_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_lb_probe_delete }}" 

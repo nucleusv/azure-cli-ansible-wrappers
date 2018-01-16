@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_network_watcher_test_connectivity
+   set_fact: 
+     az_network_watcher_test_connectivity:
+       input: 
+         ###  Required parameter. Name or ID of the resource from which to originate traffic.  ### 
+        'source-resource': "{{ item['source-resource'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Port number from which to originate traffic.  ### 
+        'source-port': "{{ item['source-port'] | default('') }}" 
+         ###  Optional parameter. The IP address or URI at which to receive traffic.  ### 
+        'dest-address': "{{ item['dest-address'] | default('') }}" 
+         ###  Optional parameter. Port number on which to receive traffic.  ### 
+        'dest-port': "{{ item['dest-port'] | default('') }}" 
+         ###  Optional parameter. Name or ID of the resource to receive traffic.  ### 
+        'dest-resource': "{{ item['dest-resource'] | default('') }}" 
+ - debug: msg="{{ az_network_watcher_test_connectivity }}"          
+ - name: "az network watcher test-connectivity: Test if a direct TCP connection can be established between a Virtual Machine and a given endpoint." 
+   command: |                                      
+     az network watcher test-connectivity                            
+                 --source-resource {{ az_network_watcher_test_connectivity.input['source-resource'] }} 
+                 {%if az_network_watcher_test_connectivity.input['resource-group'] %} --resource-group az_network_watcher_test_connectivity.input['resource-group'] {%endif %} 
+                 {%if az_network_watcher_test_connectivity.input['source-port'] %} --source-port az_network_watcher_test_connectivity.input['source-port'] {%endif %} 
+                 {%if az_network_watcher_test_connectivity.input['dest-address'] %} --dest-address az_network_watcher_test_connectivity.input['dest-address'] {%endif %} 
+                 {%if az_network_watcher_test_connectivity.input['dest-port'] %} --dest-port az_network_watcher_test_connectivity.input['dest-port'] {%endif %} 
+                 {%if az_network_watcher_test_connectivity.input['dest-resource'] %} --dest-resource az_network_watcher_test_connectivity.input['dest-resource'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_watcher_test_connectivity: "{{ az_network_watcher_test_connectivity|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_watcher_test_connectivity }}" 

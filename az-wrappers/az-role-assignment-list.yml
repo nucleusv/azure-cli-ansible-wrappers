@@ -1,0 +1,38 @@
+
+
+ - name: Set input params for az_role_assignment_list
+   set_fact: 
+     az_role_assignment_list:
+       input: 
+         ###  Optional parameter. Show all assignments under the current subscription.  ### 
+        'all': "{{ item['all'] | default('') }}" 
+         ###  Optional parameter. Represent a user, group, or service principal. supported format: object id, user sign-in name, or service principal name.  ### 
+        'assignee': "{{ item['assignee'] | default('') }}" 
+         ###  Optional parameter. List default role assignments for subscription classic administrators, aka co-admins.  ### 
+        'include-classic-administrators': "{{ item['include-classic-administrators'] | default('') }}" 
+         ###  Optional parameter. Include extra assignments to the groups of which the user is a member(transitively). Supported only for a user principal.  ### 
+        'include-groups': "{{ item['include-groups'] | default('') }}" 
+         ###  Optional parameter. Include assignments applied on parent scopes.  ### 
+        'include-inherited': "{{ item['include-inherited'] | default('') }}" 
+         ###  Optional parameter. Use it only if the role or assignment was added at the level of a resource group.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Role name or id.  ### 
+        'role': "{{ item['role'] | default('') }}" 
+         ###  Optional parameter. Scope at which the role assignment or definition applies to, e.g., /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333, /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup, or /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup/providers/Microsoft.Compute/virtualMachines/myVM.  ### 
+        'scope': "{{ item['scope'] | default('') }}" 
+ - debug: msg="{{ az_role_assignment_list }}"          
+ - name: "az role assignment list: List role assignments." 
+   command: |                                      
+     az role assignment list                            
+                 {%if az_role_assignment_list.input['all'] %} --all az_role_assignment_list.input['all'] {%endif %} 
+                 {%if az_role_assignment_list.input['assignee'] %} --assignee az_role_assignment_list.input['assignee'] {%endif %} 
+                 {%if az_role_assignment_list.input['include-classic-administrators'] %} --include-classic-administrators az_role_assignment_list.input['include-classic-administrators'] {%endif %} 
+                 {%if az_role_assignment_list.input['include-groups'] %} --include-groups az_role_assignment_list.input['include-groups'] {%endif %} 
+                 {%if az_role_assignment_list.input['include-inherited'] %} --include-inherited az_role_assignment_list.input['include-inherited'] {%endif %} 
+                 {%if az_role_assignment_list.input['resource-group'] %} --resource-group az_role_assignment_list.input['resource-group'] {%endif %} 
+                 {%if az_role_assignment_list.input['role'] %} --role az_role_assignment_list.input['role'] {%endif %} 
+                 {%if az_role_assignment_list.input['scope'] %} --scope az_role_assignment_list.input['scope'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_role_assignment_list: "{{ az_role_assignment_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_role_assignment_list }}" 

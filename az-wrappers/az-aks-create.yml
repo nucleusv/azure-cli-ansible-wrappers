@@ -1,0 +1,59 @@
+
+
+ - name: Set input params for az_aks_create
+   set_fact: 
+     az_aks_create:
+       input: 
+         ###  Required parameter. Name of the managed cluster.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. User account to create on node VMs for SSH access.  ### 
+        'admin-username': "{{ item['admin-username'] | default('') }}" 
+         ###  Optional parameter. Secret associated with the service principal. This argument is required if `--service-principal` is specified.  ### 
+        'client-secret': "{{ item['client-secret'] | default('') }}" 
+         ###  Optional parameter. Prefix for hostnames that are created. If not specified, gemerate a hostname using the managed cluster and resource group names.  ### 
+        'dns-name-prefix': "{{ item['dns-name-prefix'] | default('') }}" 
+         ###  Optional parameter. Generate SSH public and private key files if missing.  ### 
+        'generate-ssh-keys': "{{ item['generate-ssh-keys'] | default('') }}" 
+         ###  Optional parameter. Version of Kubernetes to use for creating the cluster, such as "1.7.7" or "1.8.2".  ### 
+        'kubernetes-version': "{{ item['kubernetes-version'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+         ###  Optional parameter. Number of nodes in the Kubernetes node pool. After creating a cluster, you can change the size of its node pool with `az aks scale`.  ### 
+        'node-count': "{{ item['node-count'] | default('') }}" 
+         ###  Optional parameter. Size in GB of the OS disk for each node in the node pool.  ### 
+        'node-osdisk-size': "{{ item['node-osdisk-size'] | default('') }}" 
+         ###  Optional parameter. Size of Virtual Machines to create as Kubernetes nodes.  ### 
+        'node-vm-size': "{{ item['node-vm-size'] | default('') }}" 
+         ###  Optional parameter. Service principal used for authentication to Azure APIs.  ### 
+        'service-principal': "{{ item['service-principal'] | default('') }}" 
+         ###  Optional parameter. Public key path or key contents to install on node VMs for SSH access. For example, 'ssh-rsa AAAAB...snip...UcyupgH azureuser@linuxvm'.  ### 
+        'ssh-key-value': "{{ item['ssh-key-value'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+ - debug: msg="{{ az_aks_create }}"          
+ - name: "az aks create: Create a new managed Kubernetes cluster." 
+   command: |                                      
+     az aks create                            
+                 --name {{ az_aks_create.input['name'] }} 
+                 --resource-group {{ az_aks_create.input['resource-group'] }} 
+                 {%if az_aks_create.input['admin-username'] %} --admin-username az_aks_create.input['admin-username'] {%endif %} 
+                 {%if az_aks_create.input['client-secret'] %} --client-secret az_aks_create.input['client-secret'] {%endif %} 
+                 {%if az_aks_create.input['dns-name-prefix'] %} --dns-name-prefix az_aks_create.input['dns-name-prefix'] {%endif %} 
+                 {%if az_aks_create.input['generate-ssh-keys'] %} --generate-ssh-keys az_aks_create.input['generate-ssh-keys'] {%endif %} 
+                 {%if az_aks_create.input['kubernetes-version'] %} --kubernetes-version az_aks_create.input['kubernetes-version'] {%endif %} 
+                 {%if az_aks_create.input['location'] %} --location az_aks_create.input['location'] {%endif %} 
+                 {%if az_aks_create.input['no-wait'] %} --no-wait az_aks_create.input['no-wait'] {%endif %} 
+                 {%if az_aks_create.input['node-count'] %} --node-count az_aks_create.input['node-count'] {%endif %} 
+                 {%if az_aks_create.input['node-osdisk-size'] %} --node-osdisk-size az_aks_create.input['node-osdisk-size'] {%endif %} 
+                 {%if az_aks_create.input['node-vm-size'] %} --node-vm-size az_aks_create.input['node-vm-size'] {%endif %} 
+                 {%if az_aks_create.input['service-principal'] %} --service-principal az_aks_create.input['service-principal'] {%endif %} 
+                 {%if az_aks_create.input['ssh-key-value'] %} --ssh-key-value az_aks_create.input['ssh-key-value'] {%endif %} 
+                 {%if az_aks_create.input['rtags'] %} --tags az_aks_create.input['rtags'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_aks_create: "{{ az_aks_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_aks_create }}" 

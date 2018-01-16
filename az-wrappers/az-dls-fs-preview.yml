@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_dls_fs_preview
+   set_fact: 
+     az_dls_fs_preview:
+       input: 
+         ###  Required parameter. Name of the Data Lake Store account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The path in the specified Data Lake Store account where the action should take place. In the format '/folder/file.txt', where the first '/' after the DNS indicates the root of the file system.  ### 
+        'path': "{{ item['path'] | default('') }}" 
+         ###  Optional parameter. Indicates that, if the preview is larger than 1MB, still retrieve it. This can potentially be very slow, depending on how large the file is.  ### 
+        'force': "{{ item['force'] | default('') }}" 
+         ###  Optional parameter. The amount of data to preview in bytes.  ### 
+        'length': "{{ item['length'] | default('') }}" 
+         ###  Optional parameter. The position in bytes to start the preview from.  ### 
+        'offset': "{{ item['offset'] | default('') }}" 
+ - debug: msg="{{ az_dls_fs_preview }}"          
+ - name: "az dls fs preview: Preview the content of a file in a Data Lake Store account." 
+   command: |                                      
+     az dls fs preview                            
+                 --account {{ az_dls_fs_preview.input['account'] }} 
+                 --path {{ az_dls_fs_preview.input['path'] }} 
+                 {%if az_dls_fs_preview.input['force'] %} --force az_dls_fs_preview.input['force'] {%endif %} 
+                 {%if az_dls_fs_preview.input['length'] %} --length az_dls_fs_preview.input['length'] {%endif %} 
+                 {%if az_dls_fs_preview.input['offset'] %} --offset az_dls_fs_preview.input['offset'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dls_fs_preview: "{{ az_dls_fs_preview|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dls_fs_preview }}" 

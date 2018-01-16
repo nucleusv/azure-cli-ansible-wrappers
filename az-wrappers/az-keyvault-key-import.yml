@@ -1,0 +1,47 @@
+
+
+ - name: Set input params for az_keyvault_key_import
+   set_fact: 
+     az_keyvault_key_import:
+       input: 
+         ###  Required parameter. Name of the key.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+         ###  Optional parameter. Create key in disabled state.  ### 
+        'disabled': "{{ item['disabled'] | default('') }}" 
+         ###  Optional parameter. Expiration UTC datetime  (Y-m-d'T'H:M:S'Z').  ### 
+        'expires': "{{ item['expires'] | default('') }}" 
+         ###  Optional parameter. Key not usable before the provided UTC datetime  (Y-m-d'T'H:M:S'Z').  ### 
+        'not-before': "{{ item['not-before'] | default('') }}" 
+         ###  Optional parameter. Space separated list of permitted JSON web key operations.  ### 
+        'ops': "{{ item['ops'] | default('') }}" 
+         ###  Optional parameter. Specifies the type of key protection.  ### 
+        'protection': "{{ item['protection'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. BYOK file containing the key to be imported. Must not be password protected.  ### 
+        'byok-file': "{{ item['byok-file'] | default('') }}" 
+         ###  Optional parameter. PEM file containing the key to be imported.  ### 
+        'pem-file': "{{ item['pem-file'] | default('') }}" 
+         ###  Optional parameter. Password of PEM file.  ### 
+        'pem-password': "{{ item['pem-password'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_key_import }}"          
+ - name: "az keyvault key import: Import a private key." 
+   command: |                                      
+     az keyvault key import                            
+                 --name {{ az_keyvault_key_import.input['name'] }} 
+                 --vault-name {{ az_keyvault_key_import.input['vault-name'] }} 
+                 {%if az_keyvault_key_import.input['disabled'] %} --disabled az_keyvault_key_import.input['disabled'] {%endif %} 
+                 {%if az_keyvault_key_import.input['expires'] %} --expires az_keyvault_key_import.input['expires'] {%endif %} 
+                 {%if az_keyvault_key_import.input['not-before'] %} --not-before az_keyvault_key_import.input['not-before'] {%endif %} 
+                 {%if az_keyvault_key_import.input['ops'] %} --ops az_keyvault_key_import.input['ops'] {%endif %} 
+                 {%if az_keyvault_key_import.input['protection'] %} --protection az_keyvault_key_import.input['protection'] {%endif %} 
+                 {%if az_keyvault_key_import.input['rtags'] %} --tags az_keyvault_key_import.input['rtags'] {%endif %} 
+                 {%if az_keyvault_key_import.input['byok-file'] %} --byok-file az_keyvault_key_import.input['byok-file'] {%endif %} 
+                 {%if az_keyvault_key_import.input['pem-file'] %} --pem-file az_keyvault_key_import.input['pem-file'] {%endif %} 
+                 {%if az_keyvault_key_import.input['pem-password'] %} --pem-password az_keyvault_key_import.input['pem-password'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_keyvault_key_import: "{{ az_keyvault_key_import|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_key_import }}" 

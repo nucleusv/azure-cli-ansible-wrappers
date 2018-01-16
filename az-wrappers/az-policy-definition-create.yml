@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_policy_definition_create
+   set_fact: 
+     az_policy_definition_create:
+       input: 
+         ###  Required parameter. Name of the new policy definition.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Description of policy definition.  ### 
+        'description': "{{ item['description'] | default('') }}" 
+         ###  Optional parameter. Display name of policy definition.  ### 
+        'display-name': "{{ item['display-name'] | default('') }}" 
+         ###  Optional parameter. Mode of the new policy definition.  ### 
+        'mode': "{{ item['mode'] | default('') }}" 
+         ###  Optional parameter. JSON formatted string or a path to a file or uri with parameter definitions.  ### 
+        'params': "{{ item['params'] | default('') }}" 
+         ###  Optional parameter. Policy rules in JSON format, or a path to a file containing JSON rules.  ### 
+        'rules': "{{ item['rules'] | default('') }}" 
+ - debug: msg="{{ az_policy_definition_create }}"          
+ - name: "az policy definition create: Create a policy definition." 
+   command: |                                      
+     az policy definition create                            
+                 --name {{ az_policy_definition_create.input['name'] }} 
+                 {%if az_policy_definition_create.input['description'] %} --description az_policy_definition_create.input['description'] {%endif %} 
+                 {%if az_policy_definition_create.input['display-name'] %} --display-name az_policy_definition_create.input['display-name'] {%endif %} 
+                 {%if az_policy_definition_create.input['mode'] %} --mode az_policy_definition_create.input['mode'] {%endif %} 
+                 {%if az_policy_definition_create.input['params'] %} --params az_policy_definition_create.input['params'] {%endif %} 
+                 {%if az_policy_definition_create.input['rules'] %} --rules az_policy_definition_create.input['rules'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_policy_definition_create: "{{ az_policy_definition_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_policy_definition_create }}" 

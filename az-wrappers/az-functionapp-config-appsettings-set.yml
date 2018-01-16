@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_functionapp_config_appsettings_set
+   set_fact: 
+     az_functionapp_config_appsettings_set:
+       input: 
+         ###  Required parameter. Name of the function app.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Space separated app settings in a format of <name>=<value>.  ### 
+        'settings': "{{ item['settings'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'slot-settings': "{{ item['slot-settings'] | default('') }}" 
+ - debug: msg="{{ az_functionapp_config_appsettings_set }}"          
+ - name: "az functionapp config appsettings set: Update a function app's settings." 
+   command: |                                      
+     az functionapp config appsettings set                            
+                 --name {{ az_functionapp_config_appsettings_set.input['name'] }} 
+                 --resource-group {{ az_functionapp_config_appsettings_set.input['resource-group'] }} 
+                 {%if az_functionapp_config_appsettings_set.input['settings'] %} --settings az_functionapp_config_appsettings_set.input['settings'] {%endif %} 
+                 {%if az_functionapp_config_appsettings_set.input['slot-settings'] %} --slot-settings az_functionapp_config_appsettings_set.input['slot-settings'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_functionapp_config_appsettings_set: "{{ az_functionapp_config_appsettings_set|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_functionapp_config_appsettings_set }}" 

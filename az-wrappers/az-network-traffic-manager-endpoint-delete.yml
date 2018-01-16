@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_network_traffic_manager_endpoint_delete
+   set_fact: 
+     az_network_traffic_manager_endpoint_delete:
+       input: 
+         ###  Required parameter. Endpoint name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of parent profile.  ### 
+        'profile-name': "{{ item['profile-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Endpoint type.  ### 
+        'type': "{{ item['type'] | default('') }}" 
+ - debug: msg="{{ az_network_traffic_manager_endpoint_delete }}"          
+ - name: "az network traffic-manager endpoint delete: Delete an endpoint." 
+   command: |                                      
+     az network traffic-manager endpoint delete                            
+                 --name {{ az_network_traffic_manager_endpoint_delete.input['name'] }} 
+                 --profile-name {{ az_network_traffic_manager_endpoint_delete.input['profile-name'] }} 
+                 --resource-group {{ az_network_traffic_manager_endpoint_delete.input['resource-group'] }} 
+                 --type {{ az_network_traffic_manager_endpoint_delete.input['type'] }} 
+   register: output  
+ - set_fact: 
+    az_network_traffic_manager_endpoint_delete: "{{ az_network_traffic_manager_endpoint_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_traffic_manager_endpoint_delete }}" 

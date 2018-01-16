@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_batch_account_set
+   set_fact: 
+     az_batch_account_set:
+       input: 
+         ###  Required parameter. Name of the Batch account.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the resource group.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The storage account name or resource ID to be used for auto storage.  ### 
+        'storage-account': "{{ item['storage-account'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+ - debug: msg="{{ az_batch_account_set }}"          
+ - name: "az batch account set: Update properties for a Batch account." 
+   command: |                                      
+     az batch account set                            
+                 --name {{ az_batch_account_set.input['name'] }} 
+                 --resource-group {{ az_batch_account_set.input['resource-group'] }} 
+                 {%if az_batch_account_set.input['storage-account'] %} --storage-account az_batch_account_set.input['storage-account'] {%endif %} 
+                 {%if az_batch_account_set.input['rtags'] %} --tags az_batch_account_set.input['rtags'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_account_set: "{{ az_batch_account_set|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_account_set }}" 

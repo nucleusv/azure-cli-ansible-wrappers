@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_policy_assignment_create
+   set_fact: 
+     az_policy_assignment_create:
+       input: 
+         ###  Optional parameter. Display name of the assignment.  ### 
+        'display-name': "{{ item['display-name'] | default('') }}" 
+         ###  Optional parameter. Name of the new assignment.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Space separated scopes where the policy assignment does not apply.  ### 
+        'not-scopes': "{{ item['not-scopes'] | default('') }}" 
+         ###  Optional parameter. JSON formatted string or path to file with parameter values of policy rule.  ### 
+        'params': "{{ item['params'] | default('') }}" 
+         ###  Optional parameter. Name or id of the policy definition.  ### 
+        'policy': "{{ item['policy'] | default('') }}" 
+         ###  Optional parameter. Name or id of the policy set definition.  ### 
+        'policy-set-definition': "{{ item['policy-set-definition'] | default('') }}" 
+         ###  Optional parameter. The resource group where the policy will be applied.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Scope at which this policy assignment applies to, e.g., /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333, /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup, or /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup/providers/Microsoft.Compute/virtualMachines/myVM.  ### 
+        'scope': "{{ item['scope'] | default('') }}" 
+         ###  Optional parameter. Policy sku.  ### 
+        'sku': "{{ item['sku'] | default('') }}" 
+ - debug: msg="{{ az_policy_assignment_create }}"          
+ - name: "az policy assignment create: Create a resource policy assignment." 
+   command: |                                      
+     az policy assignment create                            
+                 {%if az_policy_assignment_create.input['display-name'] %} --display-name az_policy_assignment_create.input['display-name'] {%endif %} 
+                 {%if az_policy_assignment_create.input['name'] %} --name az_policy_assignment_create.input['name'] {%endif %} 
+                 {%if az_policy_assignment_create.input['not-scopes'] %} --not-scopes az_policy_assignment_create.input['not-scopes'] {%endif %} 
+                 {%if az_policy_assignment_create.input['params'] %} --params az_policy_assignment_create.input['params'] {%endif %} 
+                 {%if az_policy_assignment_create.input['policy'] %} --policy az_policy_assignment_create.input['policy'] {%endif %} 
+                 {%if az_policy_assignment_create.input['policy-set-definition'] %} --policy-set-definition az_policy_assignment_create.input['policy-set-definition'] {%endif %} 
+                 {%if az_policy_assignment_create.input['resource-group'] %} --resource-group az_policy_assignment_create.input['resource-group'] {%endif %} 
+                 {%if az_policy_assignment_create.input['scope'] %} --scope az_policy_assignment_create.input['scope'] {%endif %} 
+                 {%if az_policy_assignment_create.input['sku'] %} --sku az_policy_assignment_create.input['sku'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_policy_assignment_create: "{{ az_policy_assignment_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_policy_assignment_create }}" 

@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_keyvault_certificate_set_attributes
+   set_fact: 
+     az_keyvault_certificate_set_attributes:
+       input: 
+         ###  Required parameter. Name of the certificate.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+         ###  Optional parameter. Enable the certificate.  ### 
+        'enabled': "{{ item['enabled'] | default('') }}" 
+         ###  Optional parameter. JSON encoded policy defintion. Use @{file} to load from a file.  ### 
+        'policy': "{{ item['policy'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. The certificate version. If omitted, uses the latest version.  ### 
+        'version': "{{ item['version'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_certificate_set_attributes }}"          
+ - name: "az keyvault certificate set-attributes: Updates the specified attributes associated with the given certificate." 
+   command: |                                      
+     az keyvault certificate set-attributes                            
+                 --name {{ az_keyvault_certificate_set_attributes.input['name'] }} 
+                 --vault-name {{ az_keyvault_certificate_set_attributes.input['vault-name'] }} 
+                 {%if az_keyvault_certificate_set_attributes.input['enabled'] %} --enabled az_keyvault_certificate_set_attributes.input['enabled'] {%endif %} 
+                 {%if az_keyvault_certificate_set_attributes.input['policy'] %} --policy az_keyvault_certificate_set_attributes.input['policy'] {%endif %} 
+                 {%if az_keyvault_certificate_set_attributes.input['rtags'] %} --tags az_keyvault_certificate_set_attributes.input['rtags'] {%endif %} 
+                 {%if az_keyvault_certificate_set_attributes.input['version'] %} --version az_keyvault_certificate_set_attributes.input['version'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_keyvault_certificate_set_attributes: "{{ az_keyvault_certificate_set_attributes|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_certificate_set_attributes }}" 

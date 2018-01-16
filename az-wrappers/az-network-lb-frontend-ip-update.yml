@@ -1,0 +1,44 @@
+
+
+ - name: Set input params for az_network_lb_frontend_ip_update
+   set_fact: 
+     az_network_lb_frontend_ip_update:
+       input: 
+         ###  Required parameter. The load balancer name.  ### 
+        'lb-name': "{{ item['lb-name'] | default('') }}" 
+         ###  Required parameter. The name of the frontend IP configuration.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Static private IP address to associate with the configuration.  ### 
+        'private-ip-address': "{{ item['private-ip-address'] | default('') }}" 
+         ###  Optional parameter. Name or ID of the existing public IP to associate with the configuration.  ### 
+        'public-ip-address': "{{ item['public-ip-address'] | default('') }}" 
+         ###  Optional parameter. Name or ID of an existing subnet. If name is specified, also specify --vnet-name.  ### 
+        'subnet': "{{ item['subnet'] | default('') }}" 
+         ###  Optional parameter. The virtual network (VNet) associated with the subnet (Omit if supplying a subnet id).  ### 
+        'vnet-name': "{{ item['vnet-name'] | default('') }}" 
+         ###  Optional parameter. Add an object to a list of objects by specifying a path and key value pairs.  Example: --add property.listProperty <key=value, string or JSON string>.  ### 
+        'add': "{{ item['add'] | default('') }}" 
+         ###  Optional parameter. Remove a property or an element from a list.  Example: --remove property.list <indexToRemove> OR --remove propertyToRemove.  ### 
+        'remove': "{{ item['remove'] | default('') }}" 
+         ###  Optional parameter. Update an object by specifying a property path and value to set.  Example: --set property1.property2=<value>.  ### 
+        'set': "{{ item['set'] | default('') }}" 
+ - debug: msg="{{ az_network_lb_frontend_ip_update }}"          
+ - name: "az network lb frontend-ip update: Update a frontend IP address." 
+   command: |                                      
+     az network lb frontend-ip update                            
+                 --lb-name {{ az_network_lb_frontend_ip_update.input['lb-name'] }} 
+                 --name {{ az_network_lb_frontend_ip_update.input['name'] }} 
+                 --resource-group {{ az_network_lb_frontend_ip_update.input['resource-group'] }} 
+                 {%if az_network_lb_frontend_ip_update.input['private-ip-address'] %} --private-ip-address az_network_lb_frontend_ip_update.input['private-ip-address'] {%endif %} 
+                 {%if az_network_lb_frontend_ip_update.input['public-ip-address'] %} --public-ip-address az_network_lb_frontend_ip_update.input['public-ip-address'] {%endif %} 
+                 {%if az_network_lb_frontend_ip_update.input['subnet'] %} --subnet az_network_lb_frontend_ip_update.input['subnet'] {%endif %} 
+                 {%if az_network_lb_frontend_ip_update.input['vnet-name'] %} --vnet-name az_network_lb_frontend_ip_update.input['vnet-name'] {%endif %} 
+                 {%if az_network_lb_frontend_ip_update.input['add'] %} --add az_network_lb_frontend_ip_update.input['add'] {%endif %} 
+                 {%if az_network_lb_frontend_ip_update.input['remove'] %} --remove az_network_lb_frontend_ip_update.input['remove'] {%endif %} 
+                 {%if az_network_lb_frontend_ip_update.input['set'] %} --set az_network_lb_frontend_ip_update.input['set'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_lb_frontend_ip_update: "{{ az_network_lb_frontend_ip_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_lb_frontend_ip_update }}" 

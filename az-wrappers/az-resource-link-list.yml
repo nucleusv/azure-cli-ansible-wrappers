@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_resource_link_list
+   set_fact: 
+     az_resource_link_list:
+       input: 
+         ###  Optional parameter. A filter for restricting the results.  ### 
+        'filter-string': "{{ item['filter-string'] | default('') }}" 
+         ###  Optional parameter. The scope for the links.  ### 
+        'scope': "{{ item['scope'] | default('') }}" 
+ - debug: msg="{{ az_resource_link_list }}"          
+ - name: "az resource link list: List resource links." 
+   command: |                                      
+     az resource link list                            
+                 {%if az_resource_link_list.input['filter-string'] %} --filter-string az_resource_link_list.input['filter-string'] {%endif %} 
+                 {%if az_resource_link_list.input['scope'] %} --scope az_resource_link_list.input['scope'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_resource_link_list: "{{ az_resource_link_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_resource_link_list }}" 

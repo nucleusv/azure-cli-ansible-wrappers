@@ -1,0 +1,35 @@
+
+
+ - name: Set input params for az_login
+   set_fact: 
+     az_login:
+       input: 
+         ###  Optional parameter. Support access tenants without subscriptions. It's uncommon but useful to run tenant level commands, such as 'az ad'.  ### 
+        'allow-no-subscriptions': "{{ item['allow-no-subscriptions'] | default('') }}" 
+         ###  Optional parameter. Credentials like user password, or for a service principal, provide client secret or a pem file with key and public certificate. Will prompt if not given.  ### 
+        'password': "{{ item['password'] | default('') }}" 
+         ###  Optional parameter. The credential representing a service principal.  ### 
+        'service-principal': "{{ item['service-principal'] | default('') }}" 
+         ###  Optional parameter. The AAD tenant, must provide when using service principals.  ### 
+        'tenant': "{{ item['tenant'] | default('') }}" 
+         ###  Optional parameter. User name, service principal, or managed service identity ID.  ### 
+        'username': "{{ item['username'] | default('') }}" 
+         ###  Optional parameter. Log in using the Virtual Machine's identity.  ### 
+        'msi': "{{ item['msi'] | default('') }}" 
+         ###  Optional parameter. The port to retrieve tokens for login.  ### 
+        'msi-port': "{{ item['msi-port'] | default('') }}" 
+ - debug: msg="{{ az_login }}"          
+ - name: "az login: Log in to Azure." 
+   command: |                                      
+     az login                            
+                 {%if az_login.input['allow-no-subscriptions'] %} --allow-no-subscriptions az_login.input['allow-no-subscriptions'] {%endif %} 
+                 {%if az_login.input['password'] %} --password az_login.input['password'] {%endif %} 
+                 {%if az_login.input['service-principal'] %} --service-principal az_login.input['service-principal'] {%endif %} 
+                 {%if az_login.input['tenant'] %} --tenant az_login.input['tenant'] {%endif %} 
+                 {%if az_login.input['username'] %} --username az_login.input['username'] {%endif %} 
+                 {%if az_login.input['msi'] %} --msi az_login.input['msi'] {%endif %} 
+                 {%if az_login.input['msi-port'] %} --msi-port az_login.input['msi-port'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_login: "{{ az_login|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_login }}" 

@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_resource_list
+   set_fact: 
+     az_resource_list:
+       input: 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. The resource name. (Ex: myC).  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. A single tag in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'tag': "{{ item['tag'] | default('') }}" 
+         ###  Optional parameter. Provider namespace (Ex: 'Microsoft.Provider').  ### 
+        'namespace': "{{ item['namespace'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The resource type (Ex: 'resC'). Can also accept namespace/type format (Ex: 'Microsoft.Provider/resC').  ### 
+        'resource-type': "{{ item['resource-type'] | default('') }}" 
+ - debug: msg="{{ az_resource_list }}"          
+ - name: "az resource list: List resources." 
+   command: |                                      
+     az resource list                            
+                 {%if az_resource_list.input['location'] %} --location az_resource_list.input['location'] {%endif %} 
+                 {%if az_resource_list.input['name'] %} --name az_resource_list.input['name'] {%endif %} 
+                 {%if az_resource_list.input['tag'] %} --tag az_resource_list.input['tag'] {%endif %} 
+                 {%if az_resource_list.input['namespace'] %} --namespace az_resource_list.input['namespace'] {%endif %} 
+                 {%if az_resource_list.input['resource-group'] %} --resource-group az_resource_list.input['resource-group'] {%endif %} 
+                 {%if az_resource_list.input['resource-type'] %} --resource-type az_resource_list.input['resource-type'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_resource_list: "{{ az_resource_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_resource_list }}" 

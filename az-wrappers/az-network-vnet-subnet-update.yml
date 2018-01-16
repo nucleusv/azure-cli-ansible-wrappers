@@ -1,0 +1,44 @@
+
+
+ - name: Set input params for az_network_vnet_subnet_update
+   set_fact: 
+     az_network_vnet_subnet_update:
+       input: 
+         ###  Required parameter. The subnet name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The virtual network (VNet) name.  ### 
+        'vnet-name': "{{ item['vnet-name'] | default('') }}" 
+         ###  Optional parameter. The address prefix in CIDR format.  ### 
+        'address-prefix': "{{ item['address-prefix'] | default('') }}" 
+         ###  Optional parameter. Attach with existing network security group, both name or id are accepted. Use empty string "" to detach it.  ### 
+        'network-security-group': "{{ item['network-security-group'] | default('') }}" 
+         ###  Optional parameter. Name or ID of a route table to associate with the subnet.  ### 
+        'route-table': "{{ item['route-table'] | default('') }}" 
+         ###  Optional parameter. Space separated list of services allowed private access to this subnet.  ### 
+        'service-endpoints': "{{ item['service-endpoints'] | default('') }}" 
+         ###  Optional parameter. Add an object to a list of objects by specifying a path and key value pairs.  Example: --add property.listProperty <key=value, string or JSON string>.  ### 
+        'add': "{{ item['add'] | default('') }}" 
+         ###  Optional parameter. Remove a property or an element from a list.  Example: --remove property.list <indexToRemove> OR --remove propertyToRemove.  ### 
+        'remove': "{{ item['remove'] | default('') }}" 
+         ###  Optional parameter. Update an object by specifying a property path and value to set.  Example: --set property1.property2=<value>.  ### 
+        'set': "{{ item['set'] | default('') }}" 
+ - debug: msg="{{ az_network_vnet_subnet_update }}"          
+ - name: "az network vnet subnet update: Update a subnet." 
+   command: |                                      
+     az network vnet subnet update                            
+                 --name {{ az_network_vnet_subnet_update.input['name'] }} 
+                 --resource-group {{ az_network_vnet_subnet_update.input['resource-group'] }} 
+                 --vnet-name {{ az_network_vnet_subnet_update.input['vnet-name'] }} 
+                 {%if az_network_vnet_subnet_update.input['address-prefix'] %} --address-prefix az_network_vnet_subnet_update.input['address-prefix'] {%endif %} 
+                 {%if az_network_vnet_subnet_update.input['network-security-group'] %} --network-security-group az_network_vnet_subnet_update.input['network-security-group'] {%endif %} 
+                 {%if az_network_vnet_subnet_update.input['route-table'] %} --route-table az_network_vnet_subnet_update.input['route-table'] {%endif %} 
+                 {%if az_network_vnet_subnet_update.input['service-endpoints'] %} --service-endpoints az_network_vnet_subnet_update.input['service-endpoints'] {%endif %} 
+                 {%if az_network_vnet_subnet_update.input['add'] %} --add az_network_vnet_subnet_update.input['add'] {%endif %} 
+                 {%if az_network_vnet_subnet_update.input['remove'] %} --remove az_network_vnet_subnet_update.input['remove'] {%endif %} 
+                 {%if az_network_vnet_subnet_update.input['set'] %} --set az_network_vnet_subnet_update.input['set'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_vnet_subnet_update: "{{ az_network_vnet_subnet_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_vnet_subnet_update }}" 

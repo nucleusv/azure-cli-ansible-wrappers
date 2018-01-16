@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_account_get_access_token
+   set_fact: 
+     az_account_get_access_token:
+       input: 
+         ###  Optional parameter. Azure resource endpoints. Default to Azure Resource Manager Use 'az cloud show' command for other Azure resources.  ### 
+        'resource': "{{ item['resource'] | default('') }}" 
+         ###  Optional parameter. Name or ID of subscription.  ### 
+        'subscription': "{{ item['subscription'] | default('') }}" 
+ - debug: msg="{{ az_account_get_access_token }}"          
+ - name: "az account get-access-token: Get a token for utlilities to access Azure." 
+   command: |                                      
+     az account get-access-token                            
+                 {%if az_account_get_access_token.input['resource'] %} --resource az_account_get_access_token.input['resource'] {%endif %} 
+                 {%if az_account_get_access_token.input['subscription'] %} --subscription az_account_get_access_token.input['subscription'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_account_get_access_token: "{{ az_account_get_access_token|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_account_get_access_token }}" 

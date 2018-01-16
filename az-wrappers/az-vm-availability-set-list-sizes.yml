@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_vm_availability_set_list_sizes
+   set_fact: 
+     az_vm_availability_set_list_sizes:
+       input: 
+         ###  Required parameter. Name of the availability set.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_vm_availability_set_list_sizes }}"          
+ - name: "az vm availability-set list-sizes: List VM sizes for an availability set." 
+   command: |                                      
+     az vm availability-set list-sizes                            
+                 --name {{ az_vm_availability_set_list_sizes.input['name'] }} 
+                 --resource-group {{ az_vm_availability_set_list_sizes.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_vm_availability_set_list_sizes: "{{ az_vm_availability_set_list_sizes|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_availability_set_list_sizes }}" 

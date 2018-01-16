@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_batch_application_create
+   set_fact: 
+     az_batch_application_create:
+       input: 
+         ###  Required parameter. The ID of the application.  ### 
+        'application-id': "{{ item['application-id'] | default('') }}" 
+         ###  Required parameter. Name of the Batch account.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the resource group.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Specify to indicate whether packages within the application may be overwritten using the same version string. True if flag present.  ### 
+        'allow-updates': "{{ item['allow-updates'] | default('') }}" 
+         ###  Optional parameter. The display name for the application.  ### 
+        'display-name': "{{ item['display-name'] | default('') }}" 
+ - debug: msg="{{ az_batch_application_create }}"          
+ - name: "az batch application create: Adds an application to the specified Batch account." 
+   command: |                                      
+     az batch application create                            
+                 --application-id {{ az_batch_application_create.input['application-id'] }} 
+                 --name {{ az_batch_application_create.input['name'] }} 
+                 --resource-group {{ az_batch_application_create.input['resource-group'] }} 
+                 {%if az_batch_application_create.input['allow-updates'] %} --allow-updates az_batch_application_create.input['allow-updates'] {%endif %} 
+                 {%if az_batch_application_create.input['display-name'] %} --display-name az_batch_application_create.input['display-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_application_create: "{{ az_batch_application_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_application_create }}" 

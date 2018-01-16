@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_reservations_reservation_order_id_list
+   set_fact: 
+     az_reservations_reservation_order_id_list:
+       input: 
+         ###  Required parameter. Id of the subscription to look up applied reservations.  ### 
+        'subscription-id': "{{ item['subscription-id'] | default('') }}" 
+ - debug: msg="{{ az_reservations_reservation_order_id_list }}"          
+ - name: "az reservations reservation-order-id list: Get list of applicable reservation order ids." 
+   command: |                                      
+     az reservations reservation-order-id list                            
+                 --subscription-id {{ az_reservations_reservation_order_id_list.input['subscription-id'] }} 
+   register: output  
+ - set_fact: 
+    az_reservations_reservation_order_id_list: "{{ az_reservations_reservation_order_id_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_reservations_reservation_order_id_list }}" 

@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_batch_application_package_delete
+   set_fact: 
+     az_batch_application_package_delete:
+       input: 
+         ###  Required parameter. The ID of the application.  ### 
+        'application-id': "{{ item['application-id'] | default('') }}" 
+         ###  Required parameter. Name of the Batch account.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the resource group.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The version of the application to delete.  ### 
+        'version': "{{ item['version'] | default('') }}" 
+         ###  Optional parameter. Do not prompt for confirmation.  ### 
+        'yes': "{{ item['yes'] | default('') }}" 
+ - debug: msg="{{ az_batch_application_package_delete }}"          
+ - name: "az batch application package delete: Deletes an application package record and its associated binary file." 
+   command: |                                      
+     az batch application package delete                            
+                 --application-id {{ az_batch_application_package_delete.input['application-id'] }} 
+                 --name {{ az_batch_application_package_delete.input['name'] }} 
+                 --resource-group {{ az_batch_application_package_delete.input['resource-group'] }} 
+                 --version {{ az_batch_application_package_delete.input['version'] }} 
+                 {%if az_batch_application_package_delete.input['yes'] %} --yes {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_application_package_delete: "{{ az_batch_application_package_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_application_package_delete }}" 

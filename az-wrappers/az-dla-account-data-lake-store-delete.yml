@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_dla_account_data_lake_store_delete
+   set_fact: 
+     az_dla_account_data_lake_store_delete:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The name of the Data Lake Store account to remove.  ### 
+        'data-lake-store-account-name': "{{ item['data-lake-store-account-name'] | default('') }}" 
+         ###  Optional parameter. If not specified, will attempt to discover the resource group for the specified Data Lake Analytics account.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_dla_account_data_lake_store_delete }}"          
+ - name: "az dla account data-lake-store delete: Updates the Data Lake Analytics account specified to remove the specified Data Lake Store account." 
+   command: |                                      
+     az dla account data-lake-store delete                            
+                 --account {{ az_dla_account_data_lake_store_delete.input['account'] }} 
+                 --data-lake-store-account-name {{ az_dla_account_data_lake_store_delete.input['data-lake-store-account-name'] }} 
+                 {%if az_dla_account_data_lake_store_delete.input['resource-group'] %} --resource-group az_dla_account_data_lake_store_delete.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dla_account_data_lake_store_delete: "{{ az_dla_account_data_lake_store_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_account_data_lake_store_delete }}" 

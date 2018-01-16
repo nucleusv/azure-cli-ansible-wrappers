@@ -1,0 +1,50 @@
+
+
+ - name: Set input params for az_network_lb_rule_create
+   set_fact: 
+     az_network_lb_rule_create:
+       input: 
+         ###  Required parameter. Port number.  ### 
+        'backend-port': "{{ item['backend-port'] | default('') }}" 
+         ###  Required parameter. Port number.  ### 
+        'frontend-port': "{{ item['frontend-port'] | default('') }}" 
+         ###  Required parameter. The load balancer name.  ### 
+        'lb-name': "{{ item['lb-name'] | default('') }}" 
+         ###  Required parameter. The name of the load balancing rule.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter.   ### 
+        'protocol': "{{ item['protocol'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The name of the backend address pool. If only one exists, omit to use as default.  ### 
+        'backend-pool-name': "{{ item['backend-pool-name'] | default('') }}" 
+         ###  Optional parameter. Enable floating IP.  ### 
+        'floating-ip': "{{ item['floating-ip'] | default('') }}" 
+         ###  Optional parameter. The name of the frontend IP configuration. If only one exists, omit to use as default.  ### 
+        'frontend-ip-name': "{{ item['frontend-ip-name'] | default('') }}" 
+         ###  Optional parameter. Idle timeout in minutes.  ### 
+        'idle-timeout': "{{ item['idle-timeout'] | default('') }}" 
+         ###  Optional parameter. Affinity rule settings.  ### 
+        'load-distribution': "{{ item['load-distribution'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'probe-name': "{{ item['probe-name'] | default('') }}" 
+ - debug: msg="{{ az_network_lb_rule_create }}"          
+ - name: "az network lb rule create: Create a load balancing rule." 
+   command: |                                      
+     az network lb rule create                            
+                 --backend-port {{ az_network_lb_rule_create.input['backend-port'] }} 
+                 --frontend-port {{ az_network_lb_rule_create.input['frontend-port'] }} 
+                 --lb-name {{ az_network_lb_rule_create.input['lb-name'] }} 
+                 --name {{ az_network_lb_rule_create.input['name'] }} 
+                 --protocol {{ az_network_lb_rule_create.input['protocol'] }} 
+                 --resource-group {{ az_network_lb_rule_create.input['resource-group'] }} 
+                 {%if az_network_lb_rule_create.input['backend-pool-name'] %} --backend-pool-name az_network_lb_rule_create.input['backend-pool-name'] {%endif %} 
+                 {%if az_network_lb_rule_create.input['floating-ip'] %} --floating-ip az_network_lb_rule_create.input['floating-ip'] {%endif %} 
+                 {%if az_network_lb_rule_create.input['frontend-ip-name'] %} --frontend-ip-name az_network_lb_rule_create.input['frontend-ip-name'] {%endif %} 
+                 {%if az_network_lb_rule_create.input['idle-timeout'] %} --idle-timeout az_network_lb_rule_create.input['idle-timeout'] {%endif %} 
+                 {%if az_network_lb_rule_create.input['load-distribution'] %} --load-distribution az_network_lb_rule_create.input['load-distribution'] {%endif %} 
+                 {%if az_network_lb_rule_create.input['probe-name'] %} --probe-name az_network_lb_rule_create.input['probe-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_lb_rule_create: "{{ az_network_lb_rule_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_lb_rule_create }}" 

@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_batch_location_quotas_show
+   set_fact: 
+     az_batch_location_quotas_show:
+       input: 
+         ###  Required parameter. The region from which to display the Batch service quotas.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+ - debug: msg="{{ az_batch_location_quotas_show }}"          
+ - name: "az batch location quotas show: Gets the Batch service quotas for the specified subscription at the given location." 
+   command: |                                      
+     az batch location quotas show                            
+                 --location {{ az_batch_location_quotas_show.input['location'] }} 
+   register: output  
+ - set_fact: 
+    az_batch_location_quotas_show: "{{ az_batch_location_quotas_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_location_quotas_show }}" 

@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_appservice_plan_list
+   set_fact: 
+     az_appservice_plan_list:
+       input: 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_appservice_plan_list }}"          
+ - name: "az appservice plan list: List app service plans." 
+   command: |                                      
+     az appservice plan list                            
+                 {%if az_appservice_plan_list.input['resource-group'] %} --resource-group az_appservice_plan_list.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_appservice_plan_list: "{{ az_appservice_plan_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_appservice_plan_list }}" 

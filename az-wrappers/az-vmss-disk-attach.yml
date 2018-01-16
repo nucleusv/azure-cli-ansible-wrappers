@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_vmss_disk_attach
+   set_fact: 
+     az_vmss_disk_attach:
+       input: 
+         ###  Required parameter. Scale set name. You can configure the default using `az configure --defaults vmss=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Size in GB.  ### 
+        'size-gb': "{{ item['size-gb'] | default('') }}" 
+         ###  Optional parameter. Disk caching policy.  ### 
+        'caching': "{{ item['caching'] | default('') }}" 
+         ###  Optional parameter. 0-based logical unit number (LUN). Max value depends on the Virtual Machine instance size.  ### 
+        'lun': "{{ item['lun'] | default('') }}" 
+ - debug: msg="{{ az_vmss_disk_attach }}"          
+ - name: "az vmss disk attach: " 
+   command: |                                      
+     az vmss disk attach                            
+                 --name {{ az_vmss_disk_attach.input['name'] }} 
+                 --resource-group {{ az_vmss_disk_attach.input['resource-group'] }} 
+                 --size-gb {{ az_vmss_disk_attach.input['size-gb'] }} 
+                 {%if az_vmss_disk_attach.input['caching'] %} --caching az_vmss_disk_attach.input['caching'] {%endif %} 
+                 {%if az_vmss_disk_attach.input['lun'] %} --lun az_vmss_disk_attach.input['lun'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_vmss_disk_attach: "{{ az_vmss_disk_attach|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vmss_disk_attach }}" 

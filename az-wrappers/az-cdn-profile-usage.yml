@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_cdn_profile_usage
+   set_fact: 
+     az_cdn_profile_usage:
+       input: 
+         ###  Required parameter. Name of the CDN profile which is unique within the resource group.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_cdn_profile_usage }}"          
+ - name: "az cdn profile usage: Checks the quota and actual usage of endpoints under the given CDN profile." 
+   command: |                                      
+     az cdn profile usage                            
+                 --name {{ az_cdn_profile_usage.input['name'] }} 
+                 --resource-group {{ az_cdn_profile_usage.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_cdn_profile_usage: "{{ az_cdn_profile_usage|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cdn_profile_usage }}" 

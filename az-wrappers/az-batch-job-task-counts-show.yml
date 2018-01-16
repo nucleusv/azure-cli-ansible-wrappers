@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_batch_job_task_counts_show
+   set_fact: 
+     az_batch_job_task_counts_show:
+       input: 
+         ###  Required parameter. The ID of the job.  ### 
+        'job-id': "{{ item['job-id'] | default('') }}" 
+         ###  Optional parameter. Batch service endpoint. Alternatively, set by environment variable: AZURE_BATCH_ENDPOINT.  ### 
+        'account-endpoint': "{{ item['account-endpoint'] | default('') }}" 
+         ###  Optional parameter. Batch account key. Alternatively, set by environment variable: AZURE_BATCH_ACCESS_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Batch account name. Alternatively, set by environment variable: AZURE_BATCH_ACCOUNT.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+ - debug: msg="{{ az_batch_job_task_counts_show }}"          
+ - name: "az batch job task-counts show: Gets the task counts for the specified job." 
+   command: |                                      
+     az batch job task-counts show                            
+                 --job-id {{ az_batch_job_task_counts_show.input['job-id'] }} 
+                 {%if az_batch_job_task_counts_show.input['account-endpoint'] %} --account-endpoint az_batch_job_task_counts_show.input['account-endpoint'] {%endif %} 
+                 {%if az_batch_job_task_counts_show.input['account-key'] %} --account-key az_batch_job_task_counts_show.input['account-key'] {%endif %} 
+                 {%if az_batch_job_task_counts_show.input['account-name'] %} --account-name az_batch_job_task_counts_show.input['account-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_job_task_counts_show: "{{ az_batch_job_task_counts_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_job_task_counts_show }}" 

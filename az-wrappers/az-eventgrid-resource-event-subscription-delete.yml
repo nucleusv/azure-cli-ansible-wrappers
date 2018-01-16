@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_eventgrid_resource_event_subscription_delete
+   set_fact: 
+     az_eventgrid_resource_event_subscription_delete:
+       input: 
+         ###  Required parameter. Name of the event subscription.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Namespace of the provider owning the resource.  ### 
+        'provider-namespace': "{{ item['provider-namespace'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the resource whose event subscription needs to be managed.  ### 
+        'resource-name': "{{ item['resource-name'] | default('') }}" 
+         ###  Required parameter. Type of the resource.  ### 
+        'resource-type': "{{ item['resource-type'] | default('') }}" 
+ - debug: msg="{{ az_eventgrid_resource_event_subscription_delete }}"          
+ - name: "az eventgrid resource event-subscription delete: Delete an event subscription from a resource." 
+   command: |                                      
+     az eventgrid resource event-subscription delete                            
+                 --name {{ az_eventgrid_resource_event_subscription_delete.input['name'] }} 
+                 --provider-namespace {{ az_eventgrid_resource_event_subscription_delete.input['provider-namespace'] }} 
+                 --resource-group {{ az_eventgrid_resource_event_subscription_delete.input['resource-group'] }} 
+                 --resource-name {{ az_eventgrid_resource_event_subscription_delete.input['resource-name'] }} 
+                 --resource-type {{ az_eventgrid_resource_event_subscription_delete.input['resource-type'] }} 
+   register: output  
+ - set_fact: 
+    az_eventgrid_resource_event_subscription_delete: "{{ az_eventgrid_resource_event_subscription_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_eventgrid_resource_event_subscription_delete }}" 

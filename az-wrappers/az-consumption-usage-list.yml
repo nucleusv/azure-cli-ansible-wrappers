@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_consumption_usage_list
+   set_fact: 
+     az_consumption_usage_list:
+       input: 
+         ###  Optional parameter. Name of a specific billing period to get the usage details that associate with.  ### 
+        'billing-period-name': "{{ item['billing-period-name'] | default('') }}" 
+         ###  Optional parameter. End date (in UTC Y-m-d) of the usages. Both start date and end date need to be supplied or neither.  ### 
+        'end-date': "{{ item['end-date'] | default('') }}" 
+         ###  Optional parameter. Include additional properties in the usages.  ### 
+        'include-additional-properties': "{{ item['include-additional-properties'] | default('') }}" 
+         ###  Optional parameter. Include meter details in the usages.  ### 
+        'include-meter-details': "{{ item['include-meter-details'] | default('') }}" 
+         ###  Optional parameter. Start date (in UTC Y-m-d) of the usages. Both start date and end date need to be supplied or neither.  ### 
+        'start-date': "{{ item['start-date'] | default('') }}" 
+         ###  Optional parameter. Maximum number of items to return. Accepted range for this value is 1 - 1000.  ### 
+        'top': "{{ item['top'] | default('') }}" 
+ - debug: msg="{{ az_consumption_usage_list }}"          
+ - name: "az consumption usage list: Show the details of Azure resource consumption, either as an invoice or within a billing period." 
+   command: |                                      
+     az consumption usage list                            
+                 {%if az_consumption_usage_list.input['billing-period-name'] %} --billing-period-name az_consumption_usage_list.input['billing-period-name'] {%endif %} 
+                 {%if az_consumption_usage_list.input['end-date'] %} --end-date az_consumption_usage_list.input['end-date'] {%endif %} 
+                 {%if az_consumption_usage_list.input['include-additional-properties'] %} --include-additional-properties az_consumption_usage_list.input['include-additional-properties'] {%endif %} 
+                 {%if az_consumption_usage_list.input['include-meter-details'] %} --include-meter-details az_consumption_usage_list.input['include-meter-details'] {%endif %} 
+                 {%if az_consumption_usage_list.input['start-date'] %} --start-date az_consumption_usage_list.input['start-date'] {%endif %} 
+                 {%if az_consumption_usage_list.input['top'] %} --top az_consumption_usage_list.input['top'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_consumption_usage_list: "{{ az_consumption_usage_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_consumption_usage_list }}" 

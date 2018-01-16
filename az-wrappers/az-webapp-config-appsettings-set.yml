@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_webapp_config_appsettings_set
+   set_fact: 
+     az_webapp_config_appsettings_set:
+       input: 
+         ###  Required parameter. Name of the web. You can configure the default using 'az configure --defaults web=<name>'.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Space separated appsettings in a format of <name>=<value>.  ### 
+        'settings': "{{ item['settings'] | default('') }}" 
+         ###  Optional parameter. The name of the slot. Default to the productions slot if not specified.  ### 
+        'slot': "{{ item['slot'] | default('') }}" 
+         ###  Optional parameter. Space separated slot appsettings in a format of <name>=<value>.  ### 
+        'slot-settings': "{{ item['slot-settings'] | default('') }}" 
+ - debug: msg="{{ az_webapp_config_appsettings_set }}"          
+ - name: "az webapp config appsettings set: Set a web app's settings." 
+   command: |                                      
+     az webapp config appsettings set                            
+                 --name {{ az_webapp_config_appsettings_set.input['name'] }} 
+                 --resource-group {{ az_webapp_config_appsettings_set.input['resource-group'] }} 
+                 {%if az_webapp_config_appsettings_set.input['settings'] %} --settings az_webapp_config_appsettings_set.input['settings'] {%endif %} 
+                 {%if az_webapp_config_appsettings_set.input['slot'] %} --slot az_webapp_config_appsettings_set.input['slot'] {%endif %} 
+                 {%if az_webapp_config_appsettings_set.input['slot-settings'] %} --slot-settings az_webapp_config_appsettings_set.input['slot-settings'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_webapp_config_appsettings_set: "{{ az_webapp_config_appsettings_set|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_webapp_config_appsettings_set }}" 

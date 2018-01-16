@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_batch_pool_os_upgrade
+   set_fact: 
+     az_batch_pool_os_upgrade:
+       input: 
+         ###  Required parameter. The ID of the pool to upgrade.  ### 
+        'pool-id': "{{ item['pool-id'] | default('') }}" 
+         ###  Required parameter. The Azure Guest OS version to be installed on the virtual machines in the pool.  ### 
+        'target-os-version': "{{ item['target-os-version'] | default('') }}" 
+         ###  Optional parameter. Batch service endpoint. Alternatively, set by environment variable: AZURE_BATCH_ENDPOINT.  ### 
+        'account-endpoint': "{{ item['account-endpoint'] | default('') }}" 
+         ###  Optional parameter. Batch account key. Alternatively, set by environment variable: AZURE_BATCH_ACCESS_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Batch account name. Alternatively, set by environment variable: AZURE_BATCH_ACCOUNT.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+         ###  Optional parameter. An ETag value associated with the version of the resource known to the client. The operation will be performed only if the resource's current ETag on the service exactly matches the value specified by the client.  ### 
+        'if-match': "{{ item['if-match'] | default('') }}" 
+         ###  Optional parameter. A timestamp indicating the last modified time of the resource known to the client. The operation will be performed only if the resource on the service has been modified since the specified time.  ### 
+        'if-modified-since': "{{ item['if-modified-since'] | default('') }}" 
+         ###  Optional parameter. An ETag value associated with the version of the resource known to the client. The operation will be performed only if the resource's current ETag on the service does not match the value specified by the client.  ### 
+        'if-none-match': "{{ item['if-none-match'] | default('') }}" 
+         ###  Optional parameter. A timestamp indicating the last modified time of the resource known to the client. The operation will be performed only if the resource on the service has not been modified since the specified time.  ### 
+        'if-unmodified-since': "{{ item['if-unmodified-since'] | default('') }}" 
+ - debug: msg="{{ az_batch_pool_os_upgrade }}"          
+ - name: "az batch pool os upgrade: Upgrades the operating system of the specified pool." 
+   command: |                                      
+     az batch pool os upgrade                            
+                 --pool-id {{ az_batch_pool_os_upgrade.input['pool-id'] }} 
+                 --target-os-version {{ az_batch_pool_os_upgrade.input['target-os-version'] }} 
+                 {%if az_batch_pool_os_upgrade.input['account-endpoint'] %} --account-endpoint az_batch_pool_os_upgrade.input['account-endpoint'] {%endif %} 
+                 {%if az_batch_pool_os_upgrade.input['account-key'] %} --account-key az_batch_pool_os_upgrade.input['account-key'] {%endif %} 
+                 {%if az_batch_pool_os_upgrade.input['account-name'] %} --account-name az_batch_pool_os_upgrade.input['account-name'] {%endif %} 
+                 {%if az_batch_pool_os_upgrade.input['if-match'] %} --if-match az_batch_pool_os_upgrade.input['if-match'] {%endif %} 
+                 {%if az_batch_pool_os_upgrade.input['if-modified-since'] %} --if-modified-since az_batch_pool_os_upgrade.input['if-modified-since'] {%endif %} 
+                 {%if az_batch_pool_os_upgrade.input['if-none-match'] %} --if-none-match az_batch_pool_os_upgrade.input['if-none-match'] {%endif %} 
+                 {%if az_batch_pool_os_upgrade.input['if-unmodified-since'] %} --if-unmodified-since az_batch_pool_os_upgrade.input['if-unmodified-since'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_pool_os_upgrade: "{{ az_batch_pool_os_upgrade|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_pool_os_upgrade }}" 

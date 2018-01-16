@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_dla_account_list
+   set_fact: 
+     az_dla_account_list:
+       input: 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_dla_account_list }}"          
+ - name: "az dla account list: List available Data Lake Analytics accounts." 
+   command: |                                      
+     az dla account list                            
+                 {%if az_dla_account_list.input['resource-group'] %} --resource-group az_dla_account_list.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dla_account_list: "{{ az_dla_account_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_account_list }}" 

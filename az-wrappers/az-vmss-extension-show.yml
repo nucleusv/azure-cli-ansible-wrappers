@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_vmss_extension_show
+   set_fact: 
+     az_vmss_extension_show:
+       input: 
+         ###  Required parameter. Name of the extension.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Scale set name. You can configure the default using `az configure --defaults vmss=&lt;name&gt;`.  ### 
+        'vmss-name': "{{ item['vmss-name'] | default('') }}" 
+ - debug: msg="{{ az_vmss_extension_show }}"          
+ - name: "az vmss extension show: Show details on a VMSS extension." 
+   command: |                                      
+     az vmss extension show                            
+                 --name {{ az_vmss_extension_show.input['name'] }} 
+                 --resource-group {{ az_vmss_extension_show.input['resource-group'] }} 
+                 --vmss-name {{ az_vmss_extension_show.input['vmss-name'] }} 
+   register: output  
+ - set_fact: 
+    az_vmss_extension_show: "{{ az_vmss_extension_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vmss_extension_show }}" 

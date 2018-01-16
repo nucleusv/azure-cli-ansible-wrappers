@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_iot_hub_consumer_group_list
+   set_fact: 
+     az_iot_hub_consumer_group_list:
+       input: 
+         ###  Required parameter. IoT Hub name.  ### 
+        'hub-name': "{{ item['hub-name'] | default('') }}" 
+         ###  Optional parameter. Event hub endpoint name.  ### 
+        'event-hub-name': "{{ item['event-hub-name'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_iot_hub_consumer_group_list }}"          
+ - name: "az iot hub consumer-group list: List event hub consumer groups." 
+   command: |                                      
+     az iot hub consumer-group list                            
+                 --hub-name {{ az_iot_hub_consumer_group_list.input['hub-name'] }} 
+                 {%if az_iot_hub_consumer_group_list.input['event-hub-name'] %} --event-hub-name az_iot_hub_consumer_group_list.input['event-hub-name'] {%endif %} 
+                 {%if az_iot_hub_consumer_group_list.input['resource-group'] %} --resource-group az_iot_hub_consumer_group_list.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_hub_consumer_group_list: "{{ az_iot_hub_consumer_group_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_hub_consumer_group_list }}" 

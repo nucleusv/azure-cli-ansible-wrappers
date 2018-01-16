@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_reservations_reservation_show
+   set_fact: 
+     az_reservations_reservation_show:
+       input: 
+         ###  Required parameter. Reservation id of reservation to look up.  ### 
+        'reservation-id': "{{ item['reservation-id'] | default('') }}" 
+         ###  Required parameter. Order id of reservation to look up.  ### 
+        'reservation-order-id': "{{ item['reservation-order-id'] | default('') }}" 
+ - debug: msg="{{ az_reservations_reservation_show }}"          
+ - name: "az reservations reservation show: Get details of a reservation." 
+   command: |                                      
+     az reservations reservation show                            
+                 --reservation-id {{ az_reservations_reservation_show.input['reservation-id'] }} 
+                 --reservation-order-id {{ az_reservations_reservation_show.input['reservation-order-id'] }} 
+   register: output  
+ - set_fact: 
+    az_reservations_reservation_show: "{{ az_reservations_reservation_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_reservations_reservation_show }}" 

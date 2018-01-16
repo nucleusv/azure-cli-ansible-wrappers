@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_network_lb_inbound_nat_rule_show
+   set_fact: 
+     az_network_lb_inbound_nat_rule_show:
+       input: 
+         ###  Required parameter. The name of the load balancer.  ### 
+        'lb-name': "{{ item['lb-name'] | default('') }}" 
+         ###  Required parameter. The name of the inbound NAT rule.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_network_lb_inbound_nat_rule_show }}"          
+ - name: "az network lb inbound-nat-rule show: Get the details for an inbound NAT rule." 
+   command: |                                      
+     az network lb inbound-nat-rule show                            
+                 --lb-name {{ az_network_lb_inbound_nat_rule_show.input['lb-name'] }} 
+                 --name {{ az_network_lb_inbound_nat_rule_show.input['name'] }} 
+                 --resource-group {{ az_network_lb_inbound_nat_rule_show.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_network_lb_inbound_nat_rule_show: "{{ az_network_lb_inbound_nat_rule_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_lb_inbound_nat_rule_show }}" 

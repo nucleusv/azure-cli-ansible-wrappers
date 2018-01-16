@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_keyvault_key_backup
+   set_fact: 
+     az_keyvault_key_backup:
+       input: 
+         ###  Required parameter. Local file path in which to store key backup.  ### 
+        'file': "{{ item['file'] | default('') }}" 
+         ###  Required parameter. Name of the key.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_key_backup }}"          
+ - name: "az keyvault key backup: Requests that a backup of the specified key be downloaded to the client." 
+   command: |                                      
+     az keyvault key backup                            
+                 --file {{ az_keyvault_key_backup.input['file'] }} 
+                 --name {{ az_keyvault_key_backup.input['name'] }} 
+                 --vault-name {{ az_keyvault_key_backup.input['vault-name'] }} 
+   register: output  
+ - set_fact: 
+    az_keyvault_key_backup: "{{ az_keyvault_key_backup|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_key_backup }}" 

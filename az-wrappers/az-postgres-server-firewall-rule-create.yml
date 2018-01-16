@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_postgres_server_firewall_rule_create
+   set_fact: 
+     az_postgres_server_firewall_rule_create:
+       input: 
+         ###  Required parameter. The end IP address of the firewall rule. Must be IPv4 format. Use value '0.0.0.0' to represent all Azure-internal IP addresses.  ### 
+        'end-ip-address': "{{ item['end-ip-address'] | default('') }}" 
+         ###  Required parameter. The name of the firewall rule.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the server.  ### 
+        'server-name': "{{ item['server-name'] | default('') }}" 
+         ###  Required parameter. The start IP address of the firewall rule. Must be IPv4 format. Use value '0.0.0.0' to represent all Azure-internal IP addresses.  ### 
+        'start-ip-address': "{{ item['start-ip-address'] | default('') }}" 
+ - debug: msg="{{ az_postgres_server_firewall_rule_create }}"          
+ - name: "az postgres server firewall-rule create: Create a new firewall rule for a server." 
+   command: |                                      
+     az postgres server firewall-rule create                            
+                 --end-ip-address {{ az_postgres_server_firewall_rule_create.input['end-ip-address'] }} 
+                 --name {{ az_postgres_server_firewall_rule_create.input['name'] }} 
+                 --resource-group {{ az_postgres_server_firewall_rule_create.input['resource-group'] }} 
+                 --server-name {{ az_postgres_server_firewall_rule_create.input['server-name'] }} 
+                 --start-ip-address {{ az_postgres_server_firewall_rule_create.input['start-ip-address'] }} 
+   register: output  
+ - set_fact: 
+    az_postgres_server_firewall_rule_create: "{{ az_postgres_server_firewall_rule_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_postgres_server_firewall_rule_create }}" 

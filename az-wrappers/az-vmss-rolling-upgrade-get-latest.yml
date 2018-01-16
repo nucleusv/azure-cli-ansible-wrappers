@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_vmss_rolling_upgrade_get_latest
+   set_fact: 
+     az_vmss_rolling_upgrade_get_latest:
+       input: 
+         ###  Required parameter. Scale set name. You can configure the default using `az configure --defaults vmss=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_vmss_rolling_upgrade_get_latest }}"          
+ - name: "az vmss rolling-upgrade get-latest: Gets the status of the latest virtual machine scale set rolling upgrade." 
+   command: |                                      
+     az vmss rolling-upgrade get-latest                            
+                 --name {{ az_vmss_rolling_upgrade_get_latest.input['name'] }} 
+                 --resource-group {{ az_vmss_rolling_upgrade_get_latest.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_vmss_rolling_upgrade_get_latest: "{{ az_vmss_rolling_upgrade_get_latest|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vmss_rolling_upgrade_get_latest }}" 

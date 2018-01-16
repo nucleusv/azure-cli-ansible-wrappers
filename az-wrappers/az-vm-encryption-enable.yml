@@ -1,0 +1,47 @@
+
+
+ - name: Set input params for az_vm_encryption_enable
+   set_fact: 
+     az_vm_encryption_enable:
+       input: 
+         ###  Required parameter. Client ID of an AAD app with permissions to write secrets to the key vault.  ### 
+        'aad-client-id': "{{ item['aad-client-id'] | default('') }}" 
+         ###  Required parameter. The key vault where the generated encryption key will be placed.  ### 
+        'disk-encryption-keyvault': "{{ item['disk-encryption-keyvault'] | default('') }}" 
+         ###  Required parameter. The name of the Virtual Machine. You can configure the default using `az configure --defaults vm=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Thumbprint of the AAD app certificate with permissions to write secrets to the key vault.  ### 
+        'aad-client-cert-thumbprint': "{{ item['aad-client-cert-thumbprint'] | default('') }}" 
+         ###  Optional parameter. Client secret of the AAD app with permissions to write secrets to the key vault.  ### 
+        'aad-client-secret': "{{ item['aad-client-secret'] | default('') }}" 
+         ###  Optional parameter. Encrypts-formats data disks instead of encrypting them. Encrypt-formatting is a lot faster than in-place encryption but wipes out the partition getting encrypt-formatted.  ### 
+        'encrypt-format-all': "{{ item['encrypt-format-all'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'key-encryption-algorithm': "{{ item['key-encryption-algorithm'] | default('') }}" 
+         ###  Optional parameter. Key vault key name or URL used to encrypt the disk encryption key.  ### 
+        'key-encryption-key': "{{ item['key-encryption-key'] | default('') }}" 
+         ###  Optional parameter. The key vault containing the key encryption key used to encrypt the disk encryption key. If missing, CLI will use `--disk-encryption-keyvault`.  ### 
+        'key-encryption-keyvault': "{{ item['key-encryption-keyvault'] | default('') }}" 
+         ###  Optional parameter. Type of volume that the encryption operation is performed on.  ### 
+        'volume-type': "{{ item['volume-type'] | default('') }}" 
+ - debug: msg="{{ az_vm_encryption_enable }}"          
+ - name: "az vm encryption enable: Enable disk encryption on the OS disk and/or data disks." 
+   command: |                                      
+     az vm encryption enable                            
+                 --aad-client-id {{ az_vm_encryption_enable.input['aad-client-id'] }} 
+                 --disk-encryption-keyvault {{ az_vm_encryption_enable.input['disk-encryption-keyvault'] }} 
+                 --name {{ az_vm_encryption_enable.input['name'] }} 
+                 --resource-group {{ az_vm_encryption_enable.input['resource-group'] }} 
+                 {%if az_vm_encryption_enable.input['aad-client-cert-thumbprint'] %} --aad-client-cert-thumbprint az_vm_encryption_enable.input['aad-client-cert-thumbprint'] {%endif %} 
+                 {%if az_vm_encryption_enable.input['aad-client-secret'] %} --aad-client-secret az_vm_encryption_enable.input['aad-client-secret'] {%endif %} 
+                 {%if az_vm_encryption_enable.input['encrypt-format-all'] %} --encrypt-format-all az_vm_encryption_enable.input['encrypt-format-all'] {%endif %} 
+                 {%if az_vm_encryption_enable.input['key-encryption-algorithm'] %} --key-encryption-algorithm az_vm_encryption_enable.input['key-encryption-algorithm'] {%endif %} 
+                 {%if az_vm_encryption_enable.input['key-encryption-key'] %} --key-encryption-key az_vm_encryption_enable.input['key-encryption-key'] {%endif %} 
+                 {%if az_vm_encryption_enable.input['key-encryption-keyvault'] %} --key-encryption-keyvault az_vm_encryption_enable.input['key-encryption-keyvault'] {%endif %} 
+                 {%if az_vm_encryption_enable.input['volume-type'] %} --volume-type az_vm_encryption_enable.input['volume-type'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_vm_encryption_enable: "{{ az_vm_encryption_enable|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_encryption_enable }}" 

@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_cdn_name_exists
+   set_fact: 
+     az_cdn_name_exists:
+       input: 
+         ###  Required parameter. The resource name to validate.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+ - debug: msg="{{ az_cdn_name_exists }}"          
+ - name: "az cdn name-exists: Check the availability of a resource name." 
+   command: |                                      
+     az cdn name-exists                            
+                 --name {{ az_cdn_name_exists.input['name'] }} 
+   register: output  
+ - set_fact: 
+    az_cdn_name_exists: "{{ az_cdn_name_exists|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cdn_name_exists }}" 

@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_provider_operation_show
+   set_fact: 
+     az_provider_operation_show:
+       input: 
+         ###  Required parameter. The resource namespace, aka 'provider'.  ### 
+        'namespace': "{{ item['namespace'] | default('') }}" 
+         ###  Optional parameter. The api version of the 'Microsoft.Authorization/providerOperations' resource (omit for latest).  ### 
+        'api-version': "{{ item['api-version'] | default('') }}" 
+ - debug: msg="{{ az_provider_operation_show }}"          
+ - name: "az provider operation show: Get an individual provider's operations." 
+   command: |                                      
+     az provider operation show                            
+                 --namespace {{ az_provider_operation_show.input['namespace'] }} 
+                 {%if az_provider_operation_show.input['api-version'] %} --api-version az_provider_operation_show.input['api-version'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_provider_operation_show: "{{ az_provider_operation_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_provider_operation_show }}" 

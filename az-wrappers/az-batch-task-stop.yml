@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_batch_task_stop
+   set_fact: 
+     az_batch_task_stop:
+       input: 
+         ###  Required parameter. The ID of the job containing the task.  ### 
+        'job-id': "{{ item['job-id'] | default('') }}" 
+         ###  Required parameter. The ID of the task to terminate.  ### 
+        'task-id': "{{ item['task-id'] | default('') }}" 
+         ###  Optional parameter. Batch service endpoint. Alternatively, set by environment variable: AZURE_BATCH_ENDPOINT.  ### 
+        'account-endpoint': "{{ item['account-endpoint'] | default('') }}" 
+         ###  Optional parameter. Batch account key. Alternatively, set by environment variable: AZURE_BATCH_ACCESS_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Batch account name. Alternatively, set by environment variable: AZURE_BATCH_ACCOUNT.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+         ###  Optional parameter. An ETag value associated with the version of the resource known to the client. The operation will be performed only if the resource's current ETag on the service exactly matches the value specified by the client.  ### 
+        'if-match': "{{ item['if-match'] | default('') }}" 
+         ###  Optional parameter. A timestamp indicating the last modified time of the resource known to the client. The operation will be performed only if the resource on the service has been modified since the specified time.  ### 
+        'if-modified-since': "{{ item['if-modified-since'] | default('') }}" 
+         ###  Optional parameter. An ETag value associated with the version of the resource known to the client. The operation will be performed only if the resource's current ETag on the service does not match the value specified by the client.  ### 
+        'if-none-match': "{{ item['if-none-match'] | default('') }}" 
+         ###  Optional parameter. A timestamp indicating the last modified time of the resource known to the client. The operation will be performed only if the resource on the service has not been modified since the specified time.  ### 
+        'if-unmodified-since': "{{ item['if-unmodified-since'] | default('') }}" 
+ - debug: msg="{{ az_batch_task_stop }}"          
+ - name: "az batch task stop: Terminates the specified task." 
+   command: |                                      
+     az batch task stop                            
+                 --job-id {{ az_batch_task_stop.input['job-id'] }} 
+                 --task-id {{ az_batch_task_stop.input['task-id'] }} 
+                 {%if az_batch_task_stop.input['account-endpoint'] %} --account-endpoint az_batch_task_stop.input['account-endpoint'] {%endif %} 
+                 {%if az_batch_task_stop.input['account-key'] %} --account-key az_batch_task_stop.input['account-key'] {%endif %} 
+                 {%if az_batch_task_stop.input['account-name'] %} --account-name az_batch_task_stop.input['account-name'] {%endif %} 
+                 {%if az_batch_task_stop.input['if-match'] %} --if-match az_batch_task_stop.input['if-match'] {%endif %} 
+                 {%if az_batch_task_stop.input['if-modified-since'] %} --if-modified-since az_batch_task_stop.input['if-modified-since'] {%endif %} 
+                 {%if az_batch_task_stop.input['if-none-match'] %} --if-none-match az_batch_task_stop.input['if-none-match'] {%endif %} 
+                 {%if az_batch_task_stop.input['if-unmodified-since'] %} --if-unmodified-since az_batch_task_stop.input['if-unmodified-since'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_task_stop: "{{ az_batch_task_stop|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_task_stop }}" 

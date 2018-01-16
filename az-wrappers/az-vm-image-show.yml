@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_vm_image_show
+   set_fact: 
+     az_vm_image_show:
+       input: 
+         ###  Required parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Required parameter. A valid image publisher offer.  ### 
+        'offer': "{{ item['offer'] | default('') }}" 
+         ###  Required parameter. A valid image publisher.  ### 
+        'publisher': "{{ item['publisher'] | default('') }}" 
+         ###  Required parameter. A valid image SKU.  ### 
+        'sku': "{{ item['sku'] | default('') }}" 
+         ###  Required parameter. A valid image SKU version.  ### 
+        'version': "{{ item['version'] | default('') }}" 
+ - debug: msg="{{ az_vm_image_show }}"          
+ - name: "az vm image show: Get the details for a VM image available in the Azure Marketplace." 
+   command: |                                      
+     az vm image show                            
+                 --location {{ az_vm_image_show.input['location'] }} 
+                 --offer {{ az_vm_image_show.input['offer'] }} 
+                 --publisher {{ az_vm_image_show.input['publisher'] }} 
+                 --sku {{ az_vm_image_show.input['sku'] }} 
+                 --version {{ az_vm_image_show.input['version'] }} 
+   register: output  
+ - set_fact: 
+    az_vm_image_show: "{{ az_vm_image_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_image_show }}" 

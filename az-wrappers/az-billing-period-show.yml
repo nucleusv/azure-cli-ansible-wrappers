@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_billing_period_show
+   set_fact: 
+     az_billing_period_show:
+       input: 
+         ###  Required parameter. Name of the billing period.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+ - debug: msg="{{ az_billing_period_show }}"          
+ - name: "az billing period show: Gets a named billing period." 
+   command: |                                      
+     az billing period show                            
+                 --name {{ az_billing_period_show.input['name'] }} 
+   register: output  
+ - set_fact: 
+    az_billing_period_show: "{{ az_billing_period_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_billing_period_show }}" 

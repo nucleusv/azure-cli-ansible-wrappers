@@ -1,0 +1,38 @@
+
+
+ - name: Set input params for az_network_application_gateway_frontend_ip_create
+   set_fact: 
+     az_network_application_gateway_frontend_ip_create:
+       input: 
+         ###  Required parameter. The name of the application gateway.  ### 
+        'gateway-name': "{{ item['gateway-name'] | default('') }}" 
+         ###  Required parameter. The name of the frontend IP configuration.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+         ###  Optional parameter. Static private IP address to use.  ### 
+        'private-ip-address': "{{ item['private-ip-address'] | default('') }}" 
+         ###  Optional parameter. The name or ID of the public IP address.  ### 
+        'public-ip-address': "{{ item['public-ip-address'] | default('') }}" 
+         ###  Optional parameter. The name or ID of the subnet.  ### 
+        'subnet': "{{ item['subnet'] | default('') }}" 
+         ###  Optional parameter. The name of the virtual network corresponding to the subnet.  ### 
+        'vnet-name': "{{ item['vnet-name'] | default('') }}" 
+ - debug: msg="{{ az_network_application_gateway_frontend_ip_create }}"          
+ - name: "az network application-gateway frontend-ip create: Create a frontend IP address." 
+   command: |                                      
+     az network application-gateway frontend-ip create                            
+                 --gateway-name {{ az_network_application_gateway_frontend_ip_create.input['gateway-name'] }} 
+                 --name {{ az_network_application_gateway_frontend_ip_create.input['name'] }} 
+                 --resource-group {{ az_network_application_gateway_frontend_ip_create.input['resource-group'] }} 
+                 {%if az_network_application_gateway_frontend_ip_create.input['no-wait'] %} --no-wait az_network_application_gateway_frontend_ip_create.input['no-wait'] {%endif %} 
+                 {%if az_network_application_gateway_frontend_ip_create.input['private-ip-address'] %} --private-ip-address az_network_application_gateway_frontend_ip_create.input['private-ip-address'] {%endif %} 
+                 {%if az_network_application_gateway_frontend_ip_create.input['public-ip-address'] %} --public-ip-address az_network_application_gateway_frontend_ip_create.input['public-ip-address'] {%endif %} 
+                 {%if az_network_application_gateway_frontend_ip_create.input['subnet'] %} --subnet az_network_application_gateway_frontend_ip_create.input['subnet'] {%endif %} 
+                 {%if az_network_application_gateway_frontend_ip_create.input['vnet-name'] %} --vnet-name az_network_application_gateway_frontend_ip_create.input['vnet-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_application_gateway_frontend_ip_create: "{{ az_network_application_gateway_frontend_ip_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_application_gateway_frontend_ip_create }}" 

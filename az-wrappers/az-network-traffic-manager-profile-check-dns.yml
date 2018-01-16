@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_network_traffic_manager_profile_check_dns
+   set_fact: 
+     az_network_traffic_manager_profile_check_dns:
+       input: 
+         ###  Required parameter. DNS prefix to verify availability for.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+ - debug: msg="{{ az_network_traffic_manager_profile_check_dns }}"          
+ - name: "az network traffic-manager profile check-dns: Check the availability of a relative DNS name." 
+   command: |                                      
+     az network traffic-manager profile check-dns                            
+                 --name {{ az_network_traffic_manager_profile_check_dns.input['name'] }} 
+   register: output  
+ - set_fact: 
+    az_network_traffic_manager_profile_check_dns: "{{ az_network_traffic_manager_profile_check_dns|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_traffic_manager_profile_check_dns }}" 

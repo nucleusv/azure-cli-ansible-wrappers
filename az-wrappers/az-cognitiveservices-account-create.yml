@@ -1,0 +1,35 @@
+
+
+ - name: Set input params for az_cognitiveservices_account_create
+   set_fact: 
+     az_cognitiveservices_account_create:
+       input: 
+         ###  Required parameter. The API name of cognitive services account.  ### 
+        'kind': "{{ item['kind'] | default('') }}" 
+         ###  Required parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Required parameter. Cognitive service account name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The Sku of cognitive services account.  ### 
+        'sku': "{{ item['sku'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. Do not prompt for terms confirmation.  ### 
+        'yes': "{{ item['yes'] | default('') }}" 
+ - debug: msg="{{ az_cognitiveservices_account_create }}"          
+ - name: "az cognitiveservices account create: Create an Azure Cognitive Services account." 
+   command: |                                      
+     az cognitiveservices account create                            
+                 --kind {{ az_cognitiveservices_account_create.input['kind'] }} 
+                 --location {{ az_cognitiveservices_account_create.input['location'] }} 
+                 --name {{ az_cognitiveservices_account_create.input['name'] }} 
+                 --resource-group {{ az_cognitiveservices_account_create.input['resource-group'] }} 
+                 --sku {{ az_cognitiveservices_account_create.input['sku'] }} 
+                 {%if az_cognitiveservices_account_create.input['rtags'] %} --tags az_cognitiveservices_account_create.input['rtags'] {%endif %} 
+                 {%if az_cognitiveservices_account_create.input['yes'] %} --yes {%endif %} 
+   register: output  
+ - set_fact: 
+    az_cognitiveservices_account_create: "{{ az_cognitiveservices_account_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cognitiveservices_account_create }}" 

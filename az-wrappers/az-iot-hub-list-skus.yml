@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_iot_hub_list_skus
+   set_fact: 
+     az_iot_hub_list_skus:
+       input: 
+         ###  Required parameter. IoT Hub name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_iot_hub_list_skus }}"          
+ - name: "az iot hub list-skus: List available pricing tiers." 
+   command: |                                      
+     az iot hub list-skus                            
+                 --name {{ az_iot_hub_list_skus.input['name'] }} 
+                 {%if az_iot_hub_list_skus.input['resource-group'] %} --resource-group az_iot_hub_list_skus.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_hub_list_skus: "{{ az_iot_hub_list_skus|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_hub_list_skus }}" 

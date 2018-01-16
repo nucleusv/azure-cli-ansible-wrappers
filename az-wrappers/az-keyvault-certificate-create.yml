@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_keyvault_certificate_create
+   set_fact: 
+     az_keyvault_certificate_create:
+       input: 
+         ###  Required parameter. Name of the certificate.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. JSON encoded policy defintion. Use @{file} to load from a file.  ### 
+        'policy': "{{ item['policy'] | default('') }}" 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+         ###  Optional parameter. Create certificate in disabled state.  ### 
+        'disabled': "{{ item['disabled'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. Number of months the certificate is valid for. Overrides the value specified with --policy/-p.  ### 
+        'validity': "{{ item['validity'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_certificate_create }}"          
+ - name: "az keyvault certificate create: Create a Key Vault certificate." 
+   command: |                                      
+     az keyvault certificate create                            
+                 --name {{ az_keyvault_certificate_create.input['name'] }} 
+                 --policy {{ az_keyvault_certificate_create.input['policy'] }} 
+                 --vault-name {{ az_keyvault_certificate_create.input['vault-name'] }} 
+                 {%if az_keyvault_certificate_create.input['disabled'] %} --disabled az_keyvault_certificate_create.input['disabled'] {%endif %} 
+                 {%if az_keyvault_certificate_create.input['rtags'] %} --tags az_keyvault_certificate_create.input['rtags'] {%endif %} 
+                 {%if az_keyvault_certificate_create.input['validity'] %} --validity az_keyvault_certificate_create.input['validity'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_keyvault_certificate_create: "{{ az_keyvault_certificate_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_certificate_create }}" 

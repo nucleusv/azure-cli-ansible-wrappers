@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_monitor_log_profiles_update
+   set_fact: 
+     az_monitor_log_profiles_update:
+       input: 
+         ###  Required parameter. The name of the log profile.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Add an object to a list of objects by specifying a path and key value pairs.  Example: --add property.listProperty <key=value, string or JSON string>.  ### 
+        'add': "{{ item['add'] | default('') }}" 
+         ###  Optional parameter. Remove a property or an element from a list.  Example: --remove property.list <indexToRemove> OR --remove propertyToRemove.  ### 
+        'remove': "{{ item['remove'] | default('') }}" 
+         ###  Optional parameter. Update an object by specifying a property path and value to set.  Example: --set property1.property2=<value>.  ### 
+        'set': "{{ item['set'] | default('') }}" 
+ - debug: msg="{{ az_monitor_log_profiles_update }}"          
+ - name: "az monitor log-profiles update: Update a log profile." 
+   command: |                                      
+     az monitor log-profiles update                            
+                 --name {{ az_monitor_log_profiles_update.input['name'] }} 
+                 {%if az_monitor_log_profiles_update.input['add'] %} --add az_monitor_log_profiles_update.input['add'] {%endif %} 
+                 {%if az_monitor_log_profiles_update.input['remove'] %} --remove az_monitor_log_profiles_update.input['remove'] {%endif %} 
+                 {%if az_monitor_log_profiles_update.input['set'] %} --set az_monitor_log_profiles_update.input['set'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_monitor_log_profiles_update: "{{ az_monitor_log_profiles_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_monitor_log_profiles_update }}" 

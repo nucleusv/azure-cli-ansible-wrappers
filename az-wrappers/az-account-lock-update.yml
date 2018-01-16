@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_account_lock_update
+   set_fact: 
+     az_account_lock_update:
+       input: 
+         ###  Optional parameter. One or more resource IDs (space delimited). If provided, no other "Resource Id" arguments should be specified.  ### 
+        'ids': "{{ item['ids'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'lock-type': "{{ item['lock-type'] | default('') }}" 
+         ###  Optional parameter. Name of the lock.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Notes about this lock.  ### 
+        'notes': "{{ item['notes'] | default('') }}" 
+ - debug: msg="{{ az_account_lock_update }}"          
+ - name: "az account lock update: Update a subscription lock." 
+   command: |                                      
+     az account lock update                            
+                 {%if az_account_lock_update.input['ids'] %} --ids az_account_lock_update.input['ids'] {%endif %} 
+                 {%if az_account_lock_update.input['lock-type'] %} --lock-type az_account_lock_update.input['lock-type'] {%endif %} 
+                 {%if az_account_lock_update.input['name'] %} --name az_account_lock_update.input['name'] {%endif %} 
+                 {%if az_account_lock_update.input['notes'] %} --notes az_account_lock_update.input['notes'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_account_lock_update: "{{ az_account_lock_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_account_lock_update }}" 

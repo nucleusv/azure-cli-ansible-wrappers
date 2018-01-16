@@ -1,0 +1,35 @@
+
+
+ - name: Set input params for az_lab_environment_create
+   set_fact: 
+     az_lab_environment_create:
+       input: 
+         ###  Required parameter. Name or ID of the ARM template in the lab.  ### 
+        'arm-template': "{{ item['arm-template'] | default('') }}" 
+         ###  Required parameter. Name of the lab.  ### 
+        'lab-name': "{{ item['lab-name'] | default('') }}" 
+         ###  Required parameter. Name of the environment.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the lab's resource group.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Name of the artifact source in the lab.  ### 
+        'artifact-source-name': "{{ item['artifact-source-name'] | default('') }}" 
+         ###  Optional parameter. JSON encoded list of parameters. Use '@{file}' to load from a file.  ### 
+        'parameters': "{{ item['parameters'] | default('') }}" 
+         ###  Optional parameter. The tags for the resource.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+ - debug: msg="{{ az_lab_environment_create }}"          
+ - name: "az lab environment create: Create an environment in a lab." 
+   command: |                                      
+     az lab environment create                            
+                 --arm-template {{ az_lab_environment_create.input['arm-template'] }} 
+                 --lab-name {{ az_lab_environment_create.input['lab-name'] }} 
+                 --name {{ az_lab_environment_create.input['name'] }} 
+                 --resource-group {{ az_lab_environment_create.input['resource-group'] }} 
+                 {%if az_lab_environment_create.input['artifact-source-name'] %} --artifact-source-name az_lab_environment_create.input['artifact-source-name'] {%endif %} 
+                 {%if az_lab_environment_create.input['parameters'] %} --parameters az_lab_environment_create.input['parameters'] {%endif %} 
+                 {%if az_lab_environment_create.input['rtags'] %} --tags az_lab_environment_create.input['rtags'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_lab_environment_create: "{{ az_lab_environment_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_lab_environment_create }}" 

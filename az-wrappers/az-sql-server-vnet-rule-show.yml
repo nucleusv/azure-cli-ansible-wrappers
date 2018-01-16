@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_sql_server_vnet_rule_show
+   set_fact: 
+     az_sql_server_vnet_rule_show:
+       input: 
+         ###  Required parameter. The name of the virtual network rule.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The name of the server.  ### 
+        'server': "{{ item['server'] | default('') }}" 
+ - debug: msg="{{ az_sql_server_vnet_rule_show }}"          
+ - name: "az sql server vnet-rule show: Gets a virtual network rule." 
+   command: |                                      
+     az sql server vnet-rule show                            
+                 --name {{ az_sql_server_vnet_rule_show.input['name'] }} 
+                 --resource-group {{ az_sql_server_vnet_rule_show.input['resource-group'] }} 
+                 --server {{ az_sql_server_vnet_rule_show.input['server'] }} 
+   register: output  
+ - set_fact: 
+    az_sql_server_vnet_rule_show: "{{ az_sql_server_vnet_rule_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sql_server_vnet_rule_show }}" 

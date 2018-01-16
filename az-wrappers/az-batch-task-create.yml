@@ -1,0 +1,56 @@
+
+
+ - name: Set input params for az_batch_task_create
+   set_fact: 
+     az_batch_task_create:
+       input: 
+         ###  Required parameter. The ID of the job containing the task.  ### 
+        'job-id': "{{ item['job-id'] | default('') }}" 
+         ###  Optional parameter. A locality hint that can be used by the Batch service to select a compute node on which to start the new task.  ### 
+        'affinity-info': "{{ item['affinity-info'] | default('') }}" 
+         ###  Optional parameter. The space separated list of IDs specifying the application packages to be installed. Space separated application IDs with optional version in 'id[#version]' format.  ### 
+        'application-package-references': "{{ item['application-package-references'] | default('') }}" 
+         ###  Optional parameter. The command line of the task. The command line does not run under a shell, and therefore cannot take advantage of shell features such as environment variable expansion. If you want to take advantage of such features, you should invoke the shell in the command line, for example using "cmd /c MyCommand" in Windows or "/bin/sh -c MyCommand" in Linux.  ### 
+        'command-line': "{{ item['command-line'] | default('') }}" 
+         ###  Optional parameter. A list of environment variable settings for the task. Space separated values in 'key=value' format.  ### 
+        'environment-settings': "{{ item['environment-settings'] | default('') }}" 
+         ###  Optional parameter. The file containing the task(s) to create in JSON format, if this parameter is specified, all other parameters are ignored.  ### 
+        'json-file': "{{ item['json-file'] | default('') }}" 
+         ###  Optional parameter. The maximum number of times the task may be retried. The Batch service retries a task if its exit code is nonzero. Note that this value specifically controls the number of retries. The Batch service will try the task once, and may then retry up to this limit. For example, if the maximum retry count is 3, Batch tries the task up to 4 times (one initial try and 3 retries). If the maximum retry count is 0, the Batch service does not retry the task. If the maximum retry count is -1, the Batch service retries the task without limit.  ### 
+        'max-task-retry-count': "{{ item['max-task-retry-count'] | default('') }}" 
+         ###  Optional parameter. The maximum elapsed time that the task may run, measured from the time the task starts. If the task does not complete within the time limit, the Batch service terminates it. If this is not specified, there is no time limit on how long the task may run.  ### 
+        'max-wall-clock-time': "{{ item['max-wall-clock-time'] | default('') }}" 
+         ###  Optional parameter. A list of files that the Batch service will download to the compute node before running the command line. Space separated resource references in filename=blobsource format.  ### 
+        'resource-files': "{{ item['resource-files'] | default('') }}" 
+         ###  Optional parameter. The minimum time to retain the task directory on the compute node where it ran, from the time it completes execution. After this time, the Batch service may delete the task directory and all its contents. The default is infinite, i.e. the task directory will be retained until the compute node is removed or reimaged.  ### 
+        'retention-time': "{{ item['retention-time'] | default('') }}" 
+         ###  Optional parameter. The ID of the task.  ### 
+        'task-id': "{{ item['task-id'] | default('') }}" 
+         ###  Optional parameter. Batch service endpoint. Alternatively, set by environment variable: AZURE_BATCH_ENDPOINT.  ### 
+        'account-endpoint': "{{ item['account-endpoint'] | default('') }}" 
+         ###  Optional parameter. The Batch account key. Alternatively, set by environment variable: AZURE_BATCH_ACCESS_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. The Batch account name. Alternatively, set by environment variable: AZURE_BATCH_ACCOUNT.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+ - debug: msg="{{ az_batch_task_create }}"          
+ - name: "az batch task create: Create Batch tasks." 
+   command: |                                      
+     az batch task create                            
+                 --job-id {{ az_batch_task_create.input['job-id'] }} 
+                 {%if az_batch_task_create.input['affinity-info'] %} --affinity-info az_batch_task_create.input['affinity-info'] {%endif %} 
+                 {%if az_batch_task_create.input['application-package-references'] %} --application-package-references az_batch_task_create.input['application-package-references'] {%endif %} 
+                 {%if az_batch_task_create.input['command-line'] %} --command-line az_batch_task_create.input['command-line'] {%endif %} 
+                 {%if az_batch_task_create.input['environment-settings'] %} --environment-settings az_batch_task_create.input['environment-settings'] {%endif %} 
+                 {%if az_batch_task_create.input['json-file'] %} --json-file az_batch_task_create.input['json-file'] {%endif %} 
+                 {%if az_batch_task_create.input['max-task-retry-count'] %} --max-task-retry-count az_batch_task_create.input['max-task-retry-count'] {%endif %} 
+                 {%if az_batch_task_create.input['max-wall-clock-time'] %} --max-wall-clock-time az_batch_task_create.input['max-wall-clock-time'] {%endif %} 
+                 {%if az_batch_task_create.input['resource-files'] %} --resource-files az_batch_task_create.input['resource-files'] {%endif %} 
+                 {%if az_batch_task_create.input['retention-time'] %} --retention-time az_batch_task_create.input['retention-time'] {%endif %} 
+                 {%if az_batch_task_create.input['task-id'] %} --task-id az_batch_task_create.input['task-id'] {%endif %} 
+                 {%if az_batch_task_create.input['account-endpoint'] %} --account-endpoint az_batch_task_create.input['account-endpoint'] {%endif %} 
+                 {%if az_batch_task_create.input['account-key'] %} --account-key az_batch_task_create.input['account-key'] {%endif %} 
+                 {%if az_batch_task_create.input['account-name'] %} --account-name az_batch_task_create.input['account-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_task_create: "{{ az_batch_task_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_task_create }}" 

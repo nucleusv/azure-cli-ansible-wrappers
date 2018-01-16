@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_acr_login
+   set_fact: 
+     az_acr_login:
+       input: 
+         ###  Required parameter. The name of the container registry. You can configure the default registry name using `az configure --defaults acr=&lt;registry name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. The password used to log into a container registry.  ### 
+        'password': "{{ item['password'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The username used to log into a container registry.  ### 
+        'username': "{{ item['username'] | default('') }}" 
+ - debug: msg="{{ az_acr_login }}"          
+ - name: "az acr login: Log in to a container registry through Docker." 
+   command: |                                      
+     az acr login                            
+                 --name {{ az_acr_login.input['name'] }} 
+                 {%if az_acr_login.input['password'] %} --password az_acr_login.input['password'] {%endif %} 
+                 {%if az_acr_login.input['resource-group'] %} --resource-group az_acr_login.input['resource-group'] {%endif %} 
+                 {%if az_acr_login.input['username'] %} --username az_acr_login.input['username'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_acr_login: "{{ az_acr_login|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_acr_login }}" 

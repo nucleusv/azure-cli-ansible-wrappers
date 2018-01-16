@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_functionapp_config_hostname_add
+   set_fact: 
+     az_functionapp_config_hostname_add:
+       input: 
+         ###  Required parameter. Hostname assigned to the site, such as custom domains.  ### 
+        'hostname': "{{ item['hostname'] | default('') }}" 
+         ###  Required parameter. Name of the function app.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_functionapp_config_hostname_add }}"          
+ - name: "az functionapp config hostname add: Bind a hostname to a function app." 
+   command: |                                      
+     az functionapp config hostname add                            
+                 --hostname {{ az_functionapp_config_hostname_add.input['hostname'] }} 
+                 --name {{ az_functionapp_config_hostname_add.input['name'] }} 
+                 --resource-group {{ az_functionapp_config_hostname_add.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_functionapp_config_hostname_add: "{{ az_functionapp_config_hostname_add|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_functionapp_config_hostname_add }}" 

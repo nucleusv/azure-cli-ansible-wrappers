@@ -1,0 +1,56 @@
+
+
+ - name: Set input params for az_network_application_gateway_probe_create
+   set_fact: 
+     az_network_application_gateway_probe_create:
+       input: 
+         ###  Required parameter. The name of the application gateway.  ### 
+        'gateway-name': "{{ item['gateway-name'] | default('') }}" 
+         ###  Required parameter. The name of the probe.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. The relative path of the probe. Valid paths start from "/".  ### 
+        'path': "{{ item['path'] | default('') }}" 
+         ###  Required parameter. The HTTP settings protocol.  ### 
+        'protocol': "{{ item['protocol'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The name of the host to send the probe.  ### 
+        'host': "{{ item['host'] | default('') }}" 
+         ###  Optional parameter. Use host header from HTTP settings.  ### 
+        'host-name-from-http-settings': "{{ item['host-name-from-http-settings'] | default('') }}" 
+         ###  Optional parameter. The time interval in seconds between consecutive probes.  ### 
+        'interval': "{{ item['interval'] | default('') }}" 
+         ###  Optional parameter. Body that must be contained in the health response.  ### 
+        'match-body': "{{ item['match-body'] | default('') }}" 
+         ###  Optional parameter. Space-separated list of allowed ranges of healthy status codes for the health response.  ### 
+        'match-status-codes': "{{ item['match-status-codes'] | default('') }}" 
+         ###  Optional parameter. Minimum number of servers that are always marked healthy.  ### 
+        'min-servers': "{{ item['min-servers'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+         ###  Optional parameter. The number of failed probes after which the back end server is marked down.  ### 
+        'threshold': "{{ item['threshold'] | default('') }}" 
+         ###  Optional parameter. The probe timeout in seconds.  ### 
+        'timeout': "{{ item['timeout'] | default('') }}" 
+ - debug: msg="{{ az_network_application_gateway_probe_create }}"          
+ - name: "az network application-gateway probe create: Create a probe." 
+   command: |                                      
+     az network application-gateway probe create                            
+                 --gateway-name {{ az_network_application_gateway_probe_create.input['gateway-name'] }} 
+                 --name {{ az_network_application_gateway_probe_create.input['name'] }} 
+                 --path {{ az_network_application_gateway_probe_create.input['path'] }} 
+                 --protocol {{ az_network_application_gateway_probe_create.input['protocol'] }} 
+                 --resource-group {{ az_network_application_gateway_probe_create.input['resource-group'] }} 
+                 {%if az_network_application_gateway_probe_create.input['host'] %} --host az_network_application_gateway_probe_create.input['host'] {%endif %} 
+                 {%if az_network_application_gateway_probe_create.input['host-name-from-http-settings'] %} --host-name-from-http-settings az_network_application_gateway_probe_create.input['host-name-from-http-settings'] {%endif %} 
+                 {%if az_network_application_gateway_probe_create.input['interval'] %} --interval az_network_application_gateway_probe_create.input['interval'] {%endif %} 
+                 {%if az_network_application_gateway_probe_create.input['match-body'] %} --match-body az_network_application_gateway_probe_create.input['match-body'] {%endif %} 
+                 {%if az_network_application_gateway_probe_create.input['match-status-codes'] %} --match-status-codes az_network_application_gateway_probe_create.input['match-status-codes'] {%endif %} 
+                 {%if az_network_application_gateway_probe_create.input['min-servers'] %} --min-servers az_network_application_gateway_probe_create.input['min-servers'] {%endif %} 
+                 {%if az_network_application_gateway_probe_create.input['no-wait'] %} --no-wait az_network_application_gateway_probe_create.input['no-wait'] {%endif %} 
+                 {%if az_network_application_gateway_probe_create.input['threshold'] %} --threshold az_network_application_gateway_probe_create.input['threshold'] {%endif %} 
+                 {%if az_network_application_gateway_probe_create.input['timeout'] %} --timeout az_network_application_gateway_probe_create.input['timeout'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_application_gateway_probe_create: "{{ az_network_application_gateway_probe_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_application_gateway_probe_create }}" 

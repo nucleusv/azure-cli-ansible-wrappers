@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_sql_show_usage
+   set_fact: 
+     az_sql_show_usage:
+       input: 
+         ###  Required parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Required parameter. Name of usage metric to return.  ### 
+        'usage': "{{ item['usage'] | default('') }}" 
+ - debug: msg="{{ az_sql_show_usage }}"          
+ - name: "az sql show-usage: Gets a subscription usage metric." 
+   command: |                                      
+     az sql show-usage                            
+                 --location {{ az_sql_show_usage.input['location'] }} 
+                 --usage {{ az_sql_show_usage.input['usage'] }} 
+   register: output  
+ - set_fact: 
+    az_sql_show_usage: "{{ az_sql_show_usage|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sql_show_usage }}" 

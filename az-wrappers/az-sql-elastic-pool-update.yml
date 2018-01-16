@@ -1,0 +1,44 @@
+
+
+ - name: Set input params for az_sql_elastic_pool_update
+   set_fact: 
+     az_sql_elastic_pool_update:
+       input: 
+         ###  Required parameter. The name of the elastic pool.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the Azure SQL server.  ### 
+        'server': "{{ item['server'] | default('') }}" 
+         ###  Optional parameter. The maximum DTU any one database can consume.  ### 
+        'db-dtu-max': "{{ item['db-dtu-max'] | default('') }}" 
+         ###  Optional parameter. The minimum DTU all databases are guaranteed.  ### 
+        'db-dtu-min': "{{ item['db-dtu-min'] | default('') }}" 
+         ###  Optional parameter. TThe total shared DTU for the elastic eool.  ### 
+        'dtu': "{{ item['dtu'] | default('') }}" 
+         ###  Optional parameter. Storage limit for the elastic pool in MB.  ### 
+        'max-size': "{{ item['max-size'] | default('') }}" 
+         ###  Optional parameter. Add an object to a list of objects by specifying a path and key value pairs.  Example: --add property.listProperty <key=value, string or JSON string>.  ### 
+        'add': "{{ item['add'] | default('') }}" 
+         ###  Optional parameter. Remove a property or an element from a list.  Example: --remove property.list <indexToRemove> OR --remove propertyToRemove.  ### 
+        'remove': "{{ item['remove'] | default('') }}" 
+         ###  Optional parameter. Update an object by specifying a property path and value to set.  Example: --set property1.property2=<value>.  ### 
+        'set': "{{ item['set'] | default('') }}" 
+ - debug: msg="{{ az_sql_elastic_pool_update }}"          
+ - name: "az sql elastic-pool update: Update an elastic pool." 
+   command: |                                      
+     az sql elastic-pool update                            
+                 --name {{ az_sql_elastic_pool_update.input['name'] }} 
+                 --resource-group {{ az_sql_elastic_pool_update.input['resource-group'] }} 
+                 --server {{ az_sql_elastic_pool_update.input['server'] }} 
+                 {%if az_sql_elastic_pool_update.input['db-dtu-max'] %} --db-dtu-max az_sql_elastic_pool_update.input['db-dtu-max'] {%endif %} 
+                 {%if az_sql_elastic_pool_update.input['db-dtu-min'] %} --db-dtu-min az_sql_elastic_pool_update.input['db-dtu-min'] {%endif %} 
+                 {%if az_sql_elastic_pool_update.input['dtu'] %} --dtu az_sql_elastic_pool_update.input['dtu'] {%endif %} 
+                 {%if az_sql_elastic_pool_update.input['max-size'] %} --max-size az_sql_elastic_pool_update.input['max-size'] {%endif %} 
+                 {%if az_sql_elastic_pool_update.input['add'] %} --add az_sql_elastic_pool_update.input['add'] {%endif %} 
+                 {%if az_sql_elastic_pool_update.input['remove'] %} --remove az_sql_elastic_pool_update.input['remove'] {%endif %} 
+                 {%if az_sql_elastic_pool_update.input['set'] %} --set az_sql_elastic_pool_update.input['set'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_sql_elastic_pool_update: "{{ az_sql_elastic_pool_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sql_elastic_pool_update }}" 

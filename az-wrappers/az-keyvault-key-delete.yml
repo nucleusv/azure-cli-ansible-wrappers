@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_keyvault_key_delete
+   set_fact: 
+     az_keyvault_key_delete:
+       input: 
+         ###  Required parameter. Name of the key.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_key_delete }}"          
+ - name: "az keyvault key delete: Deletes a key of any type from storage in Azure Key Vault." 
+   command: |                                      
+     az keyvault key delete                            
+                 --name {{ az_keyvault_key_delete.input['name'] }} 
+                 --vault-name {{ az_keyvault_key_delete.input['vault-name'] }} 
+   register: output  
+ - set_fact: 
+    az_keyvault_key_delete: "{{ az_keyvault_key_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_key_delete }}" 

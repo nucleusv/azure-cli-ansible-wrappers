@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_configure
+   set_fact: 
+     az_configure:
+       input: 
+         ###  Optional parameter. Space separated 'name=value' pairs for common argument defaults.  ### 
+        'defaults': "{{ item['defaults'] | default('') }}" 
+ - debug: msg="{{ az_configure }}"          
+ - name: "az configure: Display and manage the Azure CLI 2.0 configuration. This command is interactive." 
+   command: |                                      
+     az configure                            
+                 {%if az_configure.input['defaults'] %} --defaults az_configure.input['defaults'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_configure: "{{ az_configure|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_configure }}" 

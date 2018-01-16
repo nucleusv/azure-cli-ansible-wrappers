@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_network_application_gateway_ssl_policy_predefined_show
+   set_fact: 
+     az_network_application_gateway_ssl_policy_predefined_show:
+       input: 
+         ###  Required parameter. Name of Ssl predefined policy.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+ - debug: msg="{{ az_network_application_gateway_ssl_policy_predefined_show }}"          
+ - name: "az network application-gateway ssl-policy predefined show: Gets Ssl predefined policy with the specified policy name." 
+   command: |                                      
+     az network application-gateway ssl-policy predefined show                            
+                 --name {{ az_network_application_gateway_ssl_policy_predefined_show.input['name'] }} 
+   register: output  
+ - set_fact: 
+    az_network_application_gateway_ssl_policy_predefined_show: "{{ az_network_application_gateway_ssl_policy_predefined_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_application_gateway_ssl_policy_predefined_show }}" 

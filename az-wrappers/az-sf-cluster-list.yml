@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_sf_cluster_list
+   set_fact: 
+     az_sf_cluster_list:
+       input: 
+         ###  Optional parameter. The resource group name.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_sf_cluster_list }}"          
+ - name: "az sf cluster list: List cluster resources." 
+   command: |                                      
+     az sf cluster list                            
+                 {%if az_sf_cluster_list.input['resource-group'] %} --resource-group az_sf_cluster_list.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_sf_cluster_list: "{{ az_sf_cluster_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sf_cluster_list }}" 

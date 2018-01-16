@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_webapp_list_runtimes
+   set_fact: 
+     az_webapp_list_runtimes:
+       input: 
+         ###  Optional parameter. List runtime stacks for linux based webapps.  ### 
+        'linux': "{{ item['linux'] | default('') }}" 
+ - debug: msg="{{ az_webapp_list_runtimes }}"          
+ - name: "az webapp list-runtimes: List available built-in stacks which can be used for web apps." 
+   command: |                                      
+     az webapp list-runtimes                            
+                 {%if az_webapp_list_runtimes.input['linux'] %} --linux az_webapp_list_runtimes.input['linux'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_webapp_list_runtimes: "{{ az_webapp_list_runtimes|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_webapp_list_runtimes }}" 

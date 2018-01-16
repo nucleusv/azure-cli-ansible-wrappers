@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_monitor_activity_log_alert_action_group_remove
+   set_fact: 
+     az_monitor_activity_log_alert_action_group_remove:
+       input: 
+         ###  Required parameter. The names or the resource ids of the action groups to be added.  ### 
+        'action-group': "{{ item['action-group'] | default('') }}" 
+         ###  Required parameter. Name of the activity log alerts.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_monitor_activity_log_alert_action_group_remove }}"          
+ - name: "az monitor activity-log alert action-group remove: Remove action groups from this activity log alert." 
+   command: |                                      
+     az monitor activity-log alert action-group remove                            
+                 --action-group {{ az_monitor_activity_log_alert_action_group_remove.input['action-group'] }} 
+                 --name {{ az_monitor_activity_log_alert_action_group_remove.input['name'] }} 
+                 --resource-group {{ az_monitor_activity_log_alert_action_group_remove.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_monitor_activity_log_alert_action_group_remove: "{{ az_monitor_activity_log_alert_action_group_remove|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_monitor_activity_log_alert_action_group_remove }}" 

@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_network_watcher_packet_capture_delete
+   set_fact: 
+     az_network_watcher_packet_capture_delete:
+       input: 
+         ###  Required parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Required parameter. The name of the packet capture session.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+ - debug: msg="{{ az_network_watcher_packet_capture_delete }}"          
+ - name: "az network watcher packet-capture delete: Deletes the specified packet capture session." 
+   command: |                                      
+     az network watcher packet-capture delete                            
+                 --location {{ az_network_watcher_packet_capture_delete.input['location'] }} 
+                 --name {{ az_network_watcher_packet_capture_delete.input['name'] }} 
+   register: output  
+ - set_fact: 
+    az_network_watcher_packet_capture_delete: "{{ az_network_watcher_packet_capture_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_watcher_packet_capture_delete }}" 

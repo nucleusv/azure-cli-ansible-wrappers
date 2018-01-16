@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_dls_fs_create
+   set_fact: 
+     az_dls_fs_create:
+       input: 
+         ###  Required parameter. Name of the Data Lake Store account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The path in the specified Data Lake Store account where the action should take place. In the format '/folder/file.txt', where the first '/' after the DNS indicates the root of the file system.  ### 
+        'path': "{{ item['path'] | default('') }}" 
+         ###  Optional parameter. Content for the file to contain upon creation.  ### 
+        'content': "{{ item['content'] | default('') }}" 
+         ###  Optional parameter. Indicates that this new item is a folder and not a file.  ### 
+        'folder': "{{ item['folder'] | default('') }}" 
+         ###  Optional parameter. Indicates that, if the file or folder exists, it should be overwritten.  ### 
+        'force': "{{ item['force'] | default('') }}" 
+ - debug: msg="{{ az_dls_fs_create }}"          
+ - name: "az dls fs create: Creates a file or folder in a Data Lake Store account." 
+   command: |                                      
+     az dls fs create                            
+                 --account {{ az_dls_fs_create.input['account'] }} 
+                 --path {{ az_dls_fs_create.input['path'] }} 
+                 {%if az_dls_fs_create.input['content'] %} --content az_dls_fs_create.input['content'] {%endif %} 
+                 {%if az_dls_fs_create.input['folder'] %} --folder az_dls_fs_create.input['folder'] {%endif %} 
+                 {%if az_dls_fs_create.input['force'] %} --force az_dls_fs_create.input['force'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dls_fs_create: "{{ az_dls_fs_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dls_fs_create }}" 

@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_eventgrid_topic_type_show
+   set_fact: 
+     az_eventgrid_topic_type_show:
+       input: 
+         ###  Required parameter. Name of the topic type.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+ - debug: msg="{{ az_eventgrid_topic_type_show }}"          
+ - name: "az eventgrid topic-type show: Get the details for a topic type." 
+   command: |                                      
+     az eventgrid topic-type show                            
+                 --name {{ az_eventgrid_topic_type_show.input['name'] }} 
+   register: output  
+ - set_fact: 
+    az_eventgrid_topic_type_show: "{{ az_eventgrid_topic_type_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_eventgrid_topic_type_show }}" 

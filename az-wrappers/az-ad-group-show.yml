@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_ad_group_show
+   set_fact: 
+     az_ad_group_show:
+       input: 
+         ###  Required parameter. Group's object id or display name(prefix also works if there is a unique match).  ### 
+        'group': "{{ item['group'] | default('') }}" 
+ - debug: msg="{{ az_ad_group_show }}"          
+ - name: "az ad group show: Gets group information from the directory." 
+   command: |                                      
+     az ad group show                            
+                 --group {{ az_ad_group_show.input['group'] }} 
+   register: output  
+ - set_fact: 
+    az_ad_group_show: "{{ az_ad_group_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_ad_group_show }}" 

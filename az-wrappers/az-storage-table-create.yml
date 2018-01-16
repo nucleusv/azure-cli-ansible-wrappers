@@ -1,0 +1,35 @@
+
+
+ - name: Set input params for az_storage_table_create
+   set_fact: 
+     az_storage_table_create:
+       input: 
+         ###  Required parameter. The name of the table to create. The table name may contain only alphanumeric characters and cannot begin with a numeric character. It is case-insensitive and must be from 3 to 63 characters long.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Throw an exception if the table already exists.  ### 
+        'fail-on-exist': "{{ item['fail-on-exist'] | default('') }}" 
+         ###  Optional parameter. Request timeout in seconds. Applies to each call to the service.  ### 
+        'timeout': "{{ item['timeout'] | default('') }}" 
+         ###  Optional parameter. Storage account key. Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Storage account name. Related environment variable: AZURE_STORAGE_ACCOUNT. Must be used in conjunction with either storage account key or a SAS token. If neither are present, the command will try to query the storage account key using the authenticated Azure account. If a large number of storage commands are executed the API quota may be hit.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+         ###  Optional parameter. Storage account connection string. Environment variable: AZURE_STORAGE_CONNECTION_STRING.  ### 
+        'connection-string': "{{ item['connection-string'] | default('') }}" 
+         ###  Optional parameter. A Shared Access Signature (SAS). Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_SAS_TOKEN.  ### 
+        'sas-token': "{{ item['sas-token'] | default('') }}" 
+ - debug: msg="{{ az_storage_table_create }}"          
+ - name: "az storage table create: Creates a new table in the storage account." 
+   command: |                                      
+     az storage table create                            
+                 --name {{ az_storage_table_create.input['name'] }} 
+                 {%if az_storage_table_create.input['fail-on-exist'] %} --fail-on-exist az_storage_table_create.input['fail-on-exist'] {%endif %} 
+                 {%if az_storage_table_create.input['timeout'] %} --timeout az_storage_table_create.input['timeout'] {%endif %} 
+                 {%if az_storage_table_create.input['account-key'] %} --account-key az_storage_table_create.input['account-key'] {%endif %} 
+                 {%if az_storage_table_create.input['account-name'] %} --account-name az_storage_table_create.input['account-name'] {%endif %} 
+                 {%if az_storage_table_create.input['connection-string'] %} --connection-string az_storage_table_create.input['connection-string'] {%endif %} 
+                 {%if az_storage_table_create.input['sas-token'] %} --sas-token az_storage_table_create.input['sas-token'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_storage_table_create: "{{ az_storage_table_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_storage_table_create }}" 

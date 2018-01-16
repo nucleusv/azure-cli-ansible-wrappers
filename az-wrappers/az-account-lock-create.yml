@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_account_lock_create
+   set_fact: 
+     az_account_lock_create:
+       input: 
+         ###  Required parameter.   ### 
+        'lock-type': "{{ item['lock-type'] | default('') }}" 
+         ###  Required parameter. Name of the lock.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Notes about this lock.  ### 
+        'notes': "{{ item['notes'] | default('') }}" 
+ - debug: msg="{{ az_account_lock_create }}"          
+ - name: "az account lock create: Create a subscription lock." 
+   command: |                                      
+     az account lock create                            
+                 --lock-type {{ az_account_lock_create.input['lock-type'] }} 
+                 --name {{ az_account_lock_create.input['name'] }} 
+                 {%if az_account_lock_create.input['notes'] %} --notes az_account_lock_create.input['notes'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_account_lock_create: "{{ az_account_lock_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_account_lock_create }}" 

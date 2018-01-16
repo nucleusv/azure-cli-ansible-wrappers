@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_batch_node_scheduling_disable
+   set_fact: 
+     az_batch_node_scheduling_disable:
+       input: 
+         ###  Required parameter. The ID of the compute node on which you want to disable task scheduling.  ### 
+        'node-id': "{{ item['node-id'] | default('') }}" 
+         ###  Required parameter. The ID of the pool that contains the compute node.  ### 
+        'pool-id': "{{ item['pool-id'] | default('') }}" 
+         ###  Optional parameter. What to do with currently running tasks when disabling task scheduling on the compute node. Values are: requeue - Terminate running task processes and requeue the tasks. The tasks may run again on other compute nodes, or when task scheduling is re-enabled on this node. Enter offline state as soon as tasks have been terminated. terminate - Terminate running tasks. The tasks will not run again. Enter offline state as soon as tasks have been terminated. taskcompletion - Allow currently running tasks to complete. Schedule no new tasks while waiting. Enter offline state when all tasks have completed. The default value is requeue.  ### 
+        'node-disable-scheduling-option': "{{ item['node-disable-scheduling-option'] | default('') }}" 
+         ###  Optional parameter. Batch service endpoint. Alternatively, set by environment variable: AZURE_BATCH_ENDPOINT.  ### 
+        'account-endpoint': "{{ item['account-endpoint'] | default('') }}" 
+         ###  Optional parameter. Batch account key. Alternatively, set by environment variable: AZURE_BATCH_ACCESS_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Batch account name. Alternatively, set by environment variable: AZURE_BATCH_ACCOUNT.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+ - debug: msg="{{ az_batch_node_scheduling_disable }}"          
+ - name: "az batch node scheduling disable: Disables task scheduling on the specified compute node." 
+   command: |                                      
+     az batch node scheduling disable                            
+                 --node-id {{ az_batch_node_scheduling_disable.input['node-id'] }} 
+                 --pool-id {{ az_batch_node_scheduling_disable.input['pool-id'] }} 
+                 {%if az_batch_node_scheduling_disable.input['node-disable-scheduling-option'] %} --node-disable-scheduling-option az_batch_node_scheduling_disable.input['node-disable-scheduling-option'] {%endif %} 
+                 {%if az_batch_node_scheduling_disable.input['account-endpoint'] %} --account-endpoint az_batch_node_scheduling_disable.input['account-endpoint'] {%endif %} 
+                 {%if az_batch_node_scheduling_disable.input['account-key'] %} --account-key az_batch_node_scheduling_disable.input['account-key'] {%endif %} 
+                 {%if az_batch_node_scheduling_disable.input['account-name'] %} --account-name az_batch_node_scheduling_disable.input['account-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_node_scheduling_disable: "{{ az_batch_node_scheduling_disable|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_node_scheduling_disable }}" 

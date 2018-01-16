@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_sql_db_replica_set_primary
+   set_fact: 
+     az_sql_db_replica_set_primary:
+       input: 
+         ###  Required parameter. Name of the database to fail over.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the resource group containing the secondary replica that will become the new primary.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the server containing the secondary replica that will become the new primary.  ### 
+        'server': "{{ item['server'] | default('') }}" 
+         ###  Optional parameter. If specified, the failover operation will allow data loss.  ### 
+        'allow-data-loss': "{{ item['allow-data-loss'] | default('') }}" 
+ - debug: msg="{{ az_sql_db_replica_set_primary }}"          
+ - name: "az sql db replica set-primary: Set the primary replica database by failing over from the current primary replica database." 
+   command: |                                      
+     az sql db replica set-primary                            
+                 --name {{ az_sql_db_replica_set_primary.input['name'] }} 
+                 --resource-group {{ az_sql_db_replica_set_primary.input['resource-group'] }} 
+                 --server {{ az_sql_db_replica_set_primary.input['server'] }} 
+                 {%if az_sql_db_replica_set_primary.input['allow-data-loss'] %} --allow-data-loss az_sql_db_replica_set_primary.input['allow-data-loss'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_sql_db_replica_set_primary: "{{ az_sql_db_replica_set_primary|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sql_db_replica_set_primary }}" 

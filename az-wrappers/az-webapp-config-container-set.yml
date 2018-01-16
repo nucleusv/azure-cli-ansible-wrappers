@@ -1,0 +1,38 @@
+
+
+ - name: Set input params for az_webapp_config_container_set
+   set_fact: 
+     az_webapp_config_container_set:
+       input: 
+         ###  Required parameter. Name of the web. You can configure the default using 'az configure --defaults web=<name>'.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The container custom image name and optionally the tag name.  ### 
+        'docker-custom-image-name': "{{ item['docker-custom-image-name'] | default('') }}" 
+         ###  Optional parameter. The container registry server password.  ### 
+        'docker-registry-server-password': "{{ item['docker-registry-server-password'] | default('') }}" 
+         ###  Optional parameter. The container registry server url.  ### 
+        'docker-registry-server-url': "{{ item['docker-registry-server-url'] | default('') }}" 
+         ###  Optional parameter. The container registry server username.  ### 
+        'docker-registry-server-user': "{{ item['docker-registry-server-user'] | default('') }}" 
+         ###  Optional parameter. Enables platform storage (custom container only).  ### 
+        'enable-app-service-storage': "{{ item['enable-app-service-storage'] | default('') }}" 
+         ###  Optional parameter. The name of the slot. Default to the productions slot if not specified.  ### 
+        'slot': "{{ item['slot'] | default('') }}" 
+ - debug: msg="{{ az_webapp_config_container_set }}"          
+ - name: "az webapp config container set: Set a web app container's settings." 
+   command: |                                      
+     az webapp config container set                            
+                 --name {{ az_webapp_config_container_set.input['name'] }} 
+                 --resource-group {{ az_webapp_config_container_set.input['resource-group'] }} 
+                 {%if az_webapp_config_container_set.input['docker-custom-image-name'] %} --docker-custom-image-name az_webapp_config_container_set.input['docker-custom-image-name'] {%endif %} 
+                 {%if az_webapp_config_container_set.input['docker-registry-server-password'] %} --docker-registry-server-password az_webapp_config_container_set.input['docker-registry-server-password'] {%endif %} 
+                 {%if az_webapp_config_container_set.input['docker-registry-server-url'] %} --docker-registry-server-url az_webapp_config_container_set.input['docker-registry-server-url'] {%endif %} 
+                 {%if az_webapp_config_container_set.input['docker-registry-server-user'] %} --docker-registry-server-user az_webapp_config_container_set.input['docker-registry-server-user'] {%endif %} 
+                 {%if az_webapp_config_container_set.input['enable-app-service-storage'] %} --enable-app-service-storage az_webapp_config_container_set.input['enable-app-service-storage'] {%endif %} 
+                 {%if az_webapp_config_container_set.input['slot'] %} --slot az_webapp_config_container_set.input['slot'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_webapp_config_container_set: "{{ az_webapp_config_container_set|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_webapp_config_container_set }}" 

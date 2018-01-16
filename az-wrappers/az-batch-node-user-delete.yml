@@ -1,0 +1,35 @@
+
+
+ - name: Set input params for az_batch_node_user_delete
+   set_fact: 
+     az_batch_node_user_delete:
+       input: 
+         ###  Required parameter. The ID of the machine on which you want to delete a user account.  ### 
+        'node-id': "{{ item['node-id'] | default('') }}" 
+         ###  Required parameter. The ID of the pool that contains the compute node.  ### 
+        'pool-id': "{{ item['pool-id'] | default('') }}" 
+         ###  Required parameter. The name of the user account to delete.  ### 
+        'user-name': "{{ item['user-name'] | default('') }}" 
+         ###  Optional parameter. Do not prompt for confirmation.  ### 
+        'yes': "{{ item['yes'] | default('') }}" 
+         ###  Optional parameter. Batch service endpoint. Alternatively, set by environment variable: AZURE_BATCH_ENDPOINT.  ### 
+        'account-endpoint': "{{ item['account-endpoint'] | default('') }}" 
+         ###  Optional parameter. Batch account key. Alternatively, set by environment variable: AZURE_BATCH_ACCESS_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Batch account name. Alternatively, set by environment variable: AZURE_BATCH_ACCOUNT.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+ - debug: msg="{{ az_batch_node_user_delete }}"          
+ - name: "az batch node user delete: Deletes a user account from the specified compute node." 
+   command: |                                      
+     az batch node user delete                            
+                 --node-id {{ az_batch_node_user_delete.input['node-id'] }} 
+                 --pool-id {{ az_batch_node_user_delete.input['pool-id'] }} 
+                 --user-name {{ az_batch_node_user_delete.input['user-name'] }} 
+                 {%if az_batch_node_user_delete.input['yes'] %} --yes {%endif %} 
+                 {%if az_batch_node_user_delete.input['account-endpoint'] %} --account-endpoint az_batch_node_user_delete.input['account-endpoint'] {%endif %} 
+                 {%if az_batch_node_user_delete.input['account-key'] %} --account-key az_batch_node_user_delete.input['account-key'] {%endif %} 
+                 {%if az_batch_node_user_delete.input['account-name'] %} --account-name az_batch_node_user_delete.input['account-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_node_user_delete: "{{ az_batch_node_user_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_node_user_delete }}" 

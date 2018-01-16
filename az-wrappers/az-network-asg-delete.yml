@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_network_asg_delete
+   set_fact: 
+     az_network_asg_delete:
+       input: 
+         ###  Required parameter. The name of the application security group.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_network_asg_delete }}"          
+ - name: "az network asg delete: Delete an application security group." 
+   command: |                                      
+     az network asg delete                            
+                 --name {{ az_network_asg_delete.input['name'] }} 
+                 --resource-group {{ az_network_asg_delete.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_network_asg_delete: "{{ az_network_asg_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_asg_delete }}" 

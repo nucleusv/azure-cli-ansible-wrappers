@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_sf_cluster_upgrade_type_set
+   set_fact: 
+     az_sf_cluster_upgrade_type_set:
+       input: 
+         ###  Required parameter. Specify the name of the cluster, if not given it will be same as resource group name.  ### 
+        'cluster-name': "{{ item['cluster-name'] | default('') }}" 
+         ###  Required parameter. The resource group name.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Cluster upgrade mode.  ### 
+        'upgrade-mode': "{{ item['upgrade-mode'] | default('') }}" 
+         ###  Optional parameter. Cluster code version.  ### 
+        'version': "{{ item['version'] | default('') }}" 
+ - debug: msg="{{ az_sf_cluster_upgrade_type_set }}"          
+ - name: "az sf cluster upgrade-type set: Change the  upgrade type for a cluster." 
+   command: |                                      
+     az sf cluster upgrade-type set                            
+                 --cluster-name {{ az_sf_cluster_upgrade_type_set.input['cluster-name'] }} 
+                 --resource-group {{ az_sf_cluster_upgrade_type_set.input['resource-group'] }} 
+                 --upgrade-mode {{ az_sf_cluster_upgrade_type_set.input['upgrade-mode'] }} 
+                 {%if az_sf_cluster_upgrade_type_set.input['version'] %} --version az_sf_cluster_upgrade_type_set.input['version'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_sf_cluster_upgrade_type_set: "{{ az_sf_cluster_upgrade_type_set|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sf_cluster_upgrade_type_set }}" 

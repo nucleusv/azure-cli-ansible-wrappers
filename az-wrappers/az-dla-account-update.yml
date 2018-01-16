@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_dla_account_update
+   set_fact: 
+     az_dla_account_update:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Optional parameter. Allow or block IPs originating from Azure through the firewall.  ### 
+        'allow-azure-ips': "{{ item['allow-azure-ips'] | default('') }}" 
+         ###  Optional parameter. Enable or disable existing firewall rules.  ### 
+        'firewall-state': "{{ item['firewall-state'] | default('') }}" 
+         ###  Optional parameter. The maximum degree of parallelism for this account.  ### 
+        'max-degree-of-parallelism': "{{ item['max-degree-of-parallelism'] | default('') }}" 
+         ###  Optional parameter. The maximum number of concurrent jobs for this account.  ### 
+        'max-job-count': "{{ item['max-job-count'] | default('') }}" 
+         ###  Optional parameter. The number of days to retain job metadata.  ### 
+        'query-store-retention': "{{ item['query-store-retention'] | default('') }}" 
+         ###  Optional parameter. If not specified, will attempt to discover the resource group for the specified Data Lake Analytics account.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. The desired commitment tier for this account to use.  ### 
+        'tier': "{{ item['tier'] | default('') }}" 
+ - debug: msg="{{ az_dla_account_update }}"          
+ - name: "az dla account update: Update a Data Lake Analytics account." 
+   command: |                                      
+     az dla account update                            
+                 --account {{ az_dla_account_update.input['account'] }} 
+                 {%if az_dla_account_update.input['allow-azure-ips'] %} --allow-azure-ips az_dla_account_update.input['allow-azure-ips'] {%endif %} 
+                 {%if az_dla_account_update.input['firewall-state'] %} --firewall-state az_dla_account_update.input['firewall-state'] {%endif %} 
+                 {%if az_dla_account_update.input['max-degree-of-parallelism'] %} --max-degree-of-parallelism az_dla_account_update.input['max-degree-of-parallelism'] {%endif %} 
+                 {%if az_dla_account_update.input['max-job-count'] %} --max-job-count az_dla_account_update.input['max-job-count'] {%endif %} 
+                 {%if az_dla_account_update.input['query-store-retention'] %} --query-store-retention az_dla_account_update.input['query-store-retention'] {%endif %} 
+                 {%if az_dla_account_update.input['resource-group'] %} --resource-group az_dla_account_update.input['resource-group'] {%endif %} 
+                 {%if az_dla_account_update.input['rtags'] %} --tags az_dla_account_update.input['rtags'] {%endif %} 
+                 {%if az_dla_account_update.input['tier'] %} --tier az_dla_account_update.input['tier'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dla_account_update: "{{ az_dla_account_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_account_update }}" 

@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_iot_hub_certificate_create
+   set_fact: 
+     az_iot_hub_certificate_create:
+       input: 
+         ###  Required parameter. IoT Hub name.  ### 
+        'hub-name': "{{ item['hub-name'] | default('') }}" 
+         ###  Required parameter. A friendly name for the certificate.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. The path to the file containing the certificate.  ### 
+        'path': "{{ item['path'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_iot_hub_certificate_create }}"          
+ - name: "az iot hub certificate create: Create/upload an Azure IoT Hub certificate." 
+   command: |                                      
+     az iot hub certificate create                            
+                 --hub-name {{ az_iot_hub_certificate_create.input['hub-name'] }} 
+                 --name {{ az_iot_hub_certificate_create.input['name'] }} 
+                 --path {{ az_iot_hub_certificate_create.input['path'] }} 
+                 {%if az_iot_hub_certificate_create.input['resource-group'] %} --resource-group az_iot_hub_certificate_create.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_hub_certificate_create: "{{ az_iot_hub_certificate_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_hub_certificate_create }}" 

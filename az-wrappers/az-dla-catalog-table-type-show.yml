@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_dla_catalog_table_type_show
+   set_fact: 
+     az_dla_catalog_table_type_show:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The name of the database containing the table type.  ### 
+        'database-name': "{{ item['database-name'] | default('') }}" 
+         ###  Required parameter. The name of the schema containing the table type.  ### 
+        'schema-name': "{{ item['schema-name'] | default('') }}" 
+         ###  Required parameter. The name of the table type to retrieve.  ### 
+        'table-type-name': "{{ item['table-type-name'] | default('') }}" 
+ - debug: msg="{{ az_dla_catalog_table_type_show }}"          
+ - name: "az dla catalog table-type show: Retrieves the specified table type from the Data Lake Analytics catalog." 
+   command: |                                      
+     az dla catalog table-type show                            
+                 --account {{ az_dla_catalog_table_type_show.input['account'] }} 
+                 --database-name {{ az_dla_catalog_table_type_show.input['database-name'] }} 
+                 --schema-name {{ az_dla_catalog_table_type_show.input['schema-name'] }} 
+                 --table-type-name {{ az_dla_catalog_table_type_show.input['table-type-name'] }} 
+   register: output  
+ - set_fact: 
+    az_dla_catalog_table_type_show: "{{ az_dla_catalog_table_type_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_catalog_table_type_show }}" 

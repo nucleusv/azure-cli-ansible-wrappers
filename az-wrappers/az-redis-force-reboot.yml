@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_redis_force_reboot
+   set_fact: 
+     az_redis_force_reboot:
+       input: 
+         ###  Required parameter. Name of the redis cache.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Which Redis node(s) to reboot. Depending on this value data loss is possible.  ### 
+        'reboot-type': "{{ item['reboot-type'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. If clustering is enabled, the ID of the shard to be rebooted.  ### 
+        'shard-id': "{{ item['shard-id'] | default('') }}" 
+ - debug: msg="{{ az_redis_force_reboot }}"          
+ - name: "az redis force-reboot: Reboot specified Redis node(s)." 
+   command: |                                      
+     az redis force-reboot                            
+                 --name {{ az_redis_force_reboot.input['name'] }} 
+                 --reboot-type {{ az_redis_force_reboot.input['reboot-type'] }} 
+                 --resource-group {{ az_redis_force_reboot.input['resource-group'] }} 
+                 {%if az_redis_force_reboot.input['shard-id'] %} --shard-id az_redis_force_reboot.input['shard-id'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_redis_force_reboot: "{{ az_redis_force_reboot|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_redis_force_reboot }}" 

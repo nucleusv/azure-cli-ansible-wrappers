@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_batch_account_delete
+   set_fact: 
+     az_batch_account_delete:
+       input: 
+         ###  Required parameter. Name of the Batch account.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the resource group.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+         ###  Optional parameter. Do not prompt for confirmation.  ### 
+        'yes': "{{ item['yes'] | default('') }}" 
+ - debug: msg="{{ az_batch_account_delete }}"          
+ - name: "az batch account delete: Deletes the specified Batch account." 
+   command: |                                      
+     az batch account delete                            
+                 --name {{ az_batch_account_delete.input['name'] }} 
+                 --resource-group {{ az_batch_account_delete.input['resource-group'] }} 
+                 {%if az_batch_account_delete.input['no-wait'] %} --no-wait az_batch_account_delete.input['no-wait'] {%endif %} 
+                 {%if az_batch_account_delete.input['yes'] %} --yes {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_account_delete: "{{ az_batch_account_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_account_delete }}" 

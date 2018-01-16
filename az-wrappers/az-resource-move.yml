@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_resource_move
+   set_fact: 
+     az_resource_move:
+       input: 
+         ###  Required parameter. The destination resource group name.  ### 
+        'destination-group': "{{ item['destination-group'] | default('') }}" 
+         ###  Required parameter. The space separated resource ids to be moved.  ### 
+        'ids': "{{ item['ids'] | default('') }}" 
+         ###  Optional parameter. The destination subscription identifier.  ### 
+        'destination-subscription-id': "{{ item['destination-subscription-id'] | default('') }}" 
+ - debug: msg="{{ az_resource_move }}"          
+ - name: "az resource move: Moves resources from one resource group to another(can be under different subscription)." 
+   command: |                                      
+     az resource move                            
+                 --destination-group {{ az_resource_move.input['destination-group'] }} 
+                 --ids {{ az_resource_move.input['ids'] }} 
+                 {%if az_resource_move.input['destination-subscription-id'] %} --destination-subscription-id az_resource_move.input['destination-subscription-id'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_resource_move: "{{ az_resource_move|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_resource_move }}" 

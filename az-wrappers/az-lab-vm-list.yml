@@ -1,0 +1,44 @@
+
+
+ - name: Set input params for az_lab_vm_list
+   set_fact: 
+     az_lab_vm_list:
+       input: 
+         ###  Required parameter. Name of the lab.  ### 
+        'lab-name': "{{ item['lab-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. List all virtual machines in the lab. Cannot be used with `--filters`.  ### 
+        'all': "{{ item['all'] | default('') }}" 
+         ###  Optional parameter. List only claimable virtual machines in the lab. Cannot be used with `--filters`.  ### 
+        'claimable': "{{ item['claimable'] | default('') }}" 
+         ###  Optional parameter. The expand query.  ### 
+        'expand': "{{ item['expand'] | default('') }}" 
+         ###  Optional parameter. Object ID of the owner to list VMs for.  ### 
+        'object-id': "{{ item['object-id'] | default('') }}" 
+         ###  Optional parameter. The ordering expression for the results using OData notation.  ### 
+        'order-by': "{{ item['order-by'] | default('') }}" 
+         ###  Optional parameter. The maximum number of resources to return.  ### 
+        'top': "{{ item['top'] | default('') }}" 
+         ###  Optional parameter. Name or ID of the environment to list virtual machines in. Cannot be used with `--filters`.  ### 
+        'environment': "{{ item['environment'] | default('') }}" 
+         ###  Optional parameter. The filter to apply.  ### 
+        'filters': "{{ item['filters'] | default('') }}" 
+ - debug: msg="{{ az_lab_vm_list }}"          
+ - name: "az lab vm list: List the VMs in an Azure DevTest Lab." 
+   command: |                                      
+     az lab vm list                            
+                 --lab-name {{ az_lab_vm_list.input['lab-name'] }} 
+                 --resource-group {{ az_lab_vm_list.input['resource-group'] }} 
+                 {%if az_lab_vm_list.input['all'] %} --all az_lab_vm_list.input['all'] {%endif %} 
+                 {%if az_lab_vm_list.input['claimable'] %} --claimable az_lab_vm_list.input['claimable'] {%endif %} 
+                 {%if az_lab_vm_list.input['expand'] %} --expand az_lab_vm_list.input['expand'] {%endif %} 
+                 {%if az_lab_vm_list.input['object-id'] %} --object-id az_lab_vm_list.input['object-id'] {%endif %} 
+                 {%if az_lab_vm_list.input['order-by'] %} --order-by az_lab_vm_list.input['order-by'] {%endif %} 
+                 {%if az_lab_vm_list.input['top'] %} --top az_lab_vm_list.input['top'] {%endif %} 
+                 {%if az_lab_vm_list.input['environment'] %} --environment az_lab_vm_list.input['environment'] {%endif %} 
+                 {%if az_lab_vm_list.input['filters'] %} --filters az_lab_vm_list.input['filters'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_lab_vm_list: "{{ az_lab_vm_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_lab_vm_list }}" 

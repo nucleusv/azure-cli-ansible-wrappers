@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_sf_cluster_setting_set
+   set_fact: 
+     az_sf_cluster_setting_set:
+       input: 
+         ###  Required parameter. Specify the name of the cluster, if not given it will be same as resource group name.  ### 
+        'cluster-name': "{{ item['cluster-name'] | default('') }}" 
+         ###  Required parameter. The resource group name.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Parameter name.  ### 
+        'parameter': "{{ item['parameter'] | default('') }}" 
+         ###  Optional parameter. Section name.  ### 
+        'section': "{{ item['section'] | default('') }}" 
+         ###  Optional parameter. JSON encoded parameters configuration. Use @{file} to load from a file. For example: [{"section": "NamingService","parameter": "MaxOperationTimeout","value": 1000},{"section": "MaxFileOperationTimeout","parameter": "Max2","value": 1000].  ### 
+        'settings-section-description': "{{ item['settings-section-description'] | default('') }}" 
+         ###  Optional parameter. Specify the value.  ### 
+        'value': "{{ item['value'] | default('') }}" 
+ - debug: msg="{{ az_sf_cluster_setting_set }}"          
+ - name: "az sf cluster setting set: Update the settings of a cluster." 
+   command: |                                      
+     az sf cluster setting set                            
+                 --cluster-name {{ az_sf_cluster_setting_set.input['cluster-name'] }} 
+                 --resource-group {{ az_sf_cluster_setting_set.input['resource-group'] }} 
+                 {%if az_sf_cluster_setting_set.input['parameter'] %} --parameter az_sf_cluster_setting_set.input['parameter'] {%endif %} 
+                 {%if az_sf_cluster_setting_set.input['section'] %} --section az_sf_cluster_setting_set.input['section'] {%endif %} 
+                 {%if az_sf_cluster_setting_set.input['settings-section-description'] %} --settings-section-description az_sf_cluster_setting_set.input['settings-section-description'] {%endif %} 
+                 {%if az_sf_cluster_setting_set.input['value'] %} --value az_sf_cluster_setting_set.input['value'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_sf_cluster_setting_set: "{{ az_sf_cluster_setting_set|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sf_cluster_setting_set }}" 

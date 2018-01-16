@@ -1,0 +1,47 @@
+
+
+ - name: Set input params for az_storage_entity_query
+   set_fact: 
+     az_storage_entity_query:
+       input: 
+         ###  Required parameter. The name of the table to query.  ### 
+        'table-name': "{{ item['table-name'] | default('') }}" 
+         ###  Optional parameter. Specifies how much metadata to include in the response payload.  ### 
+        'accept': "{{ item['accept'] | default('') }}" 
+         ###  Optional parameter. Returns only entities that satisfy the specified filter. Note that no more than 15 discrete comparisons are permitted within a $filter string. See <a href="http://msdn.microsoft.com/en-us/library/windowsazure/dd894031.aspx">http://msdn.microsoft.com/en-us/library/windowsazure/dd894031.aspx</a> for more information on constructing filters.  ### 
+        'filter': "{{ item['filter'] | default('') }}" 
+         ###  Optional parameter. An opaque continuation object. This value can be retrieved from the next_marker field of a previous generator object if max_results was specified and that generator has finished enumerating results. If specified, this generator will begin returning results from the point where the previous generator stopped.  ### 
+        'marker': "{{ item['marker'] | default('') }}" 
+         ###  Optional parameter. The maximum number of entities to return.  ### 
+        'num-results': "{{ item['num-results'] | default('') }}" 
+         ###  Optional parameter. Space separated list of properties to return for each entity.  ### 
+        'select': "{{ item['select'] | default('') }}" 
+         ###  Optional parameter. Request timeout in seconds. Applies to each call to the service.  ### 
+        'timeout': "{{ item['timeout'] | default('') }}" 
+         ###  Optional parameter. Storage account key. Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Storage account name. Related environment variable: AZURE_STORAGE_ACCOUNT. Must be used in conjunction with either storage account key or a SAS token. If neither are present, the command will try to query the storage account key using the authenticated Azure account. If a large number of storage commands are executed the API quota may be hit.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+         ###  Optional parameter. Storage account connection string. Environment variable: AZURE_STORAGE_CONNECTION_STRING.  ### 
+        'connection-string': "{{ item['connection-string'] | default('') }}" 
+         ###  Optional parameter. A Shared Access Signature (SAS). Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_SAS_TOKEN.  ### 
+        'sas-token': "{{ item['sas-token'] | default('') }}" 
+ - debug: msg="{{ az_storage_entity_query }}"          
+ - name: "az storage entity query: List entities which satisfy a query." 
+   command: |                                      
+     az storage entity query                            
+                 --table-name {{ az_storage_entity_query.input['table-name'] }} 
+                 {%if az_storage_entity_query.input['accept'] %} --accept az_storage_entity_query.input['accept'] {%endif %} 
+                 {%if az_storage_entity_query.input['filter'] %} --filter az_storage_entity_query.input['filter'] {%endif %} 
+                 {%if az_storage_entity_query.input['marker'] %} --marker az_storage_entity_query.input['marker'] {%endif %} 
+                 {%if az_storage_entity_query.input['num-results'] %} --num-results az_storage_entity_query.input['num-results'] {%endif %} 
+                 {%if az_storage_entity_query.input['select'] %} --select az_storage_entity_query.input['select'] {%endif %} 
+                 {%if az_storage_entity_query.input['timeout'] %} --timeout az_storage_entity_query.input['timeout'] {%endif %} 
+                 {%if az_storage_entity_query.input['account-key'] %} --account-key az_storage_entity_query.input['account-key'] {%endif %} 
+                 {%if az_storage_entity_query.input['account-name'] %} --account-name az_storage_entity_query.input['account-name'] {%endif %} 
+                 {%if az_storage_entity_query.input['connection-string'] %} --connection-string az_storage_entity_query.input['connection-string'] {%endif %} 
+                 {%if az_storage_entity_query.input['sas-token'] %} --sas-token az_storage_entity_query.input['sas-token'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_storage_entity_query: "{{ az_storage_entity_query|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_storage_entity_query }}" 

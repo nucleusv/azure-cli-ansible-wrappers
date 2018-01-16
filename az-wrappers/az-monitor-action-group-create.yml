@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_monitor_action_group_create
+   set_fact: 
+     az_monitor_action_group_create:
+       input: 
+         ###  Required parameter. The name of the action group.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The short name of the action group.  ### 
+        'short-name': "{{ item['short-name'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. Add receivers to the action group during the creation.  ### 
+        'action': "{{ item['action'] | default('') }}" 
+ - debug: msg="{{ az_monitor_action_group_create }}"          
+ - name: "az monitor action-group create: Create a new action group." 
+   command: |                                      
+     az monitor action-group create                            
+                 --name {{ az_monitor_action_group_create.input['name'] }} 
+                 --resource-group {{ az_monitor_action_group_create.input['resource-group'] }} 
+                 {%if az_monitor_action_group_create.input['short-name'] %} --short-name az_monitor_action_group_create.input['short-name'] {%endif %} 
+                 {%if az_monitor_action_group_create.input['rtags'] %} --tags az_monitor_action_group_create.input['rtags'] {%endif %} 
+                 {%if az_monitor_action_group_create.input['action'] %} --action az_monitor_action_group_create.input['action'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_monitor_action_group_create: "{{ az_monitor_action_group_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_monitor_action_group_create }}" 

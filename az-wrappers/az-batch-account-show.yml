@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_batch_account_show
+   set_fact: 
+     az_batch_account_show:
+       input: 
+         ###  Required parameter. Name of the Batch account.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the resource group.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_batch_account_show }}"          
+ - name: "az batch account show: Gets information about the specified Batch account." 
+   command: |                                      
+     az batch account show                            
+                 --name {{ az_batch_account_show.input['name'] }} 
+                 --resource-group {{ az_batch_account_show.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_batch_account_show: "{{ az_batch_account_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_account_show }}" 

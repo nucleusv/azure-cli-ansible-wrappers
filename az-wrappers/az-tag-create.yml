@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_tag_create
+   set_fact: 
+     az_tag_create:
+       input: 
+         ###  Required parameter. The name of the tag to create.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+ - debug: msg="{{ az_tag_create }}"          
+ - name: "az tag create: Creates a tag in the subscription." 
+   command: |                                      
+     az tag create                            
+                 --name {{ az_tag_create.input['name'] }} 
+   register: output  
+ - set_fact: 
+    az_tag_create: "{{ az_tag_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_tag_create }}" 

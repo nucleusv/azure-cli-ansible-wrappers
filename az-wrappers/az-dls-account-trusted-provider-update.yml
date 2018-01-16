@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_dls_account_trusted_provider_update
+   set_fact: 
+     az_dls_account_trusted_provider_update:
+       input: 
+         ###  Required parameter. Name of the Data Lake Store account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The name of the trusted identity provider. This is used for differentiation of providers in the account.  ### 
+        'trusted-id-provider-name': "{{ item['trusted-id-provider-name'] | default('') }}" 
+         ###  Optional parameter. The URL of this trusted identity provider.  ### 
+        'id-provider': "{{ item['id-provider'] | default('') }}" 
+         ###  Optional parameter. If not specified, will attempt to discover the resource group for the specified Data Lake Store account.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_dls_account_trusted_provider_update }}"          
+ - name: "az dls account trusted-provider update: Updates the specified trusted identity provider." 
+   command: |                                      
+     az dls account trusted-provider update                            
+                 --account {{ az_dls_account_trusted_provider_update.input['account'] }} 
+                 --trusted-id-provider-name {{ az_dls_account_trusted_provider_update.input['trusted-id-provider-name'] }} 
+                 {%if az_dls_account_trusted_provider_update.input['id-provider'] %} --id-provider az_dls_account_trusted_provider_update.input['id-provider'] {%endif %} 
+                 {%if az_dls_account_trusted_provider_update.input['resource-group'] %} --resource-group az_dls_account_trusted_provider_update.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dls_account_trusted_provider_update: "{{ az_dls_account_trusted_provider_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dls_account_trusted_provider_update }}" 

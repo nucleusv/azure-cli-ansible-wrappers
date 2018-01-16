@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_consumption_reservations_summaries_list
+   set_fact: 
+     az_consumption_reservations_summaries_list:
+       input: 
+         ###  Required parameter. Reservation summaries grain. Possible values are daily or monthly.  ### 
+        'grain': "{{ item['grain'] | default('') }}" 
+         ###  Required parameter. Reservation order id.  ### 
+        'reservation-order-id': "{{ item['reservation-order-id'] | default('') }}" 
+         ###  Optional parameter. End date (in UTC Y-m-d) of the reservation summaries. Only needed for daily grain and both start date and end date need to be supplied or neither.  ### 
+        'end-date': "{{ item['end-date'] | default('') }}" 
+         ###  Optional parameter. Reservation id.  ### 
+        'reservation-id': "{{ item['reservation-id'] | default('') }}" 
+         ###  Optional parameter. Start date (in UTC Y-m-d) of the reservation summaries. Only needed for daily grain and both start date and end date need to be supplied or neither.  ### 
+        'start-date': "{{ item['start-date'] | default('') }}" 
+ - debug: msg="{{ az_consumption_reservations_summaries_list }}"          
+ - name: "az consumption reservations summaries list: List all the reservation summaries." 
+   command: |                                      
+     az consumption reservations summaries list                            
+                 --grain {{ az_consumption_reservations_summaries_list.input['grain'] }} 
+                 --reservation-order-id {{ az_consumption_reservations_summaries_list.input['reservation-order-id'] }} 
+                 {%if az_consumption_reservations_summaries_list.input['end-date'] %} --end-date az_consumption_reservations_summaries_list.input['end-date'] {%endif %} 
+                 {%if az_consumption_reservations_summaries_list.input['reservation-id'] %} --reservation-id az_consumption_reservations_summaries_list.input['reservation-id'] {%endif %} 
+                 {%if az_consumption_reservations_summaries_list.input['start-date'] %} --start-date az_consumption_reservations_summaries_list.input['start-date'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_consumption_reservations_summaries_list: "{{ az_consumption_reservations_summaries_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_consumption_reservations_summaries_list }}" 

@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_monitor_activity_log_alert_scope_add
+   set_fact: 
+     az_monitor_activity_log_alert_scope_add:
+       input: 
+         ###  Required parameter. Name of the activity log alerts.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The scopes to add.  ### 
+        'scope': "{{ item['scope'] | default('') }}" 
+         ###  Optional parameter. Remove all the existing scopes before add new scopes.  ### 
+        'reset': "{{ item['reset'] | default('') }}" 
+ - debug: msg="{{ az_monitor_activity_log_alert_scope_add }}"          
+ - name: "az monitor activity-log alert scope add: Add scopes to this activity log alert." 
+   command: |                                      
+     az monitor activity-log alert scope add                            
+                 --name {{ az_monitor_activity_log_alert_scope_add.input['name'] }} 
+                 --resource-group {{ az_monitor_activity_log_alert_scope_add.input['resource-group'] }} 
+                 --scope {{ az_monitor_activity_log_alert_scope_add.input['scope'] }} 
+                 {%if az_monitor_activity_log_alert_scope_add.input['reset'] %} --reset az_monitor_activity_log_alert_scope_add.input['reset'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_monitor_activity_log_alert_scope_add: "{{ az_monitor_activity_log_alert_scope_add|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_monitor_activity_log_alert_scope_add }}" 

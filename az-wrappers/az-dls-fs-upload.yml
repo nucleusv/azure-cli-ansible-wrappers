@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_dls_fs_upload
+   set_fact: 
+     az_dls_fs_upload:
+       input: 
+         ###  Required parameter. Name of the Data Lake Store account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The full path in the Data Lake Store filesystem to upload the file or folder to.  ### 
+        'destination-path': "{{ item['destination-path'] | default('') }}" 
+         ###  Required parameter. The path to the file or folder to upload.  ### 
+        'source-path': "{{ item['source-path'] | default('') }}" 
+         ###  Optional parameter. Size of a block, in bytes.  ### 
+        'block-size': "{{ item['block-size'] | default('') }}" 
+         ###  Optional parameter. Size of the transfer buffer, in bytes.  ### 
+        'buffer-size': "{{ item['buffer-size'] | default('') }}" 
+         ###  Optional parameter. Size of a chunk, in bytes.  ### 
+        'chunk-size': "{{ item['chunk-size'] | default('') }}" 
+         ###  Optional parameter. Indicates that, if the destination file or folder exists, it should be overwritten.  ### 
+        'overwrite': "{{ item['overwrite'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'progress-callback': "{{ item['progress-callback'] | default('') }}" 
+         ###  Optional parameter. Parallelism of the upload. Default: The number of cores in the local machine.  ### 
+        'thread-count': "{{ item['thread-count'] | default('') }}" 
+ - debug: msg="{{ az_dls_fs_upload }}"          
+ - name: "az dls fs upload: Upload a file or folder to a Data Lake Store account." 
+   command: |                                      
+     az dls fs upload                            
+                 --account {{ az_dls_fs_upload.input['account'] }} 
+                 --destination-path {{ az_dls_fs_upload.input['destination-path'] }} 
+                 --source-path {{ az_dls_fs_upload.input['source-path'] }} 
+                 {%if az_dls_fs_upload.input['block-size'] %} --block-size az_dls_fs_upload.input['block-size'] {%endif %} 
+                 {%if az_dls_fs_upload.input['buffer-size'] %} --buffer-size az_dls_fs_upload.input['buffer-size'] {%endif %} 
+                 {%if az_dls_fs_upload.input['chunk-size'] %} --chunk-size az_dls_fs_upload.input['chunk-size'] {%endif %} 
+                 {%if az_dls_fs_upload.input['overwrite'] %} --overwrite az_dls_fs_upload.input['overwrite'] {%endif %} 
+                 {%if az_dls_fs_upload.input['progress-callback'] %} --progress-callback az_dls_fs_upload.input['progress-callback'] {%endif %} 
+                 {%if az_dls_fs_upload.input['thread-count'] %} --thread-count az_dls_fs_upload.input['thread-count'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dls_fs_upload: "{{ az_dls_fs_upload|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dls_fs_upload }}" 

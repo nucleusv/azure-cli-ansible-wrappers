@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_dls_fs_access_set_permission
+   set_fact: 
+     az_dls_fs_access_set_permission:
+       input: 
+         ###  Required parameter. Name of the Data Lake Store account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The path in the specified Data Lake Store account where the action should take place. In the format '/folder/file.txt', where the first '/' after the DNS indicates the root of the file system.  ### 
+        'path': "{{ item['path'] | default('') }}" 
+         ###  Required parameter. The octal representation of the permissions for user, group and mask.  ### 
+        'permission': "{{ item['permission'] | default('') }}" 
+ - debug: msg="{{ az_dls_fs_access_set_permission }}"          
+ - name: "az dls fs access set-permission: Set the permissions for a file or folder in a Data Lake Store account." 
+   command: |                                      
+     az dls fs access set-permission                            
+                 --account {{ az_dls_fs_access_set_permission.input['account'] }} 
+                 --path {{ az_dls_fs_access_set_permission.input['path'] }} 
+                 --permission {{ az_dls_fs_access_set_permission.input['permission'] }} 
+   register: output  
+ - set_fact: 
+    az_dls_fs_access_set_permission: "{{ az_dls_fs_access_set_permission|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dls_fs_access_set_permission }}" 

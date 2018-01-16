@@ -1,0 +1,47 @@
+
+
+ - name: Set input params for az_network_application_gateway_http_listener_update
+   set_fact: 
+     az_network_application_gateway_http_listener_update:
+       input: 
+         ###  Required parameter. The name of the application gateway.  ### 
+        'gateway-name': "{{ item['gateway-name'] | default('') }}" 
+         ###  Required parameter. The name of the HTTP listener.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The name or ID of the frontend IP configuration.  ### 
+        'frontend-ip': "{{ item['frontend-ip'] | default('') }}" 
+         ###  Optional parameter. The name or ID of the frontend port.  ### 
+        'frontend-port': "{{ item['frontend-port'] | default('') }}" 
+         ###  Optional parameter. Host name to use for multisite gateways.  ### 
+        'host-name': "{{ item['host-name'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+         ###  Optional parameter. The name or ID of the SSL certificate to use.  ### 
+        'ssl-cert': "{{ item['ssl-cert'] | default('') }}" 
+         ###  Optional parameter. Add an object to a list of objects by specifying a path and key value pairs.  Example: --add property.listProperty <key=value, string or JSON string>.  ### 
+        'add': "{{ item['add'] | default('') }}" 
+         ###  Optional parameter. Remove a property or an element from a list.  Example: --remove property.list <indexToRemove> OR --remove propertyToRemove.  ### 
+        'remove': "{{ item['remove'] | default('') }}" 
+         ###  Optional parameter. Update an object by specifying a property path and value to set.  Example: --set property1.property2=<value>.  ### 
+        'set': "{{ item['set'] | default('') }}" 
+ - debug: msg="{{ az_network_application_gateway_http_listener_update }}"          
+ - name: "az network application-gateway http-listener update: Update an HTTP listener." 
+   command: |                                      
+     az network application-gateway http-listener update                            
+                 --gateway-name {{ az_network_application_gateway_http_listener_update.input['gateway-name'] }} 
+                 --name {{ az_network_application_gateway_http_listener_update.input['name'] }} 
+                 --resource-group {{ az_network_application_gateway_http_listener_update.input['resource-group'] }} 
+                 {%if az_network_application_gateway_http_listener_update.input['frontend-ip'] %} --frontend-ip az_network_application_gateway_http_listener_update.input['frontend-ip'] {%endif %} 
+                 {%if az_network_application_gateway_http_listener_update.input['frontend-port'] %} --frontend-port az_network_application_gateway_http_listener_update.input['frontend-port'] {%endif %} 
+                 {%if az_network_application_gateway_http_listener_update.input['host-name'] %} --host-name az_network_application_gateway_http_listener_update.input['host-name'] {%endif %} 
+                 {%if az_network_application_gateway_http_listener_update.input['no-wait'] %} --no-wait az_network_application_gateway_http_listener_update.input['no-wait'] {%endif %} 
+                 {%if az_network_application_gateway_http_listener_update.input['ssl-cert'] %} --ssl-cert az_network_application_gateway_http_listener_update.input['ssl-cert'] {%endif %} 
+                 {%if az_network_application_gateway_http_listener_update.input['add'] %} --add az_network_application_gateway_http_listener_update.input['add'] {%endif %} 
+                 {%if az_network_application_gateway_http_listener_update.input['remove'] %} --remove az_network_application_gateway_http_listener_update.input['remove'] {%endif %} 
+                 {%if az_network_application_gateway_http_listener_update.input['set'] %} --set az_network_application_gateway_http_listener_update.input['set'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_application_gateway_http_listener_update: "{{ az_network_application_gateway_http_listener_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_application_gateway_http_listener_update }}" 

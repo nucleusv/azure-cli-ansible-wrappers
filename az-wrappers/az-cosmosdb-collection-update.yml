@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_cosmosdb_collection_update
+   set_fact: 
+     az_cosmosdb_collection_update:
+       input: 
+         ###  Required parameter. Collection Name.  ### 
+        'collection-name': "{{ item['collection-name'] | default('') }}" 
+         ###  Required parameter. Database Name.  ### 
+        'db-name': "{{ item['db-name'] | default('') }}" 
+         ###  Optional parameter. Default TTL.  ### 
+        'default-ttl': "{{ item['default-ttl'] | default('') }}" 
+         ###  Optional parameter. Indexing Policy, you can enter it as a string or as a file, e.g., --indexing-policy @policy-file.json).  ### 
+        'indexing-policy': "{{ item['indexing-policy'] | default('') }}" 
+         ###  Optional parameter. Offer Throughput.  ### 
+        'throughput': "{{ item['throughput'] | default('') }}" 
+         ###  Optional parameter. Cosmos DB account key. Must be used in conjunction with cosmosdb account name or url-connection.  ### 
+        'key': "{{ item['key'] | default('') }}" 
+         ###  Optional parameter. Cosmos DB account name. Must be used in conjunction with either name of the resource group or cosmosdb account key.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Name of the resource group. Must be used in conjunction with cosmosdb account name.  ### 
+        'resource-group-name': "{{ item['resource-group-name'] | default('') }}" 
+         ###  Optional parameter. Cosmos DB account url connection. Must be used in conjunction with cosmosdb account key.  ### 
+        'url-connection': "{{ item['url-connection'] | default('') }}" 
+ - debug: msg="{{ az_cosmosdb_collection_update }}"          
+ - name: "az cosmosdb collection update: Updates an Azure Cosmos DB collection." 
+   command: |                                      
+     az cosmosdb collection update                            
+                 --collection-name {{ az_cosmosdb_collection_update.input['collection-name'] }} 
+                 --db-name {{ az_cosmosdb_collection_update.input['db-name'] }} 
+                 {%if az_cosmosdb_collection_update.input['default-ttl'] %} --default-ttl az_cosmosdb_collection_update.input['default-ttl'] {%endif %} 
+                 {%if az_cosmosdb_collection_update.input['indexing-policy'] %} --indexing-policy az_cosmosdb_collection_update.input['indexing-policy'] {%endif %} 
+                 {%if az_cosmosdb_collection_update.input['throughput'] %} --throughput az_cosmosdb_collection_update.input['throughput'] {%endif %} 
+                 {%if az_cosmosdb_collection_update.input['key'] %} --key az_cosmosdb_collection_update.input['key'] {%endif %} 
+                 {%if az_cosmosdb_collection_update.input['name'] %} --name az_cosmosdb_collection_update.input['name'] {%endif %} 
+                 {%if az_cosmosdb_collection_update.input['resource-group-name'] %} --resource-group-name az_cosmosdb_collection_update.input['resource-group-name'] {%endif %} 
+                 {%if az_cosmosdb_collection_update.input['url-connection'] %} --url-connection az_cosmosdb_collection_update.input['url-connection'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_cosmosdb_collection_update: "{{ az_cosmosdb_collection_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cosmosdb_collection_update }}" 

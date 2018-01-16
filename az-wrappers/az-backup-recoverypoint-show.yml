@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_backup_recoverypoint_show
+   set_fact: 
+     az_backup_recoverypoint_show:
+       input: 
+         ###  Required parameter. Name of the container.  ### 
+        'container-name': "{{ item['container-name'] | default('') }}" 
+         ###  Required parameter. Name of the backed up item.  ### 
+        'item-name': "{{ item['item-name'] | default('') }}" 
+         ###  Required parameter. Name of the recovery point. You can use the backup recovery point list command to get the name of a backed up item.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the Recovery services vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+ - debug: msg="{{ az_backup_recoverypoint_show }}"          
+ - name: "az backup recoverypoint show: Shows details of a particular recovery point." 
+   command: |                                      
+     az backup recoverypoint show                            
+                 --container-name {{ az_backup_recoverypoint_show.input['container-name'] }} 
+                 --item-name {{ az_backup_recoverypoint_show.input['item-name'] }} 
+                 --name {{ az_backup_recoverypoint_show.input['name'] }} 
+                 --resource-group {{ az_backup_recoverypoint_show.input['resource-group'] }} 
+                 --vault-name {{ az_backup_recoverypoint_show.input['vault-name'] }} 
+   register: output  
+ - set_fact: 
+    az_backup_recoverypoint_show: "{{ az_backup_recoverypoint_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_backup_recoverypoint_show }}" 

@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_network_nic_show_effective_route_table
+   set_fact: 
+     az_network_nic_show_effective_route_table:
+       input: 
+         ###  Required parameter. The network interface (NIC).  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_network_nic_show_effective_route_table }}"          
+ - name: "az network nic show-effective-route-table: Show all route tables applied to a network interface." 
+   command: |                                      
+     az network nic show-effective-route-table                            
+                 --name {{ az_network_nic_show_effective_route_table.input['name'] }} 
+                 --resource-group {{ az_network_nic_show_effective_route_table.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_network_nic_show_effective_route_table: "{{ az_network_nic_show_effective_route_table|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_nic_show_effective_route_table }}" 

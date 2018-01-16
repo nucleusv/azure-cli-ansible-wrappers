@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_functionapp_deployment_user_set
+   set_fact: 
+     az_functionapp_deployment_user_set:
+       input: 
+         ###  Required parameter. User name.  ### 
+        'user-name': "{{ item['user-name'] | default('') }}" 
+         ###  Optional parameter. Password, will prompt if not specified.  ### 
+        'password': "{{ item['password'] | default('') }}" 
+ - debug: msg="{{ az_functionapp_deployment_user_set }}"          
+ - name: "az functionapp deployment user set: Update deployment credentials." 
+   command: |                                      
+     az functionapp deployment user set                            
+                 --user-name {{ az_functionapp_deployment_user_set.input['user-name'] }} 
+                 {%if az_functionapp_deployment_user_set.input['password'] %} --password az_functionapp_deployment_user_set.input['password'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_functionapp_deployment_user_set: "{{ az_functionapp_deployment_user_set|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_functionapp_deployment_user_set }}" 

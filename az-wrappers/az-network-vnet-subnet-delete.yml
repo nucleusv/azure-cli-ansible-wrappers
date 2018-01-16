@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_network_vnet_subnet_delete
+   set_fact: 
+     az_network_vnet_subnet_delete:
+       input: 
+         ###  Required parameter. The subnet name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The virtual network (VNet) name.  ### 
+        'vnet-name': "{{ item['vnet-name'] | default('') }}" 
+ - debug: msg="{{ az_network_vnet_subnet_delete }}"          
+ - name: "az network vnet subnet delete: Delete a subnet." 
+   command: |                                      
+     az network vnet subnet delete                            
+                 --name {{ az_network_vnet_subnet_delete.input['name'] }} 
+                 --resource-group {{ az_network_vnet_subnet_delete.input['resource-group'] }} 
+                 --vnet-name {{ az_network_vnet_subnet_delete.input['vnet-name'] }} 
+   register: output  
+ - set_fact: 
+    az_network_vnet_subnet_delete: "{{ az_network_vnet_subnet_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_vnet_subnet_delete }}" 

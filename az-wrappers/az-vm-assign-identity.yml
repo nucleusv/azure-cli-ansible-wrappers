@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_vm_assign_identity
+   set_fact: 
+     az_vm_assign_identity:
+       input: 
+         ###  Required parameter. The name of the Virtual Machine. You can configure the default using `az configure --defaults vm=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The identities to assign.  ### 
+        'identities': "{{ item['identities'] | default('') }}" 
+         ###  Optional parameter. The port to fetch AAD token. Default: 50342.  ### 
+        'port': "{{ item['port'] | default('') }}" 
+         ###  Optional parameter. Role name or id the system assigned identity will have.  ### 
+        'role': "{{ item['role'] | default('') }}" 
+         ###  Optional parameter. Scope that the system assigned identity can access.  ### 
+        'scope': "{{ item['scope'] | default('') }}" 
+ - debug: msg="{{ az_vm_assign_identity }}"          
+ - name: "az vm assign-identity: Enable managed service identity on a VM." 
+   command: |                                      
+     az vm assign-identity                            
+                 --name {{ az_vm_assign_identity.input['name'] }} 
+                 --resource-group {{ az_vm_assign_identity.input['resource-group'] }} 
+                 {%if az_vm_assign_identity.input['identities'] %} --identities az_vm_assign_identity.input['identities'] {%endif %} 
+                 {%if az_vm_assign_identity.input['port'] %} --port az_vm_assign_identity.input['port'] {%endif %} 
+                 {%if az_vm_assign_identity.input['role'] %} --role az_vm_assign_identity.input['role'] {%endif %} 
+                 {%if az_vm_assign_identity.input['scope'] %} --scope az_vm_assign_identity.input['scope'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_vm_assign_identity: "{{ az_vm_assign_identity|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_assign_identity }}" 

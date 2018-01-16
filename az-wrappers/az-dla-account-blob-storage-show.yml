@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_dla_account_blob_storage_show
+   set_fact: 
+     az_dla_account_blob_storage_show:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The name of the Azure Storage account for which to retrieve the details.  ### 
+        'storage-account-name': "{{ item['storage-account-name'] | default('') }}" 
+         ###  Optional parameter. If not specified, will attempt to discover the resource group for the specified Data Lake Analytics account.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_dla_account_blob_storage_show }}"          
+ - name: "az dla account blob-storage show: Gets the specified Azure Storage account linked to the given Data Lake Analytics account." 
+   command: |                                      
+     az dla account blob-storage show                            
+                 --account {{ az_dla_account_blob_storage_show.input['account'] }} 
+                 --storage-account-name {{ az_dla_account_blob_storage_show.input['storage-account-name'] }} 
+                 {%if az_dla_account_blob_storage_show.input['resource-group'] %} --resource-group az_dla_account_blob_storage_show.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dla_account_blob_storage_show: "{{ az_dla_account_blob_storage_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_account_blob_storage_show }}" 

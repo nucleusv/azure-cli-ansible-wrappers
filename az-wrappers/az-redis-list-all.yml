@@ -1,0 +1,14 @@
+
+
+ - name: Set input params for az_redis_list_all
+   set_fact: 
+     az_redis_list_all:
+       input: 
+ - debug: msg="{{ az_redis_list_all }}"          
+ - name: "az redis list-all: Gets all Redis caches in the specified subscription." 
+   command: |                                      
+     az redis list-all                            
+   register: output  
+ - set_fact: 
+    az_redis_list_all: "{{ az_redis_list_all|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_redis_list_all }}" 

@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_monitor_log_profiles_delete
+   set_fact: 
+     az_monitor_log_profiles_delete:
+       input: 
+         ###  Required parameter. The name of the log profile.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+ - debug: msg="{{ az_monitor_log_profiles_delete }}"          
+ - name: "az monitor log-profiles delete: Deletes the log profile." 
+   command: |                                      
+     az monitor log-profiles delete                            
+                 --name {{ az_monitor_log_profiles_delete.input['name'] }} 
+   register: output  
+ - set_fact: 
+    az_monitor_log_profiles_delete: "{{ az_monitor_log_profiles_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_monitor_log_profiles_delete }}" 

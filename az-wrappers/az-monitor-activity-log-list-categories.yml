@@ -1,0 +1,14 @@
+
+
+ - name: Set input params for az_monitor_activity_log_list_categories
+   set_fact: 
+     az_monitor_activity_log_list_categories:
+       input: 
+ - debug: msg="{{ az_monitor_activity_log_list_categories }}"          
+ - name: "az monitor activity-log list-categories: List the event categories of activity logs." 
+   command: |                                      
+     az monitor activity-log list-categories                            
+   register: output  
+ - set_fact: 
+    az_monitor_activity_log_list_categories: "{{ az_monitor_activity_log_list_categories|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_monitor_activity_log_list_categories }}" 

@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_keyvault_certificate_purge
+   set_fact: 
+     az_keyvault_certificate_purge:
+       input: 
+         ###  Required parameter. Name of the certificate.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_certificate_purge }}"          
+ - name: "az keyvault certificate purge: Permanently deletes the specified deleted certificate." 
+   command: |                                      
+     az keyvault certificate purge                            
+                 --name {{ az_keyvault_certificate_purge.input['name'] }} 
+                 --vault-name {{ az_keyvault_certificate_purge.input['vault-name'] }} 
+   register: output  
+ - set_fact: 
+    az_keyvault_certificate_purge: "{{ az_keyvault_certificate_purge|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_certificate_purge }}" 

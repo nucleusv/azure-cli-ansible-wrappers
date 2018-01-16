@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_dls_account_firewall_delete
+   set_fact: 
+     az_dls_account_firewall_delete:
+       input: 
+         ###  Required parameter. Name of the Data Lake Store account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The name of the firewall rule to delete.  ### 
+        'firewall-rule-name': "{{ item['firewall-rule-name'] | default('') }}" 
+         ###  Optional parameter. If not specified, will attempt to discover the resource group for the specified Data Lake Store account.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_dls_account_firewall_delete }}"          
+ - name: "az dls account firewall delete: Deletes a firewall rule in a Data Lake Store account." 
+   command: |                                      
+     az dls account firewall delete                            
+                 --account {{ az_dls_account_firewall_delete.input['account'] }} 
+                 --firewall-rule-name {{ az_dls_account_firewall_delete.input['firewall-rule-name'] }} 
+                 {%if az_dls_account_firewall_delete.input['resource-group'] %} --resource-group az_dls_account_firewall_delete.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dls_account_firewall_delete: "{{ az_dls_account_firewall_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dls_account_firewall_delete }}" 

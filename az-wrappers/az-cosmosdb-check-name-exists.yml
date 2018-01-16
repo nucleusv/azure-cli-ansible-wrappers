@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_cosmosdb_check_name_exists
+   set_fact: 
+     az_cosmosdb_check_name_exists:
+       input: 
+         ###  Required parameter. Name of the Cosmos DB database account.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+ - debug: msg="{{ az_cosmosdb_check_name_exists }}"          
+ - name: "az cosmosdb check-name-exists: Checks if an Azure Cosmos DB account name exists." 
+   command: |                                      
+     az cosmosdb check-name-exists                            
+                 --name {{ az_cosmosdb_check_name_exists.input['name'] }} 
+   register: output  
+ - set_fact: 
+    az_cosmosdb_check_name_exists: "{{ az_cosmosdb_check_name_exists|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cosmosdb_check_name_exists }}" 

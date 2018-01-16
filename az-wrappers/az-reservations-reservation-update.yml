@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_reservations_reservation_update
+   set_fact: 
+     az_reservations_reservation_update:
+       input: 
+         ###  Required parameter. Type is either Single or Shared.  ### 
+        'applied-scope-type': "{{ item['applied-scope-type'] | default('') }}" 
+         ###  Required parameter. Reservation id of reservation to update.  ### 
+        'reservation-id': "{{ item['reservation-id'] | default('') }}" 
+         ###  Required parameter. Order id of reservation to update.  ### 
+        'reservation-order-id': "{{ item['reservation-order-id'] | default('') }}" 
+         ###  Optional parameter. If applied scope type is Single, this field must be provided.  ### 
+        'applied-scopes': "{{ item['applied-scopes'] | default('') }}" 
+ - debug: msg="{{ az_reservations_reservation_update }}"          
+ - name: "az reservations reservation update: Updates the applied scopes of the reservation." 
+   command: |                                      
+     az reservations reservation update                            
+                 --applied-scope-type {{ az_reservations_reservation_update.input['applied-scope-type'] }} 
+                 --reservation-id {{ az_reservations_reservation_update.input['reservation-id'] }} 
+                 --reservation-order-id {{ az_reservations_reservation_update.input['reservation-order-id'] }} 
+                 {%if az_reservations_reservation_update.input['applied-scopes'] %} --applied-scopes az_reservations_reservation_update.input['applied-scopes'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_reservations_reservation_update: "{{ az_reservations_reservation_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_reservations_reservation_update }}" 

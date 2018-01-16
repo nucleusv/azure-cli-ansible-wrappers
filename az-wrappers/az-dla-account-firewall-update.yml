@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_dla_account_firewall_update
+   set_fact: 
+     az_dla_account_firewall_update:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The name of the firewall rule to update.  ### 
+        'firewall-rule-name': "{{ item['firewall-rule-name'] | default('') }}" 
+         ###  Optional parameter. The end IP address for the firewall rule. This can be either ipv4 or ipv6. Start and End should be in the same protocol.  ### 
+        'end-ip-address': "{{ item['end-ip-address'] | default('') }}" 
+         ###  Optional parameter. If not specified, will attempt to discover the resource group for the specified Data Lake Analytics account.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The start IP address for the firewall rule. This can be either ipv4 or ipv6. Start and End should be in the same protocol.  ### 
+        'start-ip-address': "{{ item['start-ip-address'] | default('') }}" 
+ - debug: msg="{{ az_dla_account_firewall_update }}"          
+ - name: "az dla account firewall update: Update a firewall rule in a Data Lake Analytics account." 
+   command: |                                      
+     az dla account firewall update                            
+                 --account {{ az_dla_account_firewall_update.input['account'] }} 
+                 --firewall-rule-name {{ az_dla_account_firewall_update.input['firewall-rule-name'] }} 
+                 {%if az_dla_account_firewall_update.input['end-ip-address'] %} --end-ip-address az_dla_account_firewall_update.input['end-ip-address'] {%endif %} 
+                 {%if az_dla_account_firewall_update.input['resource-group'] %} --resource-group az_dla_account_firewall_update.input['resource-group'] {%endif %} 
+                 {%if az_dla_account_firewall_update.input['start-ip-address'] %} --start-ip-address az_dla_account_firewall_update.input['start-ip-address'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dla_account_firewall_update: "{{ az_dla_account_firewall_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_account_firewall_update }}" 

@@ -1,0 +1,38 @@
+
+
+ - name: Set input params for az_network_lb_inbound_nat_pool_create
+   set_fact: 
+     az_network_lb_inbound_nat_pool_create:
+       input: 
+         ###  Required parameter. Port number.  ### 
+        'backend-port': "{{ item['backend-port'] | default('') }}" 
+         ###  Required parameter. Port number.  ### 
+        'frontend-port-range-end': "{{ item['frontend-port-range-end'] | default('') }}" 
+         ###  Required parameter. Port number.  ### 
+        'frontend-port-range-start': "{{ item['frontend-port-range-start'] | default('') }}" 
+         ###  Required parameter. The load balancer name.  ### 
+        'lb-name': "{{ item['lb-name'] | default('') }}" 
+         ###  Required parameter. The name of the inbound NAT pool.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter.   ### 
+        'protocol': "{{ item['protocol'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The name of the frontend IP configuration. If only one exists, omit to use as default.  ### 
+        'frontend-ip-name': "{{ item['frontend-ip-name'] | default('') }}" 
+ - debug: msg="{{ az_network_lb_inbound_nat_pool_create }}"          
+ - name: "az network lb inbound-nat-pool create: Create an inbound NAT address pool." 
+   command: |                                      
+     az network lb inbound-nat-pool create                            
+                 --backend-port {{ az_network_lb_inbound_nat_pool_create.input['backend-port'] }} 
+                 --frontend-port-range-end {{ az_network_lb_inbound_nat_pool_create.input['frontend-port-range-end'] }} 
+                 --frontend-port-range-start {{ az_network_lb_inbound_nat_pool_create.input['frontend-port-range-start'] }} 
+                 --lb-name {{ az_network_lb_inbound_nat_pool_create.input['lb-name'] }} 
+                 --name {{ az_network_lb_inbound_nat_pool_create.input['name'] }} 
+                 --protocol {{ az_network_lb_inbound_nat_pool_create.input['protocol'] }} 
+                 --resource-group {{ az_network_lb_inbound_nat_pool_create.input['resource-group'] }} 
+                 {%if az_network_lb_inbound_nat_pool_create.input['frontend-ip-name'] %} --frontend-ip-name az_network_lb_inbound_nat_pool_create.input['frontend-ip-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_lb_inbound_nat_pool_create: "{{ az_network_lb_inbound_nat_pool_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_lb_inbound_nat_pool_create }}" 

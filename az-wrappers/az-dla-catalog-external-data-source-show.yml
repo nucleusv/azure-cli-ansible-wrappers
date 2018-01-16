@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_dla_catalog_external_data_source_show
+   set_fact: 
+     az_dla_catalog_external_data_source_show:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The name of the database containing the external data source.  ### 
+        'database-name': "{{ item['database-name'] | default('') }}" 
+         ###  Required parameter. The name of the external data source.  ### 
+        'external-data-source-name': "{{ item['external-data-source-name'] | default('') }}" 
+ - debug: msg="{{ az_dla_catalog_external_data_source_show }}"          
+ - name: "az dla catalog external-data-source show: Retrieves the specified external data source from the Data Lake Analytics catalog." 
+   command: |                                      
+     az dla catalog external-data-source show                            
+                 --account {{ az_dla_catalog_external_data_source_show.input['account'] }} 
+                 --database-name {{ az_dla_catalog_external_data_source_show.input['database-name'] }} 
+                 --external-data-source-name {{ az_dla_catalog_external_data_source_show.input['external-data-source-name'] }} 
+   register: output  
+ - set_fact: 
+    az_dla_catalog_external_data_source_show: "{{ az_dla_catalog_external_data_source_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_catalog_external_data_source_show }}" 

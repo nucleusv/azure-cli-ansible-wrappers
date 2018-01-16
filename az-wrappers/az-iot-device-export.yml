@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_iot_device_export
+   set_fact: 
+     az_iot_device_export:
+       input: 
+         ###  Required parameter. Blob Shared Access Signature URI with write access to a blob container.This is used to output the status of the job and the results.  ### 
+        'blob-container-uri': "{{ item['blob-container-uri'] | default('') }}" 
+         ###  Required parameter. IoT Hub name.  ### 
+        'hub-name': "{{ item['hub-name'] | default('') }}" 
+         ###  Optional parameter. If set, keys are exported normally. Otherwise, keys are set to null in export output.  ### 
+        'include-keys': "{{ item['include-keys'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_iot_device_export }}"          
+ - name: "az iot device export: Export all the device identities in the IoT hub identity registry to an Azure Storage blob container." 
+   command: |                                      
+     az iot device export                            
+                 --blob-container-uri {{ az_iot_device_export.input['blob-container-uri'] }} 
+                 --hub-name {{ az_iot_device_export.input['hub-name'] }} 
+                 {%if az_iot_device_export.input['include-keys'] %} --include-keys az_iot_device_export.input['include-keys'] {%endif %} 
+                 {%if az_iot_device_export.input['resource-group'] %} --resource-group az_iot_device_export.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_device_export: "{{ az_iot_device_export|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_device_export }}" 

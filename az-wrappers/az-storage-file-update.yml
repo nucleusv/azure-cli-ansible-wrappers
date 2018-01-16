@@ -1,0 +1,53 @@
+
+
+ - name: Set input params for az_storage_file_update
+   set_fact: 
+     az_storage_file_update:
+       input: 
+         ###  Required parameter. The path to the file within the file share.  ### 
+        'path': "{{ item['path'] | default('') }}" 
+         ###  Required parameter. The file share name.  ### 
+        'share-name': "{{ item['share-name'] | default('') }}" 
+         ###  Optional parameter. The cache control string.  ### 
+        'content-cache-control': "{{ item['content-cache-control'] | default('') }}" 
+         ###  Optional parameter. Conveys additional information about how to process the response payload, and can also be used to attach additional metadata.  ### 
+        'content-disposition': "{{ item['content-disposition'] | default('') }}" 
+         ###  Optional parameter. The content encoding type.  ### 
+        'content-encoding': "{{ item['content-encoding'] | default('') }}" 
+         ###  Optional parameter. The content language.  ### 
+        'content-language': "{{ item['content-language'] | default('') }}" 
+         ###  Optional parameter. The content's MD5 hash.  ### 
+        'content-md5': "{{ item['content-md5'] | default('') }}" 
+         ###  Optional parameter. The content MIME type.  ### 
+        'content-type': "{{ item['content-type'] | default('') }}" 
+         ###  Optional parameter. Request timeout in seconds. Applies to each call to the service.  ### 
+        'timeout': "{{ item['timeout'] | default('') }}" 
+         ###  Optional parameter. Storage account key. Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Storage account name. Related environment variable: AZURE_STORAGE_ACCOUNT. Must be used in conjunction with either storage account key or a SAS token. If neither are present, the command will try to query the storage account key using the authenticated Azure account. If a large number of storage commands are executed the API quota may be hit.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+         ###  Optional parameter. Storage account connection string. Environment variable: AZURE_STORAGE_CONNECTION_STRING.  ### 
+        'connection-string': "{{ item['connection-string'] | default('') }}" 
+         ###  Optional parameter. A Shared Access Signature (SAS). Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_SAS_TOKEN.  ### 
+        'sas-token': "{{ item['sas-token'] | default('') }}" 
+ - debug: msg="{{ az_storage_file_update }}"          
+ - name: "az storage file update: Sets system properties on the file." 
+   command: |                                      
+     az storage file update                            
+                 --path {{ az_storage_file_update.input['path'] }} 
+                 --share-name {{ az_storage_file_update.input['share-name'] }} 
+                 {%if az_storage_file_update.input['content-cache-control'] %} --content-cache-control az_storage_file_update.input['content-cache-control'] {%endif %} 
+                 {%if az_storage_file_update.input['content-disposition'] %} --content-disposition az_storage_file_update.input['content-disposition'] {%endif %} 
+                 {%if az_storage_file_update.input['content-encoding'] %} --content-encoding az_storage_file_update.input['content-encoding'] {%endif %} 
+                 {%if az_storage_file_update.input['content-language'] %} --content-language az_storage_file_update.input['content-language'] {%endif %} 
+                 {%if az_storage_file_update.input['content-md5'] %} --content-md5 az_storage_file_update.input['content-md5'] {%endif %} 
+                 {%if az_storage_file_update.input['content-type'] %} --content-type az_storage_file_update.input['content-type'] {%endif %} 
+                 {%if az_storage_file_update.input['timeout'] %} --timeout az_storage_file_update.input['timeout'] {%endif %} 
+                 {%if az_storage_file_update.input['account-key'] %} --account-key az_storage_file_update.input['account-key'] {%endif %} 
+                 {%if az_storage_file_update.input['account-name'] %} --account-name az_storage_file_update.input['account-name'] {%endif %} 
+                 {%if az_storage_file_update.input['connection-string'] %} --connection-string az_storage_file_update.input['connection-string'] {%endif %} 
+                 {%if az_storage_file_update.input['sas-token'] %} --sas-token az_storage_file_update.input['sas-token'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_storage_file_update: "{{ az_storage_file_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_storage_file_update }}" 

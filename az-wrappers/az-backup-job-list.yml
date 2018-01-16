@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_backup_job_list
+   set_fact: 
+     az_backup_job_list:
+       input: 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the Recovery services vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+         ###  Optional parameter. The end date of the range in UTC (d-m-Y).  ### 
+        'end-date': "{{ item['end-date'] | default('') }}" 
+         ###  Optional parameter. User initiated operation.  ### 
+        'operation': "{{ item['operation'] | default('') }}" 
+         ###  Optional parameter. The start date of the range in UTC (d-m-Y).  ### 
+        'start-date': "{{ item['start-date'] | default('') }}" 
+         ###  Optional parameter. Status of the Job.  ### 
+        'status': "{{ item['status'] | default('') }}" 
+ - debug: msg="{{ az_backup_job_list }}"          
+ - name: "az backup job list: List all backup jobs of a Recovery Services vault." 
+   command: |                                      
+     az backup job list                            
+                 --resource-group {{ az_backup_job_list.input['resource-group'] }} 
+                 --vault-name {{ az_backup_job_list.input['vault-name'] }} 
+                 {%if az_backup_job_list.input['end-date'] %} --end-date az_backup_job_list.input['end-date'] {%endif %} 
+                 {%if az_backup_job_list.input['operation'] %} --operation az_backup_job_list.input['operation'] {%endif %} 
+                 {%if az_backup_job_list.input['start-date'] %} --start-date az_backup_job_list.input['start-date'] {%endif %} 
+                 {%if az_backup_job_list.input['status'] %} --status az_backup_job_list.input['status'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_backup_job_list: "{{ az_backup_job_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_backup_job_list }}" 

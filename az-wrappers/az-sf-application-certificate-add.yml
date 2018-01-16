@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_sf_application_certificate_add
+   set_fact: 
+     az_sf_application_certificate_add:
+       input: 
+         ###  Required parameter. Specify the name of the cluster, if not given it will be same as resource group name.  ### 
+        'cluster-name': "{{ item['cluster-name'] | default('') }}" 
+         ###  Required parameter. The resource group name.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The existing certificate file path for the primary cluster certificate.  ### 
+        'certificate-file': "{{ item['certificate-file'] | default('') }}" 
+         ###  Optional parameter. The folder of the new certificate file to be created.  ### 
+        'certificate-output-folder': "{{ item['certificate-output-folder'] | default('') }}" 
+         ###  Optional parameter. The password of the certificate file.  ### 
+        'certificate-password': "{{ item['certificate-password'] | default('') }}" 
+         ###  Optional parameter. The subject name of the certificate to be created.  ### 
+        'certificate-subject-name': "{{ item['certificate-subject-name'] | default('') }}" 
+         ###  Optional parameter. The existing Azure key vault secret URL.  ### 
+        'secret-identifier': "{{ item['secret-identifier'] | default('') }}" 
+         ###  Optional parameter. Azure key vault name, it not given it will be the cluster resource group name.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+         ###  Optional parameter. Key vault resource group name,if not given it will be cluster resource group name.  ### 
+        'vault-resource-group': "{{ item['vault-resource-group'] | default('') }}" 
+ - debug: msg="{{ az_sf_application_certificate_add }}"          
+ - name: "az sf application certificate add: Add a new certificate to the Virtual Machine Scale Sets that make up the cluster to be used by hosted applications." 
+   command: |                                      
+     az sf application certificate add                            
+                 --cluster-name {{ az_sf_application_certificate_add.input['cluster-name'] }} 
+                 --resource-group {{ az_sf_application_certificate_add.input['resource-group'] }} 
+                 {%if az_sf_application_certificate_add.input['certificate-file'] %} --certificate-file az_sf_application_certificate_add.input['certificate-file'] {%endif %} 
+                 {%if az_sf_application_certificate_add.input['certificate-output-folder'] %} --certificate-output-folder az_sf_application_certificate_add.input['certificate-output-folder'] {%endif %} 
+                 {%if az_sf_application_certificate_add.input['certificate-password'] %} --certificate-password az_sf_application_certificate_add.input['certificate-password'] {%endif %} 
+                 {%if az_sf_application_certificate_add.input['certificate-subject-name'] %} --certificate-subject-name az_sf_application_certificate_add.input['certificate-subject-name'] {%endif %} 
+                 {%if az_sf_application_certificate_add.input['secret-identifier'] %} --secret-identifier az_sf_application_certificate_add.input['secret-identifier'] {%endif %} 
+                 {%if az_sf_application_certificate_add.input['vault-name'] %} --vault-name az_sf_application_certificate_add.input['vault-name'] {%endif %} 
+                 {%if az_sf_application_certificate_add.input['vault-resource-group'] %} --vault-resource-group az_sf_application_certificate_add.input['vault-resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_sf_application_certificate_add: "{{ az_sf_application_certificate_add|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sf_application_certificate_add }}" 

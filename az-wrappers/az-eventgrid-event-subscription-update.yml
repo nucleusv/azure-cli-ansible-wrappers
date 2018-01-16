@@ -1,0 +1,53 @@
+
+
+ - name: Set input params for az_eventgrid_event_subscription_update
+   set_fact: 
+     az_eventgrid_event_subscription_update:
+       input: 
+         ###  Required parameter. Name of the event subscription.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Endpoint where EventGrid should deliver events matching this event subscription. For webhook endpoint type, this should be the corresponding webhook URL. For eventhub endpoint type, this should be the Azure ResourceID of the event hub.  ### 
+        'endpoint': "{{ item['endpoint'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'endpoint-type': "{{ item['endpoint-type'] | default('') }}" 
+         ###  Optional parameter. A space separated list of event types. To subscribe to all event types, the string "All" should be specified.  ### 
+        'included-event-types': "{{ item['included-event-types'] | default('') }}" 
+         ###  Optional parameter. A space separated list of labels to associate with this event subscription.  ### 
+        'labels': "{{ item['labels'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Fully qualified identifier of the Azure resource.  ### 
+        'resource-id': "{{ item['resource-id'] | default('') }}" 
+         ###  Optional parameter. An optional string to filter events for an event subscription based on a prefix. Wildcard characters are not supported.  ### 
+        'subject-begins-with': "{{ item['subject-begins-with'] | default('') }}" 
+         ###  Optional parameter. An optional string to filter events for an event subscription based on a suffix. Wildcard characters are not supported.  ### 
+        'subject-ends-with': "{{ item['subject-ends-with'] | default('') }}" 
+         ###  Optional parameter. Name of the Event Grid topic.  ### 
+        'topic-name': "{{ item['topic-name'] | default('') }}" 
+         ###  Optional parameter. Add an object to a list of objects by specifying a path and key value pairs.  Example: --add property.listProperty <key=value, string or JSON string>.  ### 
+        'add': "{{ item['add'] | default('') }}" 
+         ###  Optional parameter. Remove a property or an element from a list.  Example: --remove property.list <indexToRemove> OR --remove propertyToRemove.  ### 
+        'remove': "{{ item['remove'] | default('') }}" 
+         ###  Optional parameter. Update an object by specifying a property path and value to set.  Example: --set property1.property2=<value>.  ### 
+        'set': "{{ item['set'] | default('') }}" 
+ - debug: msg="{{ az_eventgrid_event_subscription_update }}"          
+ - name: "az eventgrid event-subscription update: Update an event subscription." 
+   command: |                                      
+     az eventgrid event-subscription update                            
+                 --name {{ az_eventgrid_event_subscription_update.input['name'] }} 
+                 {%if az_eventgrid_event_subscription_update.input['endpoint'] %} --endpoint az_eventgrid_event_subscription_update.input['endpoint'] {%endif %} 
+                 {%if az_eventgrid_event_subscription_update.input['endpoint-type'] %} --endpoint-type az_eventgrid_event_subscription_update.input['endpoint-type'] {%endif %} 
+                 {%if az_eventgrid_event_subscription_update.input['included-event-types'] %} --included-event-types az_eventgrid_event_subscription_update.input['included-event-types'] {%endif %} 
+                 {%if az_eventgrid_event_subscription_update.input['labels'] %} --labels az_eventgrid_event_subscription_update.input['labels'] {%endif %} 
+                 {%if az_eventgrid_event_subscription_update.input['resource-group'] %} --resource-group az_eventgrid_event_subscription_update.input['resource-group'] {%endif %} 
+                 {%if az_eventgrid_event_subscription_update.input['resource-id'] %} --resource-id az_eventgrid_event_subscription_update.input['resource-id'] {%endif %} 
+                 {%if az_eventgrid_event_subscription_update.input['subject-begins-with'] %} --subject-begins-with az_eventgrid_event_subscription_update.input['subject-begins-with'] {%endif %} 
+                 {%if az_eventgrid_event_subscription_update.input['subject-ends-with'] %} --subject-ends-with az_eventgrid_event_subscription_update.input['subject-ends-with'] {%endif %} 
+                 {%if az_eventgrid_event_subscription_update.input['topic-name'] %} --topic-name az_eventgrid_event_subscription_update.input['topic-name'] {%endif %} 
+                 {%if az_eventgrid_event_subscription_update.input['add'] %} --add az_eventgrid_event_subscription_update.input['add'] {%endif %} 
+                 {%if az_eventgrid_event_subscription_update.input['remove'] %} --remove az_eventgrid_event_subscription_update.input['remove'] {%endif %} 
+                 {%if az_eventgrid_event_subscription_update.input['set'] %} --set az_eventgrid_event_subscription_update.input['set'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_eventgrid_event_subscription_update: "{{ az_eventgrid_event_subscription_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_eventgrid_event_subscription_update }}" 

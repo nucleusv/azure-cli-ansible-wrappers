@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_network_public_ip_delete
+   set_fact: 
+     az_network_public_ip_delete:
+       input: 
+         ###  Required parameter. The name of the public IP address.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_network_public_ip_delete }}"          
+ - name: "az network public-ip delete: Delete a public IP address." 
+   command: |                                      
+     az network public-ip delete                            
+                 --name {{ az_network_public_ip_delete.input['name'] }} 
+                 --resource-group {{ az_network_public_ip_delete.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_network_public_ip_delete: "{{ az_network_public_ip_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_public_ip_delete }}" 

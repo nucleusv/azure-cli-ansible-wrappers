@@ -1,0 +1,77 @@
+
+
+ - name: Set input params for az_storage_blob_incremental_copy_start
+   set_fact: 
+     az_storage_blob_incremental_copy_start:
+       input: 
+         ###  Required parameter. Name of the destination blob. If the exists, it will be overwritten.  ### 
+        'destination-blob': "{{ item['destination-blob'] | default('') }}" 
+         ###  Required parameter. The container name.  ### 
+        'destination-container': "{{ item['destination-container'] | default('') }}" 
+         ###  Optional parameter. The lease ID specified for this header must match the lease ID of the destination blob. If the request does not include the lease ID or it is not valid, the operation fails with status code 412 (Precondition Failed).  ### 
+        'destination-lease-id': "{{ item['destination-lease-id'] | default('') }}" 
+         ###  Optional parameter. Metadata in space-separated key=value pairs. This overwrites any existing metadata.  ### 
+        'metadata': "{{ item['metadata'] | default('') }}" 
+         ###  Optional parameter. Request timeout in seconds. Applies to each call to the service.  ### 
+        'timeout': "{{ item['timeout'] | default('') }}" 
+         ###  Optional parameter. The storage account key of the source blob.  ### 
+        'source-account-key': "{{ item['source-account-key'] | default('') }}" 
+         ###  Optional parameter. The storage account name of the source blob.  ### 
+        'source-account-name': "{{ item['source-account-name'] | default('') }}" 
+         ###  Optional parameter. The blob name for the source storage account.  ### 
+        'source-blob': "{{ item['source-blob'] | default('') }}" 
+         ###  Optional parameter. The container name for the source storage account.  ### 
+        'source-container': "{{ item['source-container'] | default('') }}" 
+         ###  Optional parameter. Specify this to perform the Copy Blob operation only if the lease ID given matches the active lease ID of the source blob.  ### 
+        'source-lease-id': "{{ item['source-lease-id'] | default('') }}" 
+         ###  Optional parameter. The shared access signature for the source storage account.  ### 
+        'source-sas': "{{ item['source-sas'] | default('') }}" 
+         ###  Optional parameter. The blob snapshot for the source storage account.  ### 
+        'source-snapshot': "{{ item['source-snapshot'] | default('') }}" 
+         ###  Optional parameter. A URL of up to 2 KB in length that specifies an Azure page blob. The value should be URL-encoded as it would appear in a request URI. The copy source must be a snapshot and include a valid SAS token or be public. Example: <a href="https://myaccount.blob.core.windows.net/mycontainer/myblob">https://myaccount.blob.core.windows.net/mycontainer/myblob</a>?snapshot=&lt;DateTime&gt;&amp;sastoken.  ### 
+        'source-uri': "{{ item['source-uri'] | default('') }}" 
+         ###  Optional parameter. An ETag value, or the wildcard character (*). Specify an ETag value for this conditional header to copy the blob only if the specified ETag value matches the ETag value for an existing destination blob. If the ETag for the destination blob does not match the ETag specified for If-Match, the Blob service returns status code 412 (Precondition Failed).  ### 
+        'destination-if-match': "{{ item['destination-if-match'] | default('') }}" 
+         ###  Optional parameter. A DateTime value. Azure expects the date value passed in to be UTC. If timezone is included, any non-UTC datetimes will be converted to UTC. If a date is passed in without timezone info, it is assumed to be UTC. Specify this conditional header to copy the blob only if the destination blob has been modified since the specified date/time. If the destination blob has not been modified, the Blob service returns status code 412 (Precondition Failed).  ### 
+        'destination-if-modified-since': "{{ item['destination-if-modified-since'] | default('') }}" 
+         ###  Optional parameter. An ETag value, or the wildcard character (*). Specify an ETag value for this conditional header to copy the blob only if the specified ETag value does not match the ETag value for the destination blob. Specify the wildcard character (*) to perform the operation only if the destination blob does not exist. If the specified condition isn't met, the Blob service returns status code 412 (Precondition Failed).  ### 
+        'destination-if-none-match': "{{ item['destination-if-none-match'] | default('') }}" 
+         ###  Optional parameter. A DateTime value. Azure expects the date value passed in to be UTC. If timezone is included, any non-UTC datetimes will be converted to UTC. If a date is passed in without timezone info, it is assumed to be UTC. Specify this conditional header to copy the blob only if the destination blob has not been modified since the specified ate/time. If the destination blob has been modified, the Blob service returns status code 412 (Precondition Failed).  ### 
+        'destination-if-unmodified-since': "{{ item['destination-if-unmodified-since'] | default('') }}" 
+         ###  Optional parameter. Storage account key. Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Storage account name. Related environment variable: AZURE_STORAGE_ACCOUNT. Must be used in conjunction with either storage account key or a SAS token. If neither are present, the command will try to query the storage account key using the authenticated Azure account. If a large number of storage commands are executed the API quota may be hit.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+         ###  Optional parameter. Storage account connection string. Environment variable: AZURE_STORAGE_CONNECTION_STRING.  ### 
+        'connection-string': "{{ item['connection-string'] | default('') }}" 
+         ###  Optional parameter. A Shared Access Signature (SAS). Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_SAS_TOKEN.  ### 
+        'sas-token': "{{ item['sas-token'] | default('') }}" 
+ - debug: msg="{{ az_storage_blob_incremental_copy_start }}"          
+ - name: "az storage blob incremental-copy start: Copies an incremental copy of a blob asynchronously." 
+   command: |                                      
+     az storage blob incremental-copy start                            
+                 --destination-blob {{ az_storage_blob_incremental_copy_start.input['destination-blob'] }} 
+                 --destination-container {{ az_storage_blob_incremental_copy_start.input['destination-container'] }} 
+                 {%if az_storage_blob_incremental_copy_start.input['destination-lease-id'] %} --destination-lease-id az_storage_blob_incremental_copy_start.input['destination-lease-id'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_start.input['metadata'] %} --metadata az_storage_blob_incremental_copy_start.input['metadata'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_start.input['timeout'] %} --timeout az_storage_blob_incremental_copy_start.input['timeout'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_start.input['source-account-key'] %} --source-account-key az_storage_blob_incremental_copy_start.input['source-account-key'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_start.input['source-account-name'] %} --source-account-name az_storage_blob_incremental_copy_start.input['source-account-name'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_start.input['source-blob'] %} --source-blob az_storage_blob_incremental_copy_start.input['source-blob'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_start.input['source-container'] %} --source-container az_storage_blob_incremental_copy_start.input['source-container'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_start.input['source-lease-id'] %} --source-lease-id az_storage_blob_incremental_copy_start.input['source-lease-id'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_start.input['source-sas'] %} --source-sas az_storage_blob_incremental_copy_start.input['source-sas'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_start.input['source-snapshot'] %} --source-snapshot az_storage_blob_incremental_copy_start.input['source-snapshot'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_start.input['source-uri'] %} --source-uri az_storage_blob_incremental_copy_start.input['source-uri'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_start.input['destination-if-match'] %} --destination-if-match az_storage_blob_incremental_copy_start.input['destination-if-match'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_start.input['destination-if-modified-since'] %} --destination-if-modified-since az_storage_blob_incremental_copy_start.input['destination-if-modified-since'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_start.input['destination-if-none-match'] %} --destination-if-none-match az_storage_blob_incremental_copy_start.input['destination-if-none-match'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_start.input['destination-if-unmodified-since'] %} --destination-if-unmodified-since az_storage_blob_incremental_copy_start.input['destination-if-unmodified-since'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_start.input['account-key'] %} --account-key az_storage_blob_incremental_copy_start.input['account-key'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_start.input['account-name'] %} --account-name az_storage_blob_incremental_copy_start.input['account-name'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_start.input['connection-string'] %} --connection-string az_storage_blob_incremental_copy_start.input['connection-string'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_start.input['sas-token'] %} --sas-token az_storage_blob_incremental_copy_start.input['sas-token'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_storage_blob_incremental_copy_start: "{{ az_storage_blob_incremental_copy_start|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_storage_blob_incremental_copy_start }}" 

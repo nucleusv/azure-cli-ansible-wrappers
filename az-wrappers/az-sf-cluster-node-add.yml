@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_sf_cluster_node_add
+   set_fact: 
+     az_sf_cluster_node_add:
+       input: 
+         ###  Required parameter. Specify the name of the cluster, if not given it will be same as resource group name.  ### 
+        'cluster-name': "{{ item['cluster-name'] | default('') }}" 
+         ###  Required parameter. The Node type name.  ### 
+        'node-type': "{{ item['node-type'] | default('') }}" 
+         ###  Required parameter. Number of nodes to add.  ### 
+        'number-of-nodes-to-add': "{{ item['number-of-nodes-to-add'] | default('') }}" 
+         ###  Required parameter. The resource group name.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_sf_cluster_node_add }}"          
+ - name: "az sf cluster node add: Add nodes to a node type in a cluster." 
+   command: |                                      
+     az sf cluster node add                            
+                 --cluster-name {{ az_sf_cluster_node_add.input['cluster-name'] }} 
+                 --node-type {{ az_sf_cluster_node_add.input['node-type'] }} 
+                 --number-of-nodes-to-add {{ az_sf_cluster_node_add.input['number-of-nodes-to-add'] }} 
+                 --resource-group {{ az_sf_cluster_node_add.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_sf_cluster_node_add: "{{ az_sf_cluster_node_add|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sf_cluster_node_add }}" 

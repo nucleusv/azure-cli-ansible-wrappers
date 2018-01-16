@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_keyvault_certificate_pending_delete
+   set_fact: 
+     az_keyvault_certificate_pending_delete:
+       input: 
+         ###  Required parameter. Name of the pending certificate.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_certificate_pending_delete }}"          
+ - name: "az keyvault certificate pending delete: Deletes the operation for a specified certificate." 
+   command: |                                      
+     az keyvault certificate pending delete                            
+                 --name {{ az_keyvault_certificate_pending_delete.input['name'] }} 
+                 --vault-name {{ az_keyvault_certificate_pending_delete.input['vault-name'] }} 
+   register: output  
+ - set_fact: 
+    az_keyvault_certificate_pending_delete: "{{ az_keyvault_certificate_pending_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_certificate_pending_delete }}" 

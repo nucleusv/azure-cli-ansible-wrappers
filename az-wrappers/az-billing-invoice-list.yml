@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_billing_invoice_list
+   set_fact: 
+     az_billing_invoice_list:
+       input: 
+         ###  Optional parameter. Generate download url of the invoice.  ### 
+        'generate-download-url': "{{ item['generate-download-url'] | default('') }}" 
+ - debug: msg="{{ az_billing_invoice_list }}"          
+ - name: "az billing invoice list: List all available invoices of the subscription." 
+   command: |                                      
+     az billing invoice list                            
+                 {%if az_billing_invoice_list.input['generate-download-url'] %} --generate-download-url az_billing_invoice_list.input['generate-download-url'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_billing_invoice_list: "{{ az_billing_invoice_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_billing_invoice_list }}" 

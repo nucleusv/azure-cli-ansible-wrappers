@@ -1,0 +1,65 @@
+
+
+ - name: Set input params for az_cloud_update
+   set_fact: 
+     az_cloud_update:
+       input: 
+         ###  Optional parameter. JSON encoded cloud configuration. Use @{file} to load from a file.  ### 
+        'cloud-config': "{{ item['cloud-config'] | default('') }}" 
+         ###  Optional parameter. The Active Directory login endpoint.  ### 
+        'endpoint-active-directory': "{{ item['endpoint-active-directory'] | default('') }}" 
+         ###  Optional parameter. The Active Directory resource ID for data lake services.  ### 
+        'endpoint-active-directory-data-lake-resource-id': "{{ item['endpoint-active-directory-data-lake-resource-id'] | default('') }}" 
+         ###  Optional parameter. The Active Directory resource ID.  ### 
+        'endpoint-active-directory-graph-resource-id': "{{ item['endpoint-active-directory-graph-resource-id'] | default('') }}" 
+         ###  Optional parameter. The resource ID to obtain AD tokens for.  ### 
+        'endpoint-active-directory-resource-id': "{{ item['endpoint-active-directory-resource-id'] | default('') }}" 
+         ###  Optional parameter. The template gallery endpoint.  ### 
+        'endpoint-gallery': "{{ item['endpoint-gallery'] | default('') }}" 
+         ###  Optional parameter. The management service endpoint.  ### 
+        'endpoint-management': "{{ item['endpoint-management'] | default('') }}" 
+         ###  Optional parameter. The resource management endpoint.  ### 
+        'endpoint-resource-manager': "{{ item['endpoint-resource-manager'] | default('') }}" 
+         ###  Optional parameter. The sql server management endpoint.  ### 
+        'endpoint-sql-management': "{{ item['endpoint-sql-management'] | default('') }}" 
+         ###  Optional parameter. The uri of the document which caches commonly used virtual machine images.  ### 
+        'endpoint-vm-image-alias-doc': "{{ item['endpoint-vm-image-alias-doc'] | default('') }}" 
+         ###  Optional parameter. Name of a registered cloud.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Profile to use for this cloud.  ### 
+        'profile': "{{ item['profile'] | default('') }}" 
+         ###  Optional parameter. The Data Lake analytics job and catalog service dns suffix.  ### 
+        'suffix-azure-datalake-analytics-catalog-and-job-endpoint': "{{ item['suffix-azure-datalake-analytics-catalog-and-job-endpoint'] | default('') }}" 
+         ###  Optional parameter. The Data Lake store filesystem service dns suffix.  ### 
+        'suffix-azure-datalake-store-file-system-endpoint': "{{ item['suffix-azure-datalake-store-file-system-endpoint'] | default('') }}" 
+         ###  Optional parameter. The Key Vault service dns suffix.  ### 
+        'suffix-keyvault-dns': "{{ item['suffix-keyvault-dns'] | default('') }}" 
+         ###  Optional parameter. The dns suffix for sql servers.  ### 
+        'suffix-sql-server-hostname': "{{ item['suffix-sql-server-hostname'] | default('') }}" 
+         ###  Optional parameter. The endpoint suffix for storage accounts.  ### 
+        'suffix-storage-endpoint': "{{ item['suffix-storage-endpoint'] | default('') }}" 
+ - debug: msg="{{ az_cloud_update }}"          
+ - name: "az cloud update: Update the configuration of a cloud." 
+   command: |                                      
+     az cloud update                            
+                 {%if az_cloud_update.input['cloud-config'] %} --cloud-config az_cloud_update.input['cloud-config'] {%endif %} 
+                 {%if az_cloud_update.input['endpoint-active-directory'] %} --endpoint-active-directory az_cloud_update.input['endpoint-active-directory'] {%endif %} 
+                 {%if az_cloud_update.input['endpoint-active-directory-data-lake-resource-id'] %} --endpoint-active-directory-data-lake-resource-id az_cloud_update.input['endpoint-active-directory-data-lake-resource-id'] {%endif %} 
+                 {%if az_cloud_update.input['endpoint-active-directory-graph-resource-id'] %} --endpoint-active-directory-graph-resource-id az_cloud_update.input['endpoint-active-directory-graph-resource-id'] {%endif %} 
+                 {%if az_cloud_update.input['endpoint-active-directory-resource-id'] %} --endpoint-active-directory-resource-id az_cloud_update.input['endpoint-active-directory-resource-id'] {%endif %} 
+                 {%if az_cloud_update.input['endpoint-gallery'] %} --endpoint-gallery az_cloud_update.input['endpoint-gallery'] {%endif %} 
+                 {%if az_cloud_update.input['endpoint-management'] %} --endpoint-management az_cloud_update.input['endpoint-management'] {%endif %} 
+                 {%if az_cloud_update.input['endpoint-resource-manager'] %} --endpoint-resource-manager az_cloud_update.input['endpoint-resource-manager'] {%endif %} 
+                 {%if az_cloud_update.input['endpoint-sql-management'] %} --endpoint-sql-management az_cloud_update.input['endpoint-sql-management'] {%endif %} 
+                 {%if az_cloud_update.input['endpoint-vm-image-alias-doc'] %} --endpoint-vm-image-alias-doc az_cloud_update.input['endpoint-vm-image-alias-doc'] {%endif %} 
+                 {%if az_cloud_update.input['name'] %} --name az_cloud_update.input['name'] {%endif %} 
+                 {%if az_cloud_update.input['profile'] %} --profile az_cloud_update.input['profile'] {%endif %} 
+                 {%if az_cloud_update.input['suffix-azure-datalake-analytics-catalog-and-job-endpoint'] %} --suffix-azure-datalake-analytics-catalog-and-job-endpoint az_cloud_update.input['suffix-azure-datalake-analytics-catalog-and-job-endpoint'] {%endif %} 
+                 {%if az_cloud_update.input['suffix-azure-datalake-store-file-system-endpoint'] %} --suffix-azure-datalake-store-file-system-endpoint az_cloud_update.input['suffix-azure-datalake-store-file-system-endpoint'] {%endif %} 
+                 {%if az_cloud_update.input['suffix-keyvault-dns'] %} --suffix-keyvault-dns az_cloud_update.input['suffix-keyvault-dns'] {%endif %} 
+                 {%if az_cloud_update.input['suffix-sql-server-hostname'] %} --suffix-sql-server-hostname az_cloud_update.input['suffix-sql-server-hostname'] {%endif %} 
+                 {%if az_cloud_update.input['suffix-storage-endpoint'] %} --suffix-storage-endpoint az_cloud_update.input['suffix-storage-endpoint'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_cloud_update: "{{ az_cloud_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cloud_update }}" 

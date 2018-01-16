@@ -1,0 +1,44 @@
+
+
+ - name: Set input params for az_ad_sp_create_for_rbac
+   set_fact: 
+     az_ad_sp_create_for_rbac:
+       input: 
+         ###  Optional parameter. Name or app URI to associate the RBAC with. If not present, a name will be generated.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Role of the service principal.  ### 
+        'role': "{{ item['role'] | default('') }}" 
+         ###  Optional parameter. Space-separated list of scopes the service principal's role assignment applies to. Defaults to the root of the current subscription.  ### 
+        'scopes': "{{ item['scopes'] | default('') }}" 
+         ###  Optional parameter. Output result in compatible with Azure SDK auth file.  ### 
+        'sdk-auth': "{{ item['sdk-auth'] | default('') }}" 
+         ###  Optional parameter. Do not create default assignment.  ### 
+        'skip-assignment': "{{ item['skip-assignment'] | default('') }}" 
+         ###  Optional parameter. Certificate to use for credentials.  ### 
+        'cert': "{{ item['cert'] | default('') }}" 
+         ###  Optional parameter. Create a self-signed certificate to use for the credential.  ### 
+        'create-cert': "{{ item['create-cert'] | default('') }}" 
+         ###  Optional parameter. Name or ID of a KeyVault to use for creating or retrieving certificates.  ### 
+        'keyvault': "{{ item['keyvault'] | default('') }}" 
+         ###  Optional parameter. The password used to log in.  ### 
+        'password': "{{ item['password'] | default('') }}" 
+         ###  Optional parameter. Number of years for which the credentials will be valid. Default: 1 year.  ### 
+        'years': "{{ item['years'] | default('') }}" 
+ - debug: msg="{{ az_ad_sp_create_for_rbac }}"          
+ - name: "az ad sp create-for-rbac: Create a service principal and configure its access to Azure resources." 
+   command: |                                      
+     az ad sp create-for-rbac                            
+                 {%if az_ad_sp_create_for_rbac.input['name'] %} --name az_ad_sp_create_for_rbac.input['name'] {%endif %} 
+                 {%if az_ad_sp_create_for_rbac.input['role'] %} --role az_ad_sp_create_for_rbac.input['role'] {%endif %} 
+                 {%if az_ad_sp_create_for_rbac.input['scopes'] %} --scopes az_ad_sp_create_for_rbac.input['scopes'] {%endif %} 
+                 {%if az_ad_sp_create_for_rbac.input['sdk-auth'] %} --sdk-auth az_ad_sp_create_for_rbac.input['sdk-auth'] {%endif %} 
+                 {%if az_ad_sp_create_for_rbac.input['skip-assignment'] %} --skip-assignment az_ad_sp_create_for_rbac.input['skip-assignment'] {%endif %} 
+                 {%if az_ad_sp_create_for_rbac.input['cert'] %} --cert az_ad_sp_create_for_rbac.input['cert'] {%endif %} 
+                 {%if az_ad_sp_create_for_rbac.input['create-cert'] %} --create-cert az_ad_sp_create_for_rbac.input['create-cert'] {%endif %} 
+                 {%if az_ad_sp_create_for_rbac.input['keyvault'] %} --keyvault az_ad_sp_create_for_rbac.input['keyvault'] {%endif %} 
+                 {%if az_ad_sp_create_for_rbac.input['password'] %} --password az_ad_sp_create_for_rbac.input['password'] {%endif %} 
+                 {%if az_ad_sp_create_for_rbac.input['years'] %} --years az_ad_sp_create_for_rbac.input['years'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_ad_sp_create_for_rbac: "{{ az_ad_sp_create_for_rbac|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_ad_sp_create_for_rbac }}" 

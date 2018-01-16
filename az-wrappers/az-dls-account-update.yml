@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_dls_account_update
+   set_fact: 
+     az_dls_account_update:
+       input: 
+         ###  Required parameter. Name of the Data Lake Store account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Optional parameter. Allow/block Azure originating IPs through the firewall.  ### 
+        'allow-azure-ips': "{{ item['allow-azure-ips'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'default-group': "{{ item['default-group'] | default('') }}" 
+         ###  Optional parameter. Enable/disable existing firewall rules.  ### 
+        'firewall-state': "{{ item['firewall-state'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'key-version': "{{ item['key-version'] | default('') }}" 
+         ###  Optional parameter. If not specified, will attempt to discover the resource group for the specified Data Lake Store account.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. The desired commitment tier for this account to use.  ### 
+        'tier': "{{ item['tier'] | default('') }}" 
+         ###  Optional parameter. Enable/disable the existing trusted ID providers.  ### 
+        'trusted-id-provider-state': "{{ item['trusted-id-provider-state'] | default('') }}" 
+ - debug: msg="{{ az_dls_account_update }}"          
+ - name: "az dls account update: Updates a Data Lake Store account." 
+   command: |                                      
+     az dls account update                            
+                 --account {{ az_dls_account_update.input['account'] }} 
+                 {%if az_dls_account_update.input['allow-azure-ips'] %} --allow-azure-ips az_dls_account_update.input['allow-azure-ips'] {%endif %} 
+                 {%if az_dls_account_update.input['default-group'] %} --default-group az_dls_account_update.input['default-group'] {%endif %} 
+                 {%if az_dls_account_update.input['firewall-state'] %} --firewall-state az_dls_account_update.input['firewall-state'] {%endif %} 
+                 {%if az_dls_account_update.input['key-version'] %} --key-version az_dls_account_update.input['key-version'] {%endif %} 
+                 {%if az_dls_account_update.input['resource-group'] %} --resource-group az_dls_account_update.input['resource-group'] {%endif %} 
+                 {%if az_dls_account_update.input['rtags'] %} --tags az_dls_account_update.input['rtags'] {%endif %} 
+                 {%if az_dls_account_update.input['tier'] %} --tier az_dls_account_update.input['tier'] {%endif %} 
+                 {%if az_dls_account_update.input['trusted-id-provider-state'] %} --trusted-id-provider-state az_dls_account_update.input['trusted-id-provider-state'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dls_account_update: "{{ az_dls_account_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dls_account_update }}" 

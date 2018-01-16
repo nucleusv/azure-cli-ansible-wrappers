@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_sql_server_firewall_rule_update
+   set_fact: 
+     az_sql_server_firewall_rule_update:
+       input: 
+         ###  Required parameter. The name of the firewall rule.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the Azure SQL server.  ### 
+        'server': "{{ item['server'] | default('') }}" 
+         ###  Optional parameter. The end IP address of the firewall rule. Must be IPv4 format. Use value '0.0.0.0' to represent all Azure-internal IP addresses.  ### 
+        'end-ip-address': "{{ item['end-ip-address'] | default('') }}" 
+         ###  Optional parameter. The start IP address of the firewall rule. Must be IPv4 format. Use value '0.0.0.0' to represent all Azure-internal IP addresses.  ### 
+        'start-ip-address': "{{ item['start-ip-address'] | default('') }}" 
+ - debug: msg="{{ az_sql_server_firewall_rule_update }}"          
+ - name: "az sql server firewall-rule update: Update a firewall rule." 
+   command: |                                      
+     az sql server firewall-rule update                            
+                 --name {{ az_sql_server_firewall_rule_update.input['name'] }} 
+                 --resource-group {{ az_sql_server_firewall_rule_update.input['resource-group'] }} 
+                 --server {{ az_sql_server_firewall_rule_update.input['server'] }} 
+                 {%if az_sql_server_firewall_rule_update.input['end-ip-address'] %} --end-ip-address az_sql_server_firewall_rule_update.input['end-ip-address'] {%endif %} 
+                 {%if az_sql_server_firewall_rule_update.input['start-ip-address'] %} --start-ip-address az_sql_server_firewall_rule_update.input['start-ip-address'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_sql_server_firewall_rule_update: "{{ az_sql_server_firewall_rule_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sql_server_firewall_rule_update }}" 

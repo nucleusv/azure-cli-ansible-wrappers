@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_dla_catalog_procedure_show
+   set_fact: 
+     az_dla_catalog_procedure_show:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The name of the database containing the procedure.  ### 
+        'database-name': "{{ item['database-name'] | default('') }}" 
+         ###  Required parameter. The name of the procedure.  ### 
+        'procedure-name': "{{ item['procedure-name'] | default('') }}" 
+         ###  Required parameter. The name of the schema containing the procedure.  ### 
+        'schema-name': "{{ item['schema-name'] | default('') }}" 
+ - debug: msg="{{ az_dla_catalog_procedure_show }}"          
+ - name: "az dla catalog procedure show: Retrieves the specified procedure from the Data Lake Analytics catalog." 
+   command: |                                      
+     az dla catalog procedure show                            
+                 --account {{ az_dla_catalog_procedure_show.input['account'] }} 
+                 --database-name {{ az_dla_catalog_procedure_show.input['database-name'] }} 
+                 --procedure-name {{ az_dla_catalog_procedure_show.input['procedure-name'] }} 
+                 --schema-name {{ az_dla_catalog_procedure_show.input['schema-name'] }} 
+   register: output  
+ - set_fact: 
+    az_dla_catalog_procedure_show: "{{ az_dla_catalog_procedure_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_catalog_procedure_show }}" 

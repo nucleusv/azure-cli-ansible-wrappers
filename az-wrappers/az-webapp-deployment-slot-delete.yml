@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_webapp_deployment_slot_delete
+   set_fact: 
+     az_webapp_deployment_slot_delete:
+       input: 
+         ###  Required parameter. Name of the webapp.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The name of the slot.  ### 
+        'slot': "{{ item['slot'] | default('') }}" 
+ - debug: msg="{{ az_webapp_deployment_slot_delete }}"          
+ - name: "az webapp deployment slot delete: Delete a deployment slot." 
+   command: |                                      
+     az webapp deployment slot delete                            
+                 --name {{ az_webapp_deployment_slot_delete.input['name'] }} 
+                 --resource-group {{ az_webapp_deployment_slot_delete.input['resource-group'] }} 
+                 --slot {{ az_webapp_deployment_slot_delete.input['slot'] }} 
+   register: output  
+ - set_fact: 
+    az_webapp_deployment_slot_delete: "{{ az_webapp_deployment_slot_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_webapp_deployment_slot_delete }}" 

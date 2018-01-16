@@ -1,0 +1,47 @@
+
+
+ - name: Set input params for az_storage_cors_add
+   set_fact: 
+     az_storage_cors_add:
+       input: 
+         ###  Required parameter. List of HTTP methods allowed to be executed by the origin.  ### 
+        'methods': "{{ item['methods'] | default('') }}" 
+         ###  Required parameter. List of origin domains that will be allowed via CORS, or '*' to allow all domains.  ### 
+        'origins': "{{ item['origins'] | default('') }}" 
+         ###  Required parameter. The storage service(s) to add rules to. Allowed options are: (b)lob, (f)ile, (q)ueue, (t)able. Can be combined.  ### 
+        'services': "{{ item['services'] | default('') }}" 
+         ###  Optional parameter. List of response headers allowed to be part of the cross-origin request.  ### 
+        'allowed-headers': "{{ item['allowed-headers'] | default('') }}" 
+         ###  Optional parameter. List of response headers to expose to CORS clients.  ### 
+        'exposed-headers': "{{ item['exposed-headers'] | default('') }}" 
+         ###  Optional parameter. The maximum number of seconds the client/browser should cache a preflight response.  ### 
+        'max-age': "{{ item['max-age'] | default('') }}" 
+         ###  Optional parameter. Request timeout in seconds. Applies to each call to the service.  ### 
+        'timeout': "{{ item['timeout'] | default('') }}" 
+         ###  Optional parameter. Storage account key. Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Storage account name. Related environment variable: AZURE_STORAGE_ACCOUNT. Must be used in conjunction with either storage account key or a SAS token. If neither are present, the command will try to query the storage account key using the authenticated Azure account. If a large number of storage commands are executed the API quota may be hit.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+         ###  Optional parameter. Storage account connection string. Environment variable: AZURE_STORAGE_CONNECTION_STRING.  ### 
+        'connection-string': "{{ item['connection-string'] | default('') }}" 
+         ###  Optional parameter. A Shared Access Signature (SAS). Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_SAS_TOKEN.  ### 
+        'sas-token': "{{ item['sas-token'] | default('') }}" 
+ - debug: msg="{{ az_storage_cors_add }}"          
+ - name: "az storage cors add: Add a CORS rule to a storage account." 
+   command: |                                      
+     az storage cors add                            
+                 --methods {{ az_storage_cors_add.input['methods'] }} 
+                 --origins {{ az_storage_cors_add.input['origins'] }} 
+                 --services {{ az_storage_cors_add.input['services'] }} 
+                 {%if az_storage_cors_add.input['allowed-headers'] %} --allowed-headers az_storage_cors_add.input['allowed-headers'] {%endif %} 
+                 {%if az_storage_cors_add.input['exposed-headers'] %} --exposed-headers az_storage_cors_add.input['exposed-headers'] {%endif %} 
+                 {%if az_storage_cors_add.input['max-age'] %} --max-age az_storage_cors_add.input['max-age'] {%endif %} 
+                 {%if az_storage_cors_add.input['timeout'] %} --timeout az_storage_cors_add.input['timeout'] {%endif %} 
+                 {%if az_storage_cors_add.input['account-key'] %} --account-key az_storage_cors_add.input['account-key'] {%endif %} 
+                 {%if az_storage_cors_add.input['account-name'] %} --account-name az_storage_cors_add.input['account-name'] {%endif %} 
+                 {%if az_storage_cors_add.input['connection-string'] %} --connection-string az_storage_cors_add.input['connection-string'] {%endif %} 
+                 {%if az_storage_cors_add.input['sas-token'] %} --sas-token az_storage_cors_add.input['sas-token'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_storage_cors_add: "{{ az_storage_cors_add|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_storage_cors_add }}" 

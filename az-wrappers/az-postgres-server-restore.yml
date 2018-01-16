@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_postgres_server_restore
+   set_fact: 
+     az_postgres_server_restore:
+       input: 
+         ###  Required parameter. Name of the server.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The point in time to restore from (ISO8601 format), e.g., 2017-04-26T02:10:00+08:00.  ### 
+        'restore-point-in-time': "{{ item['restore-point-in-time'] | default('') }}" 
+         ###  Required parameter. The name or ID of the source server to restore from.  ### 
+        'source-server': "{{ item['source-server'] | default('') }}" 
+ - debug: msg="{{ az_postgres_server_restore }}"          
+ - name: "az postgres server restore: Restore a server from backup." 
+   command: |                                      
+     az postgres server restore                            
+                 --name {{ az_postgres_server_restore.input['name'] }} 
+                 --resource-group {{ az_postgres_server_restore.input['resource-group'] }} 
+                 --restore-point-in-time {{ az_postgres_server_restore.input['restore-point-in-time'] }} 
+                 --source-server {{ az_postgres_server_restore.input['source-server'] }} 
+   register: output  
+ - set_fact: 
+    az_postgres_server_restore: "{{ az_postgres_server_restore|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_postgres_server_restore }}" 

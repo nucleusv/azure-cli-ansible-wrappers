@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_network_dns_record_set_soa_update
+   set_fact: 
+     az_network_dns_record_set_soa_update:
+       input: 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The name of the zone.  ### 
+        'zone-name': "{{ item['zone-name'] | default('') }}" 
+         ###  Optional parameter. Email address.  ### 
+        'email': "{{ item['email'] | default('') }}" 
+         ###  Optional parameter. Expire time (seconds).  ### 
+        'expire-time': "{{ item['expire-time'] | default('') }}" 
+         ###  Optional parameter. Host name.  ### 
+        'host': "{{ item['host'] | default('') }}" 
+         ###  Optional parameter. Minimum TTL (time-to-live, seconds).  ### 
+        'minimum-ttl': "{{ item['minimum-ttl'] | default('') }}" 
+         ###  Optional parameter. Refresh value (seconds).  ### 
+        'refresh-time': "{{ item['refresh-time'] | default('') }}" 
+         ###  Optional parameter. Retry time (seconds).  ### 
+        'retry-time': "{{ item['retry-time'] | default('') }}" 
+         ###  Optional parameter. Serial number.  ### 
+        'serial-number': "{{ item['serial-number'] | default('') }}" 
+ - debug: msg="{{ az_network_dns_record_set_soa_update }}"          
+ - name: "az network dns record-set soa update: Update properties of a zone's SOA record." 
+   command: |                                      
+     az network dns record-set soa update                            
+                 --resource-group {{ az_network_dns_record_set_soa_update.input['resource-group'] }} 
+                 --zone-name {{ az_network_dns_record_set_soa_update.input['zone-name'] }} 
+                 {%if az_network_dns_record_set_soa_update.input['email'] %} --email az_network_dns_record_set_soa_update.input['email'] {%endif %} 
+                 {%if az_network_dns_record_set_soa_update.input['expire-time'] %} --expire-time az_network_dns_record_set_soa_update.input['expire-time'] {%endif %} 
+                 {%if az_network_dns_record_set_soa_update.input['host'] %} --host az_network_dns_record_set_soa_update.input['host'] {%endif %} 
+                 {%if az_network_dns_record_set_soa_update.input['minimum-ttl'] %} --minimum-ttl az_network_dns_record_set_soa_update.input['minimum-ttl'] {%endif %} 
+                 {%if az_network_dns_record_set_soa_update.input['refresh-time'] %} --refresh-time az_network_dns_record_set_soa_update.input['refresh-time'] {%endif %} 
+                 {%if az_network_dns_record_set_soa_update.input['retry-time'] %} --retry-time az_network_dns_record_set_soa_update.input['retry-time'] {%endif %} 
+                 {%if az_network_dns_record_set_soa_update.input['serial-number'] %} --serial-number az_network_dns_record_set_soa_update.input['serial-number'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_dns_record_set_soa_update: "{{ az_network_dns_record_set_soa_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_dns_record_set_soa_update }}" 

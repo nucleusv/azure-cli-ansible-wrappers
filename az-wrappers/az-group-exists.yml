@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_group_exists
+   set_fact: 
+     az_group_exists:
+       input: 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+ - debug: msg="{{ az_group_exists }}"          
+ - name: "az group exists: Check if a resource group exists." 
+   command: |                                      
+     az group exists                            
+                 --name {{ az_group_exists.input['name'] }} 
+   register: output  
+ - set_fact: 
+    az_group_exists: "{{ az_group_exists|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_group_exists }}" 

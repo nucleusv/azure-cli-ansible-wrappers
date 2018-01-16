@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_network_dns_record_set_ns_show
+   set_fact: 
+     az_network_dns_record_set_ns_show:
+       input: 
+         ###  Required parameter. The name of the record set, relative to the name of the zone.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The name of the zone.  ### 
+        'zone-name': "{{ item['zone-name'] | default('') }}" 
+ - debug: msg="{{ az_network_dns_record_set_ns_show }}"          
+ - name: "az network dns record-set ns show: Get the details for a NS record set." 
+   command: |                                      
+     az network dns record-set ns show                            
+                 --name {{ az_network_dns_record_set_ns_show.input['name'] }} 
+                 --resource-group {{ az_network_dns_record_set_ns_show.input['resource-group'] }} 
+                 --zone-name {{ az_network_dns_record_set_ns_show.input['zone-name'] }} 
+   register: output  
+ - set_fact: 
+    az_network_dns_record_set_ns_show: "{{ az_network_dns_record_set_ns_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_dns_record_set_ns_show }}" 

@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_batchai_cluster_show
+   set_fact: 
+     az_batchai_cluster_show:
+       input: 
+         ###  Required parameter. Name of the cluster.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_batchai_cluster_show }}"          
+ - name: "az batchai cluster show: Show information about a cluster." 
+   command: |                                      
+     az batchai cluster show                            
+                 --name {{ az_batchai_cluster_show.input['name'] }} 
+                 --resource-group {{ az_batchai_cluster_show.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_batchai_cluster_show: "{{ az_batchai_cluster_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batchai_cluster_show }}" 

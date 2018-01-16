@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_network_nsg_rule_show
+   set_fact: 
+     az_network_nsg_rule_show:
+       input: 
+         ###  Required parameter. Name of the network security group rule.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the network security group.  ### 
+        'nsg-name': "{{ item['nsg-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_network_nsg_rule_show }}"          
+ - name: "az network nsg rule show: Get the details for a network security group rule." 
+   command: |                                      
+     az network nsg rule show                            
+                 --name {{ az_network_nsg_rule_show.input['name'] }} 
+                 --nsg-name {{ az_network_nsg_rule_show.input['nsg-name'] }} 
+                 --resource-group {{ az_network_nsg_rule_show.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_network_nsg_rule_show: "{{ az_network_nsg_rule_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_nsg_rule_show }}" 

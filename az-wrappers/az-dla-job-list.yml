@@ -1,0 +1,44 @@
+
+
+ - name: Set input params for az_dla_job_list
+   set_fact: 
+     az_dla_job_list:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Optional parameter. A filter which returns jobs only by the specified friendly name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. A filter which returns jobs only containing the specified pipeline_id.  ### 
+        'pipeline-id': "{{ item['pipeline-id'] | default('') }}" 
+         ###  Optional parameter. A filter which returns jobs only containing the specified recurrence_id.  ### 
+        'recurrence-id': "{{ item['recurrence-id'] | default('') }}" 
+         ###  Optional parameter. A filter which returns jobs with only the specified result(s).  ### 
+        'result': "{{ item['result'] | default('') }}" 
+         ###  Optional parameter. A filter which returns jobs with only the specified state(s).  ### 
+        'state': "{{ item['state'] | default('') }}" 
+         ###  Optional parameter. A filter which returns jobs only submitted after the specified time, in ISO-8601 format.  ### 
+        'submitted-after': "{{ item['submitted-after'] | default('') }}" 
+         ###  Optional parameter. A filter which returns jobs only submitted before the specified time, in ISO-8601 format.  ### 
+        'submitted-before': "{{ item['submitted-before'] | default('') }}" 
+         ###  Optional parameter. A filter which returns jobs only by the specified submitter.  ### 
+        'submitter': "{{ item['submitter'] | default('') }}" 
+         ###  Optional parameter. Maximum number of items to return.  ### 
+        'top': "{{ item['top'] | default('') }}" 
+ - debug: msg="{{ az_dla_job_list }}"          
+ - name: "az dla job list: List Data Lake Analytics jobs." 
+   command: |                                      
+     az dla job list                            
+                 --account {{ az_dla_job_list.input['account'] }} 
+                 {%if az_dla_job_list.input['name'] %} --name az_dla_job_list.input['name'] {%endif %} 
+                 {%if az_dla_job_list.input['pipeline-id'] %} --pipeline-id az_dla_job_list.input['pipeline-id'] {%endif %} 
+                 {%if az_dla_job_list.input['recurrence-id'] %} --recurrence-id az_dla_job_list.input['recurrence-id'] {%endif %} 
+                 {%if az_dla_job_list.input['result'] %} --result az_dla_job_list.input['result'] {%endif %} 
+                 {%if az_dla_job_list.input['state'] %} --state az_dla_job_list.input['state'] {%endif %} 
+                 {%if az_dla_job_list.input['submitted-after'] %} --submitted-after az_dla_job_list.input['submitted-after'] {%endif %} 
+                 {%if az_dla_job_list.input['submitted-before'] %} --submitted-before az_dla_job_list.input['submitted-before'] {%endif %} 
+                 {%if az_dla_job_list.input['submitter'] %} --submitter az_dla_job_list.input['submitter'] {%endif %} 
+                 {%if az_dla_job_list.input['top'] %} --top az_dla_job_list.input['top'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dla_job_list: "{{ az_dla_job_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_job_list }}" 

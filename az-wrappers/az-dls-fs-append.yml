@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_dls_fs_append
+   set_fact: 
+     az_dls_fs_append:
+       input: 
+         ###  Required parameter. Name of the Data Lake Store account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. Content to be appended to the file.  ### 
+        'content': "{{ item['content'] | default('') }}" 
+         ###  Required parameter. The path in the specified Data Lake Store account where the action should take place. In the format '/folder/file.txt', where the first '/' after the DNS indicates the root of the file system.  ### 
+        'path': "{{ item['path'] | default('') }}" 
+ - debug: msg="{{ az_dls_fs_append }}"          
+ - name: "az dls fs append: Append content to a file in a Data Lake Store account." 
+   command: |                                      
+     az dls fs append                            
+                 --account {{ az_dls_fs_append.input['account'] }} 
+                 --content {{ az_dls_fs_append.input['content'] }} 
+                 --path {{ az_dls_fs_append.input['path'] }} 
+   register: output  
+ - set_fact: 
+    az_dls_fs_append: "{{ az_dls_fs_append|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dls_fs_append }}" 

@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_acr_webhook_delete
+   set_fact: 
+     az_acr_webhook_delete:
+       input: 
+         ###  Required parameter. The name of the webhook.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. The name of the container registry. You can configure the default registry name using `az configure --defaults acr=&lt;registry name&gt;`.  ### 
+        'registry': "{{ item['registry'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_acr_webhook_delete }}"          
+ - name: "az acr webhook delete: Delete a webhook from a container registry." 
+   command: |                                      
+     az acr webhook delete                            
+                 --name {{ az_acr_webhook_delete.input['name'] }} 
+                 --registry {{ az_acr_webhook_delete.input['registry'] }} 
+                 {%if az_acr_webhook_delete.input['resource-group'] %} --resource-group az_acr_webhook_delete.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_acr_webhook_delete: "{{ az_acr_webhook_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_acr_webhook_delete }}" 

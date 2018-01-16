@@ -1,0 +1,86 @@
+
+
+ - name: Set input params for az_webapp_auth_update
+   set_fact: 
+     az_webapp_auth_update:
+       input: 
+         ###  Required parameter. Name of the web. You can configure the default using 'az configure --defaults web=<name>'.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'action': "{{ item['action'] | default('') }}" 
+         ###  Optional parameter. One or more urls (space delimited).  ### 
+        'allowed-external-redirect-urls': "{{ item['allowed-external-redirect-urls'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'enabled': "{{ item['enabled'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'runtime-version': "{{ item['runtime-version'] | default('') }}" 
+         ###  Optional parameter. The name of the slot. Default to the productions slot if not specified.  ### 
+        'slot': "{{ item['slot'] | default('') }}" 
+         ###  Optional parameter. Hours, must be formattable into a float.  ### 
+        'token-refresh-extension-hours': "{{ item['token-refresh-extension-hours'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'token-store': "{{ item['token-store'] | default('') }}" 
+         ###  Optional parameter. One or more token audiences (space delimited).  ### 
+        'aad-allowed-token-audiences': "{{ item['aad-allowed-token-audiences'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'aad-client-id': "{{ item['aad-client-id'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'aad-client-secret': "{{ item['aad-client-secret'] | default('') }}" 
+         ###  Optional parameter. This url can be found in the JSON output returned from your active directory endpoint using your tenantID. The endpoint can be queried from 'az cloud show' at "endpoints.activeDirectory". The tenantID can be found using 'az account show'. Get the "issuer" from the JSON at <active directory endpoint>/<tenantId>/.well-known/openid-configuration.  ### 
+        'aad-token-issuer-url': "{{ item['aad-token-issuer-url'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'facebook-app-id': "{{ item['facebook-app-id'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'facebook-app-secret': "{{ item['facebook-app-secret'] | default('') }}" 
+         ###  Optional parameter. One or more facebook authentication scopes (space delimited).  ### 
+        'facebook-oauth-scopes': "{{ item['facebook-oauth-scopes'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'google-client-id': "{{ item['google-client-id'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'google-client-secret': "{{ item['google-client-secret'] | default('') }}" 
+         ###  Optional parameter. One or more Google authentication scopes (space delimited).  ### 
+        'google-oauth-scopes': "{{ item['google-oauth-scopes'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'microsoft-account-client-id': "{{ item['microsoft-account-client-id'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'microsoft-account-client-secret': "{{ item['microsoft-account-client-secret'] | default('') }}" 
+         ###  Optional parameter. One or more Microsoft authentification scopes (space delimited).  ### 
+        'microsoft-account-oauth-scopes': "{{ item['microsoft-account-oauth-scopes'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'twitter-consumer-key': "{{ item['twitter-consumer-key'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'twitter-consumer-secret': "{{ item['twitter-consumer-secret'] | default('') }}" 
+ - debug: msg="{{ az_webapp_auth_update }}"          
+ - name: "az webapp auth update: Update the authentication settings for the webapp." 
+   command: |                                      
+     az webapp auth update                            
+                 --name {{ az_webapp_auth_update.input['name'] }} 
+                 --resource-group {{ az_webapp_auth_update.input['resource-group'] }} 
+                 {%if az_webapp_auth_update.input['action'] %} --action az_webapp_auth_update.input['action'] {%endif %} 
+                 {%if az_webapp_auth_update.input['allowed-external-redirect-urls'] %} --allowed-external-redirect-urls az_webapp_auth_update.input['allowed-external-redirect-urls'] {%endif %} 
+                 {%if az_webapp_auth_update.input['enabled'] %} --enabled az_webapp_auth_update.input['enabled'] {%endif %} 
+                 {%if az_webapp_auth_update.input['runtime-version'] %} --runtime-version az_webapp_auth_update.input['runtime-version'] {%endif %} 
+                 {%if az_webapp_auth_update.input['slot'] %} --slot az_webapp_auth_update.input['slot'] {%endif %} 
+                 {%if az_webapp_auth_update.input['token-refresh-extension-hours'] %} --token-refresh-extension-hours az_webapp_auth_update.input['token-refresh-extension-hours'] {%endif %} 
+                 {%if az_webapp_auth_update.input['token-store'] %} --token-store az_webapp_auth_update.input['token-store'] {%endif %} 
+                 {%if az_webapp_auth_update.input['aad-allowed-token-audiences'] %} --aad-allowed-token-audiences az_webapp_auth_update.input['aad-allowed-token-audiences'] {%endif %} 
+                 {%if az_webapp_auth_update.input['aad-client-id'] %} --aad-client-id az_webapp_auth_update.input['aad-client-id'] {%endif %} 
+                 {%if az_webapp_auth_update.input['aad-client-secret'] %} --aad-client-secret az_webapp_auth_update.input['aad-client-secret'] {%endif %} 
+                 {%if az_webapp_auth_update.input['aad-token-issuer-url'] %} --aad-token-issuer-url az_webapp_auth_update.input['aad-token-issuer-url'] {%endif %} 
+                 {%if az_webapp_auth_update.input['facebook-app-id'] %} --facebook-app-id az_webapp_auth_update.input['facebook-app-id'] {%endif %} 
+                 {%if az_webapp_auth_update.input['facebook-app-secret'] %} --facebook-app-secret az_webapp_auth_update.input['facebook-app-secret'] {%endif %} 
+                 {%if az_webapp_auth_update.input['facebook-oauth-scopes'] %} --facebook-oauth-scopes az_webapp_auth_update.input['facebook-oauth-scopes'] {%endif %} 
+                 {%if az_webapp_auth_update.input['google-client-id'] %} --google-client-id az_webapp_auth_update.input['google-client-id'] {%endif %} 
+                 {%if az_webapp_auth_update.input['google-client-secret'] %} --google-client-secret az_webapp_auth_update.input['google-client-secret'] {%endif %} 
+                 {%if az_webapp_auth_update.input['google-oauth-scopes'] %} --google-oauth-scopes az_webapp_auth_update.input['google-oauth-scopes'] {%endif %} 
+                 {%if az_webapp_auth_update.input['microsoft-account-client-id'] %} --microsoft-account-client-id az_webapp_auth_update.input['microsoft-account-client-id'] {%endif %} 
+                 {%if az_webapp_auth_update.input['microsoft-account-client-secret'] %} --microsoft-account-client-secret az_webapp_auth_update.input['microsoft-account-client-secret'] {%endif %} 
+                 {%if az_webapp_auth_update.input['microsoft-account-oauth-scopes'] %} --microsoft-account-oauth-scopes az_webapp_auth_update.input['microsoft-account-oauth-scopes'] {%endif %} 
+                 {%if az_webapp_auth_update.input['twitter-consumer-key'] %} --twitter-consumer-key az_webapp_auth_update.input['twitter-consumer-key'] {%endif %} 
+                 {%if az_webapp_auth_update.input['twitter-consumer-secret'] %} --twitter-consumer-secret az_webapp_auth_update.input['twitter-consumer-secret'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_webapp_auth_update: "{{ az_webapp_auth_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_webapp_auth_update }}" 

@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_vmss_extension_image_list_names
+   set_fact: 
+     az_vmss_extension_image_list_names:
+       input: 
+         ###  Required parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Required parameter. Image publisher name.  ### 
+        'publisher': "{{ item['publisher'] | default('') }}" 
+ - debug: msg="{{ az_vmss_extension_image_list_names }}"          
+ - name: "az vmss extension image list-names: Gets a list of virtual machine extension image types." 
+   command: |                                      
+     az vmss extension image list-names                            
+                 --location {{ az_vmss_extension_image_list_names.input['location'] }} 
+                 --publisher {{ az_vmss_extension_image_list_names.input['publisher'] }} 
+   register: output  
+ - set_fact: 
+    az_vmss_extension_image_list_names: "{{ az_vmss_extension_image_list_names|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vmss_extension_image_list_names }}" 

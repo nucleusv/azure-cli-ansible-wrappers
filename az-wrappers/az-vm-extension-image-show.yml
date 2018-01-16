@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_vm_extension_image_show
+   set_fact: 
+     az_vm_extension_image_show:
+       input: 
+         ###  Required parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Required parameter. Name of the extension.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Image publisher name.  ### 
+        'publisher': "{{ item['publisher'] | default('') }}" 
+         ###  Required parameter. Extension version.  ### 
+        'version': "{{ item['version'] | default('') }}" 
+ - debug: msg="{{ az_vm_extension_image_show }}"          
+ - name: "az vm extension image show: Display information for an extension." 
+   command: |                                      
+     az vm extension image show                            
+                 --location {{ az_vm_extension_image_show.input['location'] }} 
+                 --name {{ az_vm_extension_image_show.input['name'] }} 
+                 --publisher {{ az_vm_extension_image_show.input['publisher'] }} 
+                 --version {{ az_vm_extension_image_show.input['version'] }} 
+   register: output  
+ - set_fact: 
+    az_vm_extension_image_show: "{{ az_vm_extension_image_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_extension_image_show }}" 

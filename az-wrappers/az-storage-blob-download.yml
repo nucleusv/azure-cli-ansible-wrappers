@@ -1,0 +1,71 @@
+
+
+ - name: Set input params for az_storage_blob_download
+   set_fact: 
+     az_storage_blob_download:
+       input: 
+         ###  Required parameter. The container name.  ### 
+        'container-name': "{{ item['container-name'] | default('') }}" 
+         ###  Required parameter. Path of file to write out to.  ### 
+        'file': "{{ item['file'] | default('') }}" 
+         ###  Required parameter. The blob name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. End of byte range to use for downloading a section of the blob. If end_range is given, start_range must be provided. The start_range and end_range params are inclusive. Ex: start_range=0, end_range=511 will download first 512 bytes of blob.  ### 
+        'end-range': "{{ item['end-range'] | default('') }}" 
+         ###  Optional parameter. Required if the blob has an active lease.  ### 
+        'lease-id': "{{ item['lease-id'] | default('') }}" 
+         ###  Optional parameter. If set to 2 or greater, an initial get will be done for the first self.MAX_SINGLE_GET_SIZE bytes of the blob. If this is the entire blob, the method returns at this point. If it is not, it will download the remaining data parallel using the number of threads equal to max_connections. Each chunk will be of size self.MAX_CHUNK_GET_SIZE. If set to 1, a single large get request will be done. This is not generally recommended but available if very few threads should be used, network requests are very expensive, or a non-seekable stream prevents parallel download. This may also be useful if many blobs are expected to be empty as an extra request is required for empty blobs if max_connections is greater than 1.  ### 
+        'max-connections': "{{ item['max-connections'] | default('') }}" 
+         ###  Optional parameter. Mode to use when opening the file. Note that specifying append only open_mode prevents parallel download. So, max_connections must be set to 1 if this open_mode is used.  ### 
+        'open-mode': "{{ item['open-mode'] | default('') }}" 
+         ###  Optional parameter. The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve.  ### 
+        'snapshot': "{{ item['snapshot'] | default('') }}" 
+         ###  Optional parameter. Start of byte range to use for downloading a section of the blob. If no end_range is given, all bytes after the start_range will be downloaded. The start_range and end_range params are inclusive. Ex: start_range=0, end_range=511 will download first 512 bytes of blob.  ### 
+        'start-range': "{{ item['start-range'] | default('') }}" 
+         ###  Optional parameter. Request timeout in seconds. Applies to each call to the service.  ### 
+        'timeout': "{{ item['timeout'] | default('') }}" 
+         ###  Optional parameter. If set to true, validates an MD5 hash for each retrieved portion of the blob. This is primarily valuable for detecting bitflips on the wire if using http instead of https as https (the default) will already validate. Note that the service will only return transactional MD5s for chunks 4MB or less so the first get request will be of size self.MAX_CHUNK_GET_SIZE instead of self.MAX_SINGLE_GET_SIZE. If self.MAX_CHUNK_GET_SIZE was set to greater than 4MB an error will be thrown. As computing the MD5 takes processing time and more requests will need to be done due to the reduced chunk size there may be some increase in latency.  ### 
+        'validate-content': "{{ item['validate-content'] | default('') }}" 
+         ###  Optional parameter. An ETag value, or the wildcard character (*). Specify this header to perform the operation only if the resource's ETag matches the value specified.  ### 
+        'if-match': "{{ item['if-match'] | default('') }}" 
+         ###  Optional parameter. Alter only if modified since supplied UTC datetime (Y-m-d'T'H:M'Z').  ### 
+        'if-modified-since': "{{ item['if-modified-since'] | default('') }}" 
+         ###  Optional parameter. An ETag value, or the wildcard character (*). Specify this header to perform the operation only if the resource's ETag does not match the value specified. Specify the wildcard character (*) to perform the operation only if the resource does not exist, and fail the operation if it does exist.  ### 
+        'if-none-match': "{{ item['if-none-match'] | default('') }}" 
+         ###  Optional parameter. Alter only if unmodified since supplied UTC datetime (Y-m-d'T'H:M'Z').  ### 
+        'if-unmodified-since': "{{ item['if-unmodified-since'] | default('') }}" 
+         ###  Optional parameter. Storage account key. Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Storage account name. Related environment variable: AZURE_STORAGE_ACCOUNT. Must be used in conjunction with either storage account key or a SAS token. If neither are present, the command will try to query the storage account key using the authenticated Azure account. If a large number of storage commands are executed the API quota may be hit.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+         ###  Optional parameter. Storage account connection string. Environment variable: AZURE_STORAGE_CONNECTION_STRING.  ### 
+        'connection-string': "{{ item['connection-string'] | default('') }}" 
+         ###  Optional parameter. A Shared Access Signature (SAS). Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_SAS_TOKEN.  ### 
+        'sas-token': "{{ item['sas-token'] | default('') }}" 
+ - debug: msg="{{ az_storage_blob_download }}"          
+ - name: "az storage blob download: Downloads a blob to a file path, with automatic chunking and progress notifications." 
+   command: |                                      
+     az storage blob download                            
+                 --container-name {{ az_storage_blob_download.input['container-name'] }} 
+                 --file {{ az_storage_blob_download.input['file'] }} 
+                 --name {{ az_storage_blob_download.input['name'] }} 
+                 {%if az_storage_blob_download.input['end-range'] %} --end-range az_storage_blob_download.input['end-range'] {%endif %} 
+                 {%if az_storage_blob_download.input['lease-id'] %} --lease-id az_storage_blob_download.input['lease-id'] {%endif %} 
+                 {%if az_storage_blob_download.input['max-connections'] %} --max-connections az_storage_blob_download.input['max-connections'] {%endif %} 
+                 {%if az_storage_blob_download.input['open-mode'] %} --open-mode az_storage_blob_download.input['open-mode'] {%endif %} 
+                 {%if az_storage_blob_download.input['snapshot'] %} --snapshot az_storage_blob_download.input['snapshot'] {%endif %} 
+                 {%if az_storage_blob_download.input['start-range'] %} --start-range az_storage_blob_download.input['start-range'] {%endif %} 
+                 {%if az_storage_blob_download.input['timeout'] %} --timeout az_storage_blob_download.input['timeout'] {%endif %} 
+                 {%if az_storage_blob_download.input['validate-content'] %} --validate-content az_storage_blob_download.input['validate-content'] {%endif %} 
+                 {%if az_storage_blob_download.input['if-match'] %} --if-match az_storage_blob_download.input['if-match'] {%endif %} 
+                 {%if az_storage_blob_download.input['if-modified-since'] %} --if-modified-since az_storage_blob_download.input['if-modified-since'] {%endif %} 
+                 {%if az_storage_blob_download.input['if-none-match'] %} --if-none-match az_storage_blob_download.input['if-none-match'] {%endif %} 
+                 {%if az_storage_blob_download.input['if-unmodified-since'] %} --if-unmodified-since az_storage_blob_download.input['if-unmodified-since'] {%endif %} 
+                 {%if az_storage_blob_download.input['account-key'] %} --account-key az_storage_blob_download.input['account-key'] {%endif %} 
+                 {%if az_storage_blob_download.input['account-name'] %} --account-name az_storage_blob_download.input['account-name'] {%endif %} 
+                 {%if az_storage_blob_download.input['connection-string'] %} --connection-string az_storage_blob_download.input['connection-string'] {%endif %} 
+                 {%if az_storage_blob_download.input['sas-token'] %} --sas-token az_storage_blob_download.input['sas-token'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_storage_blob_download: "{{ az_storage_blob_download|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_storage_blob_download }}" 

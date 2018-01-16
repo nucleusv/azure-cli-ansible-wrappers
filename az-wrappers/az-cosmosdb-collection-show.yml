@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_cosmosdb_collection_show
+   set_fact: 
+     az_cosmosdb_collection_show:
+       input: 
+         ###  Required parameter. Collection Name.  ### 
+        'collection-name': "{{ item['collection-name'] | default('') }}" 
+         ###  Required parameter. Database Name.  ### 
+        'db-name': "{{ item['db-name'] | default('') }}" 
+         ###  Optional parameter. Cosmos DB account key. Must be used in conjunction with cosmosdb account name or url-connection.  ### 
+        'key': "{{ item['key'] | default('') }}" 
+         ###  Optional parameter. Cosmos DB account name. Must be used in conjunction with either name of the resource group or cosmosdb account key.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Name of the resource group. Must be used in conjunction with cosmosdb account name.  ### 
+        'resource-group-name': "{{ item['resource-group-name'] | default('') }}" 
+         ###  Optional parameter. Cosmos DB account url connection. Must be used in conjunction with cosmosdb account key.  ### 
+        'url-connection': "{{ item['url-connection'] | default('') }}" 
+ - debug: msg="{{ az_cosmosdb_collection_show }}"          
+ - name: "az cosmosdb collection show: Shows an Azure Cosmos DB collection and its offer." 
+   command: |                                      
+     az cosmosdb collection show                            
+                 --collection-name {{ az_cosmosdb_collection_show.input['collection-name'] }} 
+                 --db-name {{ az_cosmosdb_collection_show.input['db-name'] }} 
+                 {%if az_cosmosdb_collection_show.input['key'] %} --key az_cosmosdb_collection_show.input['key'] {%endif %} 
+                 {%if az_cosmosdb_collection_show.input['name'] %} --name az_cosmosdb_collection_show.input['name'] {%endif %} 
+                 {%if az_cosmosdb_collection_show.input['resource-group-name'] %} --resource-group-name az_cosmosdb_collection_show.input['resource-group-name'] {%endif %} 
+                 {%if az_cosmosdb_collection_show.input['url-connection'] %} --url-connection az_cosmosdb_collection_show.input['url-connection'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_cosmosdb_collection_show: "{{ az_cosmosdb_collection_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cosmosdb_collection_show }}" 

@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_keyvault_certificate_download
+   set_fact: 
+     az_keyvault_certificate_download:
+       input: 
+         ###  Required parameter. File to receive the binary certificate contents.  ### 
+        'file': "{{ item['file'] | default('') }}" 
+         ###  Required parameter. Name of the certificate.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+         ###  Optional parameter. Encoding of the certificate. DER will create a binary DER formatted x509 certificate, and PEM will create a base64 PEM x509 certificate.  ### 
+        'encoding': "{{ item['encoding'] | default('') }}" 
+         ###  Optional parameter. The certificate version. If omitted, uses the latest version.  ### 
+        'version': "{{ item['version'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_certificate_download }}"          
+ - name: "az keyvault certificate download: Download the public portion of a Key Vault certificate." 
+   command: |                                      
+     az keyvault certificate download                            
+                 --file {{ az_keyvault_certificate_download.input['file'] }} 
+                 --name {{ az_keyvault_certificate_download.input['name'] }} 
+                 --vault-name {{ az_keyvault_certificate_download.input['vault-name'] }} 
+                 {%if az_keyvault_certificate_download.input['encoding'] %} --encoding az_keyvault_certificate_download.input['encoding'] {%endif %} 
+                 {%if az_keyvault_certificate_download.input['version'] %} --version az_keyvault_certificate_download.input['version'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_keyvault_certificate_download: "{{ az_keyvault_certificate_download|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_certificate_download }}" 

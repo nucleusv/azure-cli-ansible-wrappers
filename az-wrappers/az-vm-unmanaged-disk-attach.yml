@@ -1,0 +1,38 @@
+
+
+ - name: Set input params for az_vm_unmanaged_disk_attach
+   set_fact: 
+     az_vm_unmanaged_disk_attach:
+       input: 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The name of the Virtual Machine. You can configure the default using `az configure --defaults vm=&lt;name&gt;`.  ### 
+        'vm-name': "{{ item['vm-name'] | default('') }}" 
+         ###  Optional parameter. Disk caching policy.  ### 
+        'caching': "{{ item['caching'] | default('') }}" 
+         ###  Optional parameter. 0-based logical unit number (LUN). Max value depends on the Virtual Machine size.  ### 
+        'lun': "{{ item['lun'] | default('') }}" 
+         ###  Optional parameter. The data disk name(optional when create a new disk).  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Create a new disk.  ### 
+        'new': "{{ item['new'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'size-gb': "{{ item['size-gb'] | default('') }}" 
+         ###  Optional parameter. Virtual hard disk URI. For example: <a href="https://mystorage.blob.core.windows.net/vhds/d1.vhd">https://mystorage.blob.core.windows.net/vhds/d1.vhd</a>.  ### 
+        'vhd-uri': "{{ item['vhd-uri'] | default('') }}" 
+ - debug: msg="{{ az_vm_unmanaged_disk_attach }}"          
+ - name: "az vm unmanaged-disk attach: Attach an unmanaged persistent disk to a VM." 
+   command: |                                      
+     az vm unmanaged-disk attach                            
+                 --resource-group {{ az_vm_unmanaged_disk_attach.input['resource-group'] }} 
+                 --vm-name {{ az_vm_unmanaged_disk_attach.input['vm-name'] }} 
+                 {%if az_vm_unmanaged_disk_attach.input['caching'] %} --caching az_vm_unmanaged_disk_attach.input['caching'] {%endif %} 
+                 {%if az_vm_unmanaged_disk_attach.input['lun'] %} --lun az_vm_unmanaged_disk_attach.input['lun'] {%endif %} 
+                 {%if az_vm_unmanaged_disk_attach.input['name'] %} --name az_vm_unmanaged_disk_attach.input['name'] {%endif %} 
+                 {%if az_vm_unmanaged_disk_attach.input['new'] %} --new az_vm_unmanaged_disk_attach.input['new'] {%endif %} 
+                 {%if az_vm_unmanaged_disk_attach.input['size-gb'] %} --size-gb az_vm_unmanaged_disk_attach.input['size-gb'] {%endif %} 
+                 {%if az_vm_unmanaged_disk_attach.input['vhd-uri'] %} --vhd-uri az_vm_unmanaged_disk_attach.input['vhd-uri'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_vm_unmanaged_disk_attach: "{{ az_vm_unmanaged_disk_attach|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_unmanaged_disk_attach }}" 

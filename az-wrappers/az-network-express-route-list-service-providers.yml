@@ -1,0 +1,14 @@
+
+
+ - name: Set input params for az_network_express_route_list_service_providers
+   set_fact: 
+     az_network_express_route_list_service_providers:
+       input: 
+ - debug: msg="{{ az_network_express_route_list_service_providers }}"          
+ - name: "az network express-route list-service-providers: List available ExpressRoute service providers." 
+   command: |                                      
+     az network express-route list-service-providers                            
+   register: output  
+ - set_fact: 
+    az_network_express_route_list_service_providers: "{{ az_network_express_route_list_service_providers|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_express_route_list_service_providers }}" 

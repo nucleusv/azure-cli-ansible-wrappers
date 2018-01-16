@@ -1,0 +1,47 @@
+
+
+ - name: Set input params for az_storage_queue_generate_sas
+   set_fact: 
+     az_storage_queue_generate_sas:
+       input: 
+         ###  Required parameter. The queue name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Specifies the UTC datetime (Y-m-d'T'H:M'Z') at which the SAS becomes invalid. Do not use if a stored access policy is referenced with --id that specifies this value.  ### 
+        'expiry': "{{ item['expiry'] | default('') }}" 
+         ###  Optional parameter. Only permit requests made with the HTTPS protocol. If omitted, requests from both the HTTP and HTTPS protocol are permitted.  ### 
+        'https-only': "{{ item['https-only'] | default('') }}" 
+         ###  Optional parameter. Specifies the IP address or range of IP addresses from which to accept requests. Supports only IPv4 style addresses.  ### 
+        'ip': "{{ item['ip'] | default('') }}" 
+         ###  Optional parameter. The permissions the SAS grants. Allowed values: (a)dd (p)rocess (r)ead (u)pdate. Do not use if a stored access policy is referenced with --id that specifies this value. Can be combined.  ### 
+        'permissions': "{{ item['permissions'] | default('') }}" 
+         ###  Optional parameter. The name of a stored access policy within the share's ACL.  ### 
+        'policy-name': "{{ item['policy-name'] | default('') }}" 
+         ###  Optional parameter. Specifies the UTC datetime (Y-m-d'T'H:M'Z') at which the SAS becomes valid. Do not use if a stored access policy is referenced with --id that specifies this value. Defaults to the time of the request.  ### 
+        'start': "{{ item['start'] | default('') }}" 
+         ###  Optional parameter. Storage account key. Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Storage account name. Related environment variable: AZURE_STORAGE_ACCOUNT. Must be used in conjunction with either storage account key or a SAS token. If neither are present, the command will try to query the storage account key using the authenticated Azure account. If a large number of storage commands are executed the API quota may be hit.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+         ###  Optional parameter. Storage account connection string. Environment variable: AZURE_STORAGE_CONNECTION_STRING.  ### 
+        'connection-string': "{{ item['connection-string'] | default('') }}" 
+         ###  Optional parameter. A Shared Access Signature (SAS). Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_SAS_TOKEN.  ### 
+        'sas-token': "{{ item['sas-token'] | default('') }}" 
+ - debug: msg="{{ az_storage_queue_generate_sas }}"          
+ - name: "az storage queue generate-sas: Generates a shared access signature for the queue." 
+   command: |                                      
+     az storage queue generate-sas                            
+                 --name {{ az_storage_queue_generate_sas.input['name'] }} 
+                 {%if az_storage_queue_generate_sas.input['expiry'] %} --expiry az_storage_queue_generate_sas.input['expiry'] {%endif %} 
+                 {%if az_storage_queue_generate_sas.input['https-only'] %} --https-only az_storage_queue_generate_sas.input['https-only'] {%endif %} 
+                 {%if az_storage_queue_generate_sas.input['ip'] %} --ip az_storage_queue_generate_sas.input['ip'] {%endif %} 
+                 {%if az_storage_queue_generate_sas.input['permissions'] %} --permissions az_storage_queue_generate_sas.input['permissions'] {%endif %} 
+                 {%if az_storage_queue_generate_sas.input['policy-name'] %} --policy-name az_storage_queue_generate_sas.input['policy-name'] {%endif %} 
+                 {%if az_storage_queue_generate_sas.input['start'] %} --start az_storage_queue_generate_sas.input['start'] {%endif %} 
+                 {%if az_storage_queue_generate_sas.input['account-key'] %} --account-key az_storage_queue_generate_sas.input['account-key'] {%endif %} 
+                 {%if az_storage_queue_generate_sas.input['account-name'] %} --account-name az_storage_queue_generate_sas.input['account-name'] {%endif %} 
+                 {%if az_storage_queue_generate_sas.input['connection-string'] %} --connection-string az_storage_queue_generate_sas.input['connection-string'] {%endif %} 
+                 {%if az_storage_queue_generate_sas.input['sas-token'] %} --sas-token az_storage_queue_generate_sas.input['sas-token'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_storage_queue_generate_sas: "{{ az_storage_queue_generate_sas|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_storage_queue_generate_sas }}" 

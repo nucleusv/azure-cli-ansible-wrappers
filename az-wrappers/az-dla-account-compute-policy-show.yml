@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_dla_account_compute_policy_show
+   set_fact: 
+     az_dla_account_compute_policy_show:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The name of the compute policy to retrieve.  ### 
+        'compute-policy-name': "{{ item['compute-policy-name'] | default('') }}" 
+         ###  Optional parameter. If not specified, will attempt to discover the resource group for the specified Data Lake Analytics account.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_dla_account_compute_policy_show }}"          
+ - name: "az dla account compute-policy show: Retrieve a compute policy in a Data Lake Analytics account." 
+   command: |                                      
+     az dla account compute-policy show                            
+                 --account {{ az_dla_account_compute_policy_show.input['account'] }} 
+                 --compute-policy-name {{ az_dla_account_compute_policy_show.input['compute-policy-name'] }} 
+                 {%if az_dla_account_compute_policy_show.input['resource-group'] %} --resource-group az_dla_account_compute_policy_show.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dla_account_compute_policy_show: "{{ az_dla_account_compute_policy_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_account_compute_policy_show }}" 

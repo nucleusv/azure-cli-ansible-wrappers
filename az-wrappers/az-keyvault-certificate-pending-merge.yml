@@ -1,0 +1,35 @@
+
+
+ - name: Set input params for az_keyvault_certificate_pending_merge
+   set_fact: 
+     az_keyvault_certificate_pending_merge:
+       input: 
+         ###  Required parameter. File containing the certificate or certificate chain to merge.  ### 
+        'file': "{{ item['file'] | default('') }}" 
+         ###  Required parameter. Name of the pending certificate.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+         ###  Optional parameter. Create certificate in disabled state.  ### 
+        'disabled': "{{ item['disabled'] | default('') }}" 
+         ###  Optional parameter. Expiration UTC datetime  (Y-m-d'T'H:M:S'Z').  ### 
+        'expires': "{{ item['expires'] | default('') }}" 
+         ###  Optional parameter. Key not usable before the provided UTC datetime  (Y-m-d'T'H:M:S'Z').  ### 
+        'not-before': "{{ item['not-before'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_certificate_pending_merge }}"          
+ - name: "az keyvault certificate pending merge: Merges a certificate or a certificate chain with a key pair existing on the server." 
+   command: |                                      
+     az keyvault certificate pending merge                            
+                 --file {{ az_keyvault_certificate_pending_merge.input['file'] }} 
+                 --name {{ az_keyvault_certificate_pending_merge.input['name'] }} 
+                 --vault-name {{ az_keyvault_certificate_pending_merge.input['vault-name'] }} 
+                 {%if az_keyvault_certificate_pending_merge.input['disabled'] %} --disabled az_keyvault_certificate_pending_merge.input['disabled'] {%endif %} 
+                 {%if az_keyvault_certificate_pending_merge.input['expires'] %} --expires az_keyvault_certificate_pending_merge.input['expires'] {%endif %} 
+                 {%if az_keyvault_certificate_pending_merge.input['not-before'] %} --not-before az_keyvault_certificate_pending_merge.input['not-before'] {%endif %} 
+                 {%if az_keyvault_certificate_pending_merge.input['rtags'] %} --tags az_keyvault_certificate_pending_merge.input['rtags'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_keyvault_certificate_pending_merge: "{{ az_keyvault_certificate_pending_merge|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_certificate_pending_merge }}" 

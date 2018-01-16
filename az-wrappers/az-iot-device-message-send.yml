@@ -1,0 +1,35 @@
+
+
+ - name: Set input params for az_iot_device_message_send
+   set_fact: 
+     az_iot_device_message_send:
+       input: 
+         ###  Required parameter. Device Id.  ### 
+        'device-id': "{{ item['device-id'] | default('') }}" 
+         ###  Required parameter. IoT Hub name.  ### 
+        'hub-name': "{{ item['hub-name'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Device-to-cloud message correlation Id.  ### 
+        'correlation-id': "{{ item['correlation-id'] | default('') }}" 
+         ###  Optional parameter. Device-to-cloud message body.  ### 
+        'data': "{{ item['data'] | default('') }}" 
+         ###  Optional parameter. Device-to-cloud message Id.  ### 
+        'message-id': "{{ item['message-id'] | default('') }}" 
+         ###  Optional parameter. Device-to-cloud message user Id.  ### 
+        'user-id': "{{ item['user-id'] | default('') }}" 
+ - debug: msg="{{ az_iot_device_message_send }}"          
+ - name: "az iot device message send: Send a device-to-cloud message." 
+   command: |                                      
+     az iot device message send                            
+                 --device-id {{ az_iot_device_message_send.input['device-id'] }} 
+                 --hub-name {{ az_iot_device_message_send.input['hub-name'] }} 
+                 {%if az_iot_device_message_send.input['resource-group'] %} --resource-group az_iot_device_message_send.input['resource-group'] {%endif %} 
+                 {%if az_iot_device_message_send.input['correlation-id'] %} --correlation-id az_iot_device_message_send.input['correlation-id'] {%endif %} 
+                 {%if az_iot_device_message_send.input['data'] %} --data az_iot_device_message_send.input['data'] {%endif %} 
+                 {%if az_iot_device_message_send.input['message-id'] %} --message-id az_iot_device_message_send.input['message-id'] {%endif %} 
+                 {%if az_iot_device_message_send.input['user-id'] %} --user-id az_iot_device_message_send.input['user-id'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_device_message_send: "{{ az_iot_device_message_send|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_device_message_send }}" 

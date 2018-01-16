@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_policy_set_definition_create
+   set_fact: 
+     az_policy_set_definition_create:
+       input: 
+         ###  Required parameter. Policy definitions in JSON format, or a path to a file containing JSON rules.  ### 
+        'definitions': "{{ item['definitions'] | default('') }}" 
+         ###  Required parameter. Name of the new policy set definition.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Description of policy set definition.  ### 
+        'description': "{{ item['description'] | default('') }}" 
+         ###  Optional parameter. Display name of policy set definition.  ### 
+        'display-name': "{{ item['display-name'] | default('') }}" 
+         ###  Optional parameter. JSON formatted string or a path to a file or uri with parameter definitions.  ### 
+        'params': "{{ item['params'] | default('') }}" 
+ - debug: msg="{{ az_policy_set_definition_create }}"          
+ - name: "az policy set-definition create: Create a policy set definition." 
+   command: |                                      
+     az policy set-definition create                            
+                 --definitions {{ az_policy_set_definition_create.input['definitions'] }} 
+                 --name {{ az_policy_set_definition_create.input['name'] }} 
+                 {%if az_policy_set_definition_create.input['description'] %} --description az_policy_set_definition_create.input['description'] {%endif %} 
+                 {%if az_policy_set_definition_create.input['display-name'] %} --display-name az_policy_set_definition_create.input['display-name'] {%endif %} 
+                 {%if az_policy_set_definition_create.input['params'] %} --params az_policy_set_definition_create.input['params'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_policy_set_definition_create: "{{ az_policy_set_definition_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_policy_set_definition_create }}" 

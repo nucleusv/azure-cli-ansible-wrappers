@@ -1,0 +1,38 @@
+
+
+ - name: Set input params for az_aks_install_connector
+   set_fact: 
+     az_aks_install_connector:
+       input: 
+         ###  Required parameter. Name of the ACI Connector.  ### 
+        'connector-name': "{{ item['connector-name'] | default('') }}" 
+         ###  Required parameter. Name of the managed cluster.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. URL of a Helm chart that installs ACI Connector.  ### 
+        'chart-url': "{{ item['chart-url'] | default('') }}" 
+         ###  Optional parameter. Secret associated with the service principal. This argument is required if `--service-principal` is specified.  ### 
+        'client-secret': "{{ item['client-secret'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. Install support for deploying ACIs of this operating system type.  ### 
+        'os-type': "{{ item['os-type'] | default('') }}" 
+         ###  Optional parameter. Service principal used for authentication to Azure APIs.  ### 
+        'service-principal': "{{ item['service-principal'] | default('') }}" 
+ - debug: msg="{{ az_aks_install_connector }}"          
+ - name: "az aks install-connector: Install the Azure Container Instances (ACI) Connector on a managed Kubernetes cluster." 
+   command: |                                      
+     az aks install-connector                            
+                 --connector-name {{ az_aks_install_connector.input['connector-name'] }} 
+                 --name {{ az_aks_install_connector.input['name'] }} 
+                 --resource-group {{ az_aks_install_connector.input['resource-group'] }} 
+                 {%if az_aks_install_connector.input['chart-url'] %} --chart-url az_aks_install_connector.input['chart-url'] {%endif %} 
+                 {%if az_aks_install_connector.input['client-secret'] %} --client-secret az_aks_install_connector.input['client-secret'] {%endif %} 
+                 {%if az_aks_install_connector.input['location'] %} --location az_aks_install_connector.input['location'] {%endif %} 
+                 {%if az_aks_install_connector.input['os-type'] %} --os-type az_aks_install_connector.input['os-type'] {%endif %} 
+                 {%if az_aks_install_connector.input['service-principal'] %} --service-principal az_aks_install_connector.input['service-principal'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_aks_install_connector: "{{ az_aks_install_connector|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_aks_install_connector }}" 

@@ -1,0 +1,35 @@
+
+
+ - name: Set input params for az_keyvault_certificate_issuer_create
+   set_fact: 
+     az_keyvault_certificate_issuer_create:
+       input: 
+         ###  Required parameter. Certificate issuer name.  ### 
+        'issuer-name': "{{ item['issuer-name'] | default('') }}" 
+         ###  Required parameter. The certificate provider name. Must be registered with your tenant ID and in your region.  ### 
+        'provider-name': "{{ item['provider-name'] | default('') }}" 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+         ###  Optional parameter. Set issuer to disabled state.  ### 
+        'disabled': "{{ item['disabled'] | default('') }}" 
+         ###  Optional parameter. The issuer account id/username/etc.  ### 
+        'account-id': "{{ item['account-id'] | default('') }}" 
+         ###  Optional parameter. The issuer account password/secret/etc.  ### 
+        'password': "{{ item['password'] | default('') }}" 
+         ###  Optional parameter. The organization id.  ### 
+        'organization-id': "{{ item['organization-id'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_certificate_issuer_create }}"          
+ - name: "az keyvault certificate issuer create: Create a certificate issuer record." 
+   command: |                                      
+     az keyvault certificate issuer create                            
+                 --issuer-name {{ az_keyvault_certificate_issuer_create.input['issuer-name'] }} 
+                 --provider-name {{ az_keyvault_certificate_issuer_create.input['provider-name'] }} 
+                 --vault-name {{ az_keyvault_certificate_issuer_create.input['vault-name'] }} 
+                 {%if az_keyvault_certificate_issuer_create.input['disabled'] %} --disabled az_keyvault_certificate_issuer_create.input['disabled'] {%endif %} 
+                 {%if az_keyvault_certificate_issuer_create.input['account-id'] %} --account-id az_keyvault_certificate_issuer_create.input['account-id'] {%endif %} 
+                 {%if az_keyvault_certificate_issuer_create.input['password'] %} --password az_keyvault_certificate_issuer_create.input['password'] {%endif %} 
+                 {%if az_keyvault_certificate_issuer_create.input['organization-id'] %} --organization-id az_keyvault_certificate_issuer_create.input['organization-id'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_keyvault_certificate_issuer_create: "{{ az_keyvault_certificate_issuer_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_certificate_issuer_create }}" 

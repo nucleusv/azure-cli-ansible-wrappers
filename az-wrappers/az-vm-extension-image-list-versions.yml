@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_vm_extension_image_list_versions
+   set_fact: 
+     az_vm_extension_image_list_versions:
+       input: 
+         ###  Required parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Required parameter. Name of the extension.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Image publisher name.  ### 
+        'publisher': "{{ item['publisher'] | default('') }}" 
+         ###  Optional parameter. The filter to apply on the operation.  ### 
+        'filter': "{{ item['filter'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'orderby': "{{ item['orderby'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'top': "{{ item['top'] | default('') }}" 
+ - debug: msg="{{ az_vm_extension_image_list_versions }}"          
+ - name: "az vm extension image list-versions: List the versions for available extensions." 
+   command: |                                      
+     az vm extension image list-versions                            
+                 --location {{ az_vm_extension_image_list_versions.input['location'] }} 
+                 --name {{ az_vm_extension_image_list_versions.input['name'] }} 
+                 --publisher {{ az_vm_extension_image_list_versions.input['publisher'] }} 
+                 {%if az_vm_extension_image_list_versions.input['filter'] %} --filter az_vm_extension_image_list_versions.input['filter'] {%endif %} 
+                 {%if az_vm_extension_image_list_versions.input['orderby'] %} --orderby az_vm_extension_image_list_versions.input['orderby'] {%endif %} 
+                 {%if az_vm_extension_image_list_versions.input['top'] %} --top az_vm_extension_image_list_versions.input['top'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_vm_extension_image_list_versions: "{{ az_vm_extension_image_list_versions|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_extension_image_list_versions }}" 

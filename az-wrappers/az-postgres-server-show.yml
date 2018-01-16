@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_postgres_server_show
+   set_fact: 
+     az_postgres_server_show:
+       input: 
+         ###  Required parameter. Name of the server.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_postgres_server_show }}"          
+ - name: "az postgres server show: Get the details of a server." 
+   command: |                                      
+     az postgres server show                            
+                 --name {{ az_postgres_server_show.input['name'] }} 
+                 --resource-group {{ az_postgres_server_show.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_postgres_server_show: "{{ az_postgres_server_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_postgres_server_show }}" 

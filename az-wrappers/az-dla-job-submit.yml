@@ -1,0 +1,56 @@
+
+
+ - name: Set input params for az_dla_job_submit
+   set_fact: 
+     az_dla_job_submit:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. Name for the submitted job.  ### 
+        'job-name': "{{ item['job-name'] | default('') }}" 
+         ###  Required parameter. Script to submit. This may be '@{file}' to load from a file.  ### 
+        'script': "{{ item['script'] | default('') }}" 
+         ###  Optional parameter. Indicates the type of compilation to be done on this job. Valid values are: 'Semantic' (Only performs semantic checks and necessary sanity checks), 'Full' (full compilation) and 'SingleBox' (Full compilation performed locally).  ### 
+        'compile-mode': "{{ item['compile-mode'] | default('') }}" 
+         ###  Optional parameter. Indicates that the submission should only build the job and not execute if set to true.  ### 
+        'compile-only': "{{ item['compile-only'] | default('') }}" 
+         ###  Optional parameter. The degree of parallelism for the job.  ### 
+        'degree-of-parallelism': "{{ item['degree-of-parallelism'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'pipeline-id': "{{ item['pipeline-id'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'pipeline-name': "{{ item['pipeline-name'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'pipeline-uri': "{{ item['pipeline-uri'] | default('') }}" 
+         ###  Optional parameter. The priority of the job.  ### 
+        'priority': "{{ item['priority'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'recurrence-id': "{{ item['recurrence-id'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'recurrence-name': "{{ item['recurrence-name'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'run-id': "{{ item['run-id'] | default('') }}" 
+         ###  Optional parameter. The runtime version to use.  ### 
+        'runtime-version': "{{ item['runtime-version'] | default('') }}" 
+ - debug: msg="{{ az_dla_job_submit }}"          
+ - name: "az dla job submit: Submit a job to a Data Lake Analytics account." 
+   command: |                                      
+     az dla job submit                            
+                 --account {{ az_dla_job_submit.input['account'] }} 
+                 --job-name {{ az_dla_job_submit.input['job-name'] }} 
+                 --script {{ az_dla_job_submit.input['script'] }} 
+                 {%if az_dla_job_submit.input['compile-mode'] %} --compile-mode az_dla_job_submit.input['compile-mode'] {%endif %} 
+                 {%if az_dla_job_submit.input['compile-only'] %} --compile-only az_dla_job_submit.input['compile-only'] {%endif %} 
+                 {%if az_dla_job_submit.input['degree-of-parallelism'] %} --degree-of-parallelism az_dla_job_submit.input['degree-of-parallelism'] {%endif %} 
+                 {%if az_dla_job_submit.input['pipeline-id'] %} --pipeline-id az_dla_job_submit.input['pipeline-id'] {%endif %} 
+                 {%if az_dla_job_submit.input['pipeline-name'] %} --pipeline-name az_dla_job_submit.input['pipeline-name'] {%endif %} 
+                 {%if az_dla_job_submit.input['pipeline-uri'] %} --pipeline-uri az_dla_job_submit.input['pipeline-uri'] {%endif %} 
+                 {%if az_dla_job_submit.input['priority'] %} --priority az_dla_job_submit.input['priority'] {%endif %} 
+                 {%if az_dla_job_submit.input['recurrence-id'] %} --recurrence-id az_dla_job_submit.input['recurrence-id'] {%endif %} 
+                 {%if az_dla_job_submit.input['recurrence-name'] %} --recurrence-name az_dla_job_submit.input['recurrence-name'] {%endif %} 
+                 {%if az_dla_job_submit.input['run-id'] %} --run-id az_dla_job_submit.input['run-id'] {%endif %} 
+                 {%if az_dla_job_submit.input['runtime-version'] %} --runtime-version az_dla_job_submit.input['runtime-version'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dla_job_submit: "{{ az_dla_job_submit|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_job_submit }}" 

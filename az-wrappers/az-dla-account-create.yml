@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_dla_account_create
+   set_fact: 
+     az_dla_account_create:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The default Data Lake Store account to associate with the created account.  ### 
+        'default-data-lake-store': "{{ item['default-data-lake-store'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. The maximum degree of parallelism for this account.  ### 
+        'max-degree-of-parallelism': "{{ item['max-degree-of-parallelism'] | default('') }}" 
+         ###  Optional parameter. The maximum number of concurrent jobs for this account.  ### 
+        'max-job-count': "{{ item['max-job-count'] | default('') }}" 
+         ###  Optional parameter. The number of days to retain job metadata.  ### 
+        'query-store-retention': "{{ item['query-store-retention'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. The desired commitment tier for this account to use.  ### 
+        'tier': "{{ item['tier'] | default('') }}" 
+ - debug: msg="{{ az_dla_account_create }}"          
+ - name: "az dla account create: Create a Data Lake Analytics account." 
+   command: |                                      
+     az dla account create                            
+                 --account {{ az_dla_account_create.input['account'] }} 
+                 --default-data-lake-store {{ az_dla_account_create.input['default-data-lake-store'] }} 
+                 {%if az_dla_account_create.input['location'] %} --location az_dla_account_create.input['location'] {%endif %} 
+                 {%if az_dla_account_create.input['max-degree-of-parallelism'] %} --max-degree-of-parallelism az_dla_account_create.input['max-degree-of-parallelism'] {%endif %} 
+                 {%if az_dla_account_create.input['max-job-count'] %} --max-job-count az_dla_account_create.input['max-job-count'] {%endif %} 
+                 {%if az_dla_account_create.input['query-store-retention'] %} --query-store-retention az_dla_account_create.input['query-store-retention'] {%endif %} 
+                 {%if az_dla_account_create.input['resource-group'] %} --resource-group az_dla_account_create.input['resource-group'] {%endif %} 
+                 {%if az_dla_account_create.input['rtags'] %} --tags az_dla_account_create.input['rtags'] {%endif %} 
+                 {%if az_dla_account_create.input['tier'] %} --tier az_dla_account_create.input['tier'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dla_account_create: "{{ az_dla_account_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_account_create }}" 

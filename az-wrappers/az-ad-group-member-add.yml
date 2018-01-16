@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_ad_group_member_add
+   set_fact: 
+     az_ad_group_member_add:
+       input: 
+         ###  Required parameter. Group's object id or display name(prefix also works if there is a unique match).  ### 
+        'group': "{{ item['group'] | default('') }}" 
+         ###  Required parameter. The object ID of the contact, group, user, or service principal.  ### 
+        'member-id': "{{ item['member-id'] | default('') }}" 
+ - debug: msg="{{ az_ad_group_member_add }}"          
+ - name: "az ad group member add: Add a member to a group." 
+   command: |                                      
+     az ad group member add                            
+                 --group {{ az_ad_group_member_add.input['group'] }} 
+                 --member-id {{ az_ad_group_member_add.input['member-id'] }} 
+   register: output  
+ - set_fact: 
+    az_ad_group_member_add: "{{ az_ad_group_member_add|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_ad_group_member_add }}" 

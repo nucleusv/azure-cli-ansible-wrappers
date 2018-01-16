@@ -1,0 +1,38 @@
+
+
+ - name: Set input params for az_vm_extension_set
+   set_fact: 
+     az_vm_extension_set:
+       input: 
+         ###  Required parameter.   ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. The name of the extension publisher.  ### 
+        'publisher': "{{ item['publisher'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The name of the Virtual Machine. You can configure the default using `az configure --defaults vm=&lt;name&gt;`.  ### 
+        'vm-name': "{{ item['vm-name'] | default('') }}" 
+         ###  Optional parameter. By doing this, extension system will not pick the highest minor version for the specified version number, and will not auto update to the latest build/revision number on any scale set updates in future.  ### 
+        'no-auto-upgrade': "{{ item['no-auto-upgrade'] | default('') }}" 
+         ###  Optional parameter. Protected settings in JSON format for sensitive information like credentials. A JSON file path is also accepted.  ### 
+        'protected-settings': "{{ item['protected-settings'] | default('') }}" 
+         ###  Optional parameter. Extension settings in JSON format. A JSON file path is also accepted.  ### 
+        'settings': "{{ item['settings'] | default('') }}" 
+         ###  Optional parameter. The version of the extension.  ### 
+        'version': "{{ item['version'] | default('') }}" 
+ - debug: msg="{{ az_vm_extension_set }}"          
+ - name: "az vm extension set: Set extensions for a VM." 
+   command: |                                      
+     az vm extension set                            
+                 --name {{ az_vm_extension_set.input['name'] }} 
+                 --publisher {{ az_vm_extension_set.input['publisher'] }} 
+                 --resource-group {{ az_vm_extension_set.input['resource-group'] }} 
+                 --vm-name {{ az_vm_extension_set.input['vm-name'] }} 
+                 {%if az_vm_extension_set.input['no-auto-upgrade'] %} --no-auto-upgrade az_vm_extension_set.input['no-auto-upgrade'] {%endif %} 
+                 {%if az_vm_extension_set.input['protected-settings'] %} --protected-settings az_vm_extension_set.input['protected-settings'] {%endif %} 
+                 {%if az_vm_extension_set.input['settings'] %} --settings az_vm_extension_set.input['settings'] {%endif %} 
+                 {%if az_vm_extension_set.input['version'] %} --version az_vm_extension_set.input['version'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_vm_extension_set: "{{ az_vm_extension_set|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_extension_set }}" 

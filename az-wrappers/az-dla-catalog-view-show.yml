@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_dla_catalog_view_show
+   set_fact: 
+     az_dla_catalog_view_show:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The name of the database containing the view.  ### 
+        'database-name': "{{ item['database-name'] | default('') }}" 
+         ###  Required parameter. The name of the schema containing the view.  ### 
+        'schema-name': "{{ item['schema-name'] | default('') }}" 
+         ###  Required parameter. The name of the view.  ### 
+        'view-name': "{{ item['view-name'] | default('') }}" 
+ - debug: msg="{{ az_dla_catalog_view_show }}"          
+ - name: "az dla catalog view show: Retrieves the specified view from the Data Lake Analytics catalog." 
+   command: |                                      
+     az dla catalog view show                            
+                 --account {{ az_dla_catalog_view_show.input['account'] }} 
+                 --database-name {{ az_dla_catalog_view_show.input['database-name'] }} 
+                 --schema-name {{ az_dla_catalog_view_show.input['schema-name'] }} 
+                 --view-name {{ az_dla_catalog_view_show.input['view-name'] }} 
+   register: output  
+ - set_fact: 
+    az_dla_catalog_view_show: "{{ az_dla_catalog_view_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_catalog_view_show }}" 

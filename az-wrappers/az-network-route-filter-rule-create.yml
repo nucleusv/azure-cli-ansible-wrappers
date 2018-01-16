@@ -1,0 +1,35 @@
+
+
+ - name: Set input params for az_network_route_filter_rule_create
+   set_fact: 
+     az_network_route_filter_rule_create:
+       input: 
+         ###  Required parameter. The access type of the rule.  ### 
+        'access': "{{ item['access'] | default('') }}" 
+         ###  Required parameter. Space separated list of border gateway protocol (BGP) community values to filter on.  ### 
+        'communities': "{{ item['communities'] | default('') }}" 
+         ###  Required parameter. Name of the route filter.  ### 
+        'filter-name': "{{ item['filter-name'] | default('') }}" 
+         ###  Required parameter. Name of the route filter rule.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+ - debug: msg="{{ az_network_route_filter_rule_create }}"          
+ - name: "az network route-filter rule create: Create a rule in a route filter." 
+   command: |                                      
+     az network route-filter rule create                            
+                 --access {{ az_network_route_filter_rule_create.input['access'] }} 
+                 --communities {{ az_network_route_filter_rule_create.input['communities'] }} 
+                 --filter-name {{ az_network_route_filter_rule_create.input['filter-name'] }} 
+                 --name {{ az_network_route_filter_rule_create.input['name'] }} 
+                 --resource-group {{ az_network_route_filter_rule_create.input['resource-group'] }} 
+                 {%if az_network_route_filter_rule_create.input['location'] %} --location az_network_route_filter_rule_create.input['location'] {%endif %} 
+                 {%if az_network_route_filter_rule_create.input['rtags'] %} --tags az_network_route_filter_rule_create.input['rtags'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_route_filter_rule_create: "{{ az_network_route_filter_rule_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_route_filter_rule_create }}" 

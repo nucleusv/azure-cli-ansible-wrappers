@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_interactive
+   set_fact: 
+     az_interactive:
+       input: 
+         ###  Optional parameter. The colors of the shell.  ### 
+        'style': "{{ item['style'] | default('') }}" 
+ - debug: msg="{{ az_interactive }}"          
+ - name: "az interactive: Start interactive mode." 
+   command: |                                      
+     az interactive                            
+                 {%if az_interactive.input['style'] %} --style az_interactive.input['style'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_interactive: "{{ az_interactive|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_interactive }}" 

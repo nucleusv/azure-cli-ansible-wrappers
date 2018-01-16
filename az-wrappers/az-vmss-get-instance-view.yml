@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_vmss_get_instance_view
+   set_fact: 
+     az_vmss_get_instance_view:
+       input: 
+         ###  Required parameter. Scale set name. You can configure the default using `az configure --defaults vmss=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. A VM instance ID or "*" to list instance view for all VMs in a scale set.  ### 
+        'instance-id': "{{ item['instance-id'] | default('') }}" 
+ - debug: msg="{{ az_vmss_get_instance_view }}"          
+ - name: "az vmss get-instance-view: View an instance of a VMSS." 
+   command: |                                      
+     az vmss get-instance-view                            
+                 --name {{ az_vmss_get_instance_view.input['name'] }} 
+                 --resource-group {{ az_vmss_get_instance_view.input['resource-group'] }} 
+                 {%if az_vmss_get_instance_view.input['instance-id'] %} --instance-id az_vmss_get_instance_view.input['instance-id'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_vmss_get_instance_view: "{{ az_vmss_get_instance_view|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vmss_get_instance_view }}" 

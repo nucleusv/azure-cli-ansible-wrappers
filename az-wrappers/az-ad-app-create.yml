@@ -1,0 +1,47 @@
+
+
+ - name: Set input params for az_ad_app_create
+   set_fact: 
+     az_ad_app_create:
+       input: 
+         ###  Required parameter. The display name of the application.  ### 
+        'display-name': "{{ item['display-name'] | default('') }}" 
+         ###  Required parameter. The url where users can sign in and use your app.  ### 
+        'homepage': "{{ item['homepage'] | default('') }}" 
+         ###  Required parameter. Space separated unique URIs that Azure AD can use for this app.  ### 
+        'identifier-uris': "{{ item['identifier-uris'] | default('') }}" 
+         ###  Optional parameter. The application can be used from any Azure AD tenants.  ### 
+        'available-to-other-tenants': "{{ item['available-to-other-tenants'] | default('') }}" 
+         ###  Optional parameter. Date or datetime after which credentials expire(e.g. '2017-12-31T11:59:59+00:00' or '2017-12-31'). Default value is one year after current time.  ### 
+        'end-date': "{{ item['end-date'] | default('') }}" 
+         ###  Optional parameter. The type of the key credentials associated with the application.  ### 
+        'key-type': "{{ item['key-type'] | default('') }}" 
+         ###  Optional parameter. The usage of the key credentials associated with the application.  ### 
+        'key-usage': "{{ item['key-usage'] | default('') }}" 
+         ###  Optional parameter. The value for the key credentials associated with the application.  ### 
+        'key-value': "{{ item['key-value'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'password': "{{ item['password'] | default('') }}" 
+         ###  Optional parameter. Space separated URIs to which Azure AD will redirect in response to an OAuth 2.0 request. The value does not need to be a physical endpoint, but must be a valid URI.  ### 
+        'reply-urls': "{{ item['reply-urls'] | default('') }}" 
+         ###  Optional parameter. Date or datetime at which credentials become valid(e.g. '2017-01-01T01:00:00+00:00' or '2017-01-01'). Default value is current time.  ### 
+        'start-date': "{{ item['start-date'] | default('') }}" 
+ - debug: msg="{{ az_ad_app_create }}"          
+ - name: "az ad app create: Create an application." 
+   command: |                                      
+     az ad app create                            
+                 --display-name {{ az_ad_app_create.input['display-name'] }} 
+                 --homepage {{ az_ad_app_create.input['homepage'] }} 
+                 --identifier-uris {{ az_ad_app_create.input['identifier-uris'] }} 
+                 {%if az_ad_app_create.input['available-to-other-tenants'] %} --available-to-other-tenants az_ad_app_create.input['available-to-other-tenants'] {%endif %} 
+                 {%if az_ad_app_create.input['end-date'] %} --end-date az_ad_app_create.input['end-date'] {%endif %} 
+                 {%if az_ad_app_create.input['key-type'] %} --key-type az_ad_app_create.input['key-type'] {%endif %} 
+                 {%if az_ad_app_create.input['key-usage'] %} --key-usage az_ad_app_create.input['key-usage'] {%endif %} 
+                 {%if az_ad_app_create.input['key-value'] %} --key-value az_ad_app_create.input['key-value'] {%endif %} 
+                 {%if az_ad_app_create.input['password'] %} --password az_ad_app_create.input['password'] {%endif %} 
+                 {%if az_ad_app_create.input['reply-urls'] %} --reply-urls az_ad_app_create.input['reply-urls'] {%endif %} 
+                 {%if az_ad_app_create.input['start-date'] %} --start-date az_ad_app_create.input['start-date'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_ad_app_create: "{{ az_ad_app_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_ad_app_create }}" 

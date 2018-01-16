@@ -1,0 +1,38 @@
+
+
+ - name: Set input params for az_acr_repository_delete
+   set_fact: 
+     az_acr_repository_delete:
+       input: 
+         ###  Required parameter. The name of the container registry. You can configure the default registry name using `az configure --defaults acr=&lt;registry name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. The name of the repository to delete.  ### 
+        'repository': "{{ item['repository'] | default('') }}" 
+         ###  Optional parameter. The sha256 based digest of manifest to delete.  ### 
+        'manifest': "{{ item['manifest'] | default('') }}" 
+         ###  Optional parameter. The password used to log into a container registry.  ### 
+        'password': "{{ item['password'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The name of tag to delete.  ### 
+        'tag': "{{ item['tag'] | default('') }}" 
+         ###  Optional parameter. The username used to log into a container registry.  ### 
+        'username': "{{ item['username'] | default('') }}" 
+         ###  Optional parameter. Do not prompt for confirmation.  ### 
+        'yes': "{{ item['yes'] | default('') }}" 
+ - debug: msg="{{ az_acr_repository_delete }}"          
+ - name: "az acr repository delete: Delete a repository, manifest, or tag in a container registry." 
+   command: |                                      
+     az acr repository delete                            
+                 --name {{ az_acr_repository_delete.input['name'] }} 
+                 --repository {{ az_acr_repository_delete.input['repository'] }} 
+                 {%if az_acr_repository_delete.input['manifest'] %} --manifest az_acr_repository_delete.input['manifest'] {%endif %} 
+                 {%if az_acr_repository_delete.input['password'] %} --password az_acr_repository_delete.input['password'] {%endif %} 
+                 {%if az_acr_repository_delete.input['resource-group'] %} --resource-group az_acr_repository_delete.input['resource-group'] {%endif %} 
+                 {%if az_acr_repository_delete.input['tag'] %} --tag az_acr_repository_delete.input['tag'] {%endif %} 
+                 {%if az_acr_repository_delete.input['username'] %} --username az_acr_repository_delete.input['username'] {%endif %} 
+                 {%if az_acr_repository_delete.input['yes'] %} --yes {%endif %} 
+   register: output  
+ - set_fact: 
+    az_acr_repository_delete: "{{ az_acr_repository_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_acr_repository_delete }}" 

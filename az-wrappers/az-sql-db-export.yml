@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_sql_db_export
+   set_fact: 
+     az_sql_db_export:
+       input: 
+         ###  Required parameter. The password of the SQL administrator.  ### 
+        'admin-password': "{{ item['admin-password'] | default('') }}" 
+         ###  Required parameter. The name of the SQL administrator.  ### 
+        'admin-user': "{{ item['admin-user'] | default('') }}" 
+         ###  Required parameter. Name of the Azure SQL Database.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the Azure SQL server.  ### 
+        'server': "{{ item['server'] | default('') }}" 
+         ###  Required parameter. The storage key to use.  If storage key type is SharedAccessKey, it must be preceded with a "?.".  ### 
+        'storage-key': "{{ item['storage-key'] | default('') }}" 
+         ###  Required parameter. The type of the storage key to use.  ### 
+        'storage-key-type': "{{ item['storage-key-type'] | default('') }}" 
+         ###  Required parameter. The storage uri to use.  ### 
+        'storage-uri': "{{ item['storage-uri'] | default('') }}" 
+         ###  Optional parameter. The authentication type.  ### 
+        'auth-type': "{{ item['auth-type'] | default('') }}" 
+ - debug: msg="{{ az_sql_db_export }}"          
+ - name: "az sql db export: Export a database to a bacpac." 
+   command: |                                      
+     az sql db export                            
+                 --admin-password {{ az_sql_db_export.input['admin-password'] }} 
+                 --admin-user {{ az_sql_db_export.input['admin-user'] }} 
+                 --name {{ az_sql_db_export.input['name'] }} 
+                 --resource-group {{ az_sql_db_export.input['resource-group'] }} 
+                 --server {{ az_sql_db_export.input['server'] }} 
+                 --storage-key {{ az_sql_db_export.input['storage-key'] }} 
+                 --storage-key-type {{ az_sql_db_export.input['storage-key-type'] }} 
+                 --storage-uri {{ az_sql_db_export.input['storage-uri'] }} 
+                 {%if az_sql_db_export.input['auth-type'] %} --auth-type az_sql_db_export.input['auth-type'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_sql_db_export: "{{ az_sql_db_export|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sql_db_export }}" 

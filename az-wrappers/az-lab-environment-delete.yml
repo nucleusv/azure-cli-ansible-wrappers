@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_lab_environment_delete
+   set_fact: 
+     az_lab_environment_delete:
+       input: 
+         ###  Required parameter. The name of the lab.  ### 
+        'lab-name': "{{ item['lab-name'] | default('') }}" 
+         ###  Required parameter. The name of the environment.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_lab_environment_delete }}"          
+ - name: "az lab environment delete: Delete an environment from a lab." 
+   command: |                                      
+     az lab environment delete                            
+                 --lab-name {{ az_lab_environment_delete.input['lab-name'] }} 
+                 --name {{ az_lab_environment_delete.input['name'] }} 
+                 --resource-group {{ az_lab_environment_delete.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_lab_environment_delete: "{{ az_lab_environment_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_lab_environment_delete }}" 

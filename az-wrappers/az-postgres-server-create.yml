@@ -1,0 +1,47 @@
+
+
+ - name: Set input params for az_postgres_server_create
+   set_fact: 
+     az_postgres_server_create:
+       input: 
+         ###  Required parameter. Name of the server.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Number of compute units.  ### 
+        'compute-units': "{{ item['compute-units'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. The performance tier of the server.  ### 
+        'performance-tier': "{{ item['performance-tier'] | default('') }}" 
+         ###  Optional parameter. Enable ssl enforcement or not when connect to server.  ### 
+        'ssl-enforcement': "{{ item['ssl-enforcement'] | default('') }}" 
+         ###  Optional parameter. The max storage size of the server, unit is MB.  ### 
+        'storage-size': "{{ item['storage-size'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. Server version.  ### 
+        'version': "{{ item['version'] | default('') }}" 
+         ###  Required parameter. The administrator's login name of a server. Can only be specified when the server is being created (and is required for creation).  ### 
+        'admin-user': "{{ item['admin-user'] | default('') }}" 
+         ###  Optional parameter. The password of the administrator login.  ### 
+        'admin-password': "{{ item['admin-password'] | default('') }}" 
+ - debug: msg="{{ az_postgres_server_create }}"          
+ - name: "az postgres server create: Create a server." 
+   command: |                                      
+     az postgres server create                            
+                 --name {{ az_postgres_server_create.input['name'] }} 
+                 --resource-group {{ az_postgres_server_create.input['resource-group'] }} 
+                 {%if az_postgres_server_create.input['compute-units'] %} --compute-units az_postgres_server_create.input['compute-units'] {%endif %} 
+                 {%if az_postgres_server_create.input['location'] %} --location az_postgres_server_create.input['location'] {%endif %} 
+                 {%if az_postgres_server_create.input['performance-tier'] %} --performance-tier az_postgres_server_create.input['performance-tier'] {%endif %} 
+                 {%if az_postgres_server_create.input['ssl-enforcement'] %} --ssl-enforcement az_postgres_server_create.input['ssl-enforcement'] {%endif %} 
+                 {%if az_postgres_server_create.input['storage-size'] %} --storage-size az_postgres_server_create.input['storage-size'] {%endif %} 
+                 {%if az_postgres_server_create.input['rtags'] %} --tags az_postgres_server_create.input['rtags'] {%endif %} 
+                 {%if az_postgres_server_create.input['version'] %} --version az_postgres_server_create.input['version'] {%endif %} 
+                 --admin-user {{ az_postgres_server_create.input['admin-user'] }} 
+                 {%if az_postgres_server_create.input['admin-password'] %} --admin-password az_postgres_server_create.input['admin-password'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_postgres_server_create: "{{ az_postgres_server_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_postgres_server_create }}" 

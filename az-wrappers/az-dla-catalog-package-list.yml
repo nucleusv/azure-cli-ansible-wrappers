@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_dla_catalog_package_list
+   set_fact: 
+     az_dla_catalog_package_list:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The name of the database containing the packages.  ### 
+        'database-name': "{{ item['database-name'] | default('') }}" 
+         ###  Required parameter. The name of the schema containing the packages.  ### 
+        'schema-name': "{{ item['schema-name'] | default('') }}" 
+         ###  Optional parameter. The Boolean value of true or false to request a count of the matching resources included with the resources in the response, e.g. Categories?$count=true.  ### 
+        'count': "{{ item['count'] | default('') }}" 
+         ###  Optional parameter. OData filter. Optional.  ### 
+        'filter': "{{ item['filter'] | default('') }}" 
+         ###  Optional parameter. OrderBy clause. One or more comma-separated expressions with an optional "asc" (the default) or "desc" depending on the order you'd like the values sorted, e.g. Categories?$orderby=CategoryName desc. Optional.  ### 
+        'orderby': "{{ item['orderby'] | default('') }}" 
+         ###  Optional parameter. OData Select statement. Limits the properties on each entry to just those requested, e.g. Categories?$select=CategoryName,Description. Optional.  ### 
+        'select': "{{ item['select'] | default('') }}" 
+         ###  Optional parameter. The number of items to skip over before returning elements.  ### 
+        'skip': "{{ item['skip'] | default('') }}" 
+         ###  Optional parameter. Maximum number of items to return.  ### 
+        'top': "{{ item['top'] | default('') }}" 
+ - debug: msg="{{ az_dla_catalog_package_list }}"          
+ - name: "az dla catalog package list: Retrieves the list of packages from the Data Lake Analytics catalog." 
+   command: |                                      
+     az dla catalog package list                            
+                 --account {{ az_dla_catalog_package_list.input['account'] }} 
+                 --database-name {{ az_dla_catalog_package_list.input['database-name'] }} 
+                 --schema-name {{ az_dla_catalog_package_list.input['schema-name'] }} 
+                 {%if az_dla_catalog_package_list.input['count'] %} --count az_dla_catalog_package_list.input['count'] {%endif %} 
+                 {%if az_dla_catalog_package_list.input['filter'] %} --filter az_dla_catalog_package_list.input['filter'] {%endif %} 
+                 {%if az_dla_catalog_package_list.input['orderby'] %} --orderby az_dla_catalog_package_list.input['orderby'] {%endif %} 
+                 {%if az_dla_catalog_package_list.input['select'] %} --select az_dla_catalog_package_list.input['select'] {%endif %} 
+                 {%if az_dla_catalog_package_list.input['skip'] %} --skip az_dla_catalog_package_list.input['skip'] {%endif %} 
+                 {%if az_dla_catalog_package_list.input['top'] %} --top az_dla_catalog_package_list.input['top'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dla_catalog_package_list: "{{ az_dla_catalog_package_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_catalog_package_list }}" 

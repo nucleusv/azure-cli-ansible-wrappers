@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_extension_show
+   set_fact: 
+     az_extension_show:
+       input: 
+         ###  Required parameter. Name of extension.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+ - debug: msg="{{ az_extension_show }}"          
+ - name: "az extension show: Show an extension." 
+   command: |                                      
+     az extension show                            
+                 --name {{ az_extension_show.input['name'] }} 
+   register: output  
+ - set_fact: 
+    az_extension_show: "{{ az_extension_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_extension_show }}" 

@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_monitor_action_group_update
+   set_fact: 
+     az_monitor_action_group_update:
+       input: 
+         ###  Required parameter. The name of the action group.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Update the group short name of the action group.  ### 
+        'short-name': "{{ item['short-name'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. Add receivers to the action group.  ### 
+        'add-action': "{{ item['add-action'] | default('') }}" 
+         ###  Optional parameter. Remove receivers from the action group. Accept space separated list of receiver names.  ### 
+        'remove-action': "{{ item['remove-action'] | default('') }}" 
+         ###  Optional parameter. Add an object to a list of objects by specifying a path and key value pairs.  Example: --add property.listProperty <key=value, string or JSON string>.  ### 
+        'add': "{{ item['add'] | default('') }}" 
+         ###  Optional parameter. Remove a property or an element from a list.  Example: --remove property.list <indexToRemove> OR --remove propertyToRemove.  ### 
+        'remove': "{{ item['remove'] | default('') }}" 
+         ###  Optional parameter. Update an object by specifying a property path and value to set.  Example: --set property1.property2=<value>.  ### 
+        'set': "{{ item['set'] | default('') }}" 
+ - debug: msg="{{ az_monitor_action_group_update }}"          
+ - name: "az monitor action-group update: Update an action group." 
+   command: |                                      
+     az monitor action-group update                            
+                 --name {{ az_monitor_action_group_update.input['name'] }} 
+                 --resource-group {{ az_monitor_action_group_update.input['resource-group'] }} 
+                 {%if az_monitor_action_group_update.input['short-name'] %} --short-name az_monitor_action_group_update.input['short-name'] {%endif %} 
+                 {%if az_monitor_action_group_update.input['rtags'] %} --tags az_monitor_action_group_update.input['rtags'] {%endif %} 
+                 {%if az_monitor_action_group_update.input['add-action'] %} --add-action az_monitor_action_group_update.input['add-action'] {%endif %} 
+                 {%if az_monitor_action_group_update.input['remove-action'] %} --remove-action az_monitor_action_group_update.input['remove-action'] {%endif %} 
+                 {%if az_monitor_action_group_update.input['add'] %} --add az_monitor_action_group_update.input['add'] {%endif %} 
+                 {%if az_monitor_action_group_update.input['remove'] %} --remove az_monitor_action_group_update.input['remove'] {%endif %} 
+                 {%if az_monitor_action_group_update.input['set'] %} --set az_monitor_action_group_update.input['set'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_monitor_action_group_update: "{{ az_monitor_action_group_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_monitor_action_group_update }}" 

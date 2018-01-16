@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_dls_fs_download
+   set_fact: 
+     az_dls_fs_download:
+       input: 
+         ###  Required parameter. Name of the Data Lake Store account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The local path where the file or folder will be downloaded to.  ### 
+        'destination-path': "{{ item['destination-path'] | default('') }}" 
+         ###  Required parameter. The full path in the Data Lake Store filesystem to download the file or folder from.  ### 
+        'source-path': "{{ item['source-path'] | default('') }}" 
+         ###  Optional parameter. Size of a block, in bytes.  ### 
+        'block-size': "{{ item['block-size'] | default('') }}" 
+         ###  Optional parameter. Size of the transfer buffer, in bytes.  ### 
+        'buffer-size': "{{ item['buffer-size'] | default('') }}" 
+         ###  Optional parameter. Size of a chunk, in bytes.  ### 
+        'chunk-size': "{{ item['chunk-size'] | default('') }}" 
+         ###  Optional parameter. Indicates that, if the destination file or folder exists, it should be overwritten.  ### 
+        'overwrite': "{{ item['overwrite'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'progress-callback': "{{ item['progress-callback'] | default('') }}" 
+         ###  Optional parameter. Parallelism of the download. Default: The number of cores in the local machine.  ### 
+        'thread-count': "{{ item['thread-count'] | default('') }}" 
+ - debug: msg="{{ az_dls_fs_download }}"          
+ - name: "az dls fs download: Download a file or folder from a Data Lake Store account to the local machine." 
+   command: |                                      
+     az dls fs download                            
+                 --account {{ az_dls_fs_download.input['account'] }} 
+                 --destination-path {{ az_dls_fs_download.input['destination-path'] }} 
+                 --source-path {{ az_dls_fs_download.input['source-path'] }} 
+                 {%if az_dls_fs_download.input['block-size'] %} --block-size az_dls_fs_download.input['block-size'] {%endif %} 
+                 {%if az_dls_fs_download.input['buffer-size'] %} --buffer-size az_dls_fs_download.input['buffer-size'] {%endif %} 
+                 {%if az_dls_fs_download.input['chunk-size'] %} --chunk-size az_dls_fs_download.input['chunk-size'] {%endif %} 
+                 {%if az_dls_fs_download.input['overwrite'] %} --overwrite az_dls_fs_download.input['overwrite'] {%endif %} 
+                 {%if az_dls_fs_download.input['progress-callback'] %} --progress-callback az_dls_fs_download.input['progress-callback'] {%endif %} 
+                 {%if az_dls_fs_download.input['thread-count'] %} --thread-count az_dls_fs_download.input['thread-count'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dls_fs_download: "{{ az_dls_fs_download|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dls_fs_download }}" 

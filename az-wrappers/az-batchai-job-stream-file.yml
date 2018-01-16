@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_batchai_job_stream_file
+   set_fact: 
+     az_batchai_job_stream_file:
+       input: 
+         ###  Required parameter. Name of the job.  ### 
+        'job-name': "{{ item['job-name'] | default('') }}" 
+         ###  Required parameter. The name of the file to stream.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. The Id of the Job output directory (as specified by "id" element in outputDirectories collection in job create parameters). Use "stdouterr" to access job stdout and stderr files.  ### 
+        'output-directory-id': "{{ item['output-directory-id'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_batchai_job_stream_file }}"          
+ - name: "az batchai job stream-file: Output the current content of the file and outputs appended data as the file grows (similar to 'tail -f')." 
+   command: |                                      
+     az batchai job stream-file                            
+                 --job-name {{ az_batchai_job_stream_file.input['job-name'] }} 
+                 --name {{ az_batchai_job_stream_file.input['name'] }} 
+                 --output-directory-id {{ az_batchai_job_stream_file.input['output-directory-id'] }} 
+                 --resource-group {{ az_batchai_job_stream_file.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_batchai_job_stream_file: "{{ az_batchai_job_stream_file|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batchai_job_stream_file }}" 

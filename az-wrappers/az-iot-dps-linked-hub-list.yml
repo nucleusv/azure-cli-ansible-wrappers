@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_iot_dps_linked_hub_list
+   set_fact: 
+     az_iot_dps_linked_hub_list:
+       input: 
+         ###  Required parameter. IoT Provisioning Service name.  ### 
+        'dps-name': "{{ item['dps-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_iot_dps_linked_hub_list }}"          
+ - name: "az iot dps linked-hub list: List all linked IoT hubs in an Azure IoT Hub device provisioning service." 
+   command: |                                      
+     az iot dps linked-hub list                            
+                 --dps-name {{ az_iot_dps_linked_hub_list.input['dps-name'] }} 
+                 --resource-group {{ az_iot_dps_linked_hub_list.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_iot_dps_linked_hub_list: "{{ az_iot_dps_linked_hub_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_dps_linked_hub_list }}" 

@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_network_watcher_flow_log_configure
+   set_fact: 
+     az_network_watcher_flow_log_configure:
+       input: 
+         ###  Required parameter. Name or ID of the Network Security Group to target.  ### 
+        'nsg': "{{ item['nsg'] | default('') }}" 
+         ###  Optional parameter. Enable logging.  ### 
+        'enabled': "{{ item['enabled'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Number of days to retain logs.  ### 
+        'retention': "{{ item['retention'] | default('') }}" 
+         ###  Optional parameter. Name or ID of the storage account in which to save the flow logs.  ### 
+        'storage-account': "{{ item['storage-account'] | default('') }}" 
+ - debug: msg="{{ az_network_watcher_flow_log_configure }}"          
+ - name: "az network watcher flow-log configure: Configure flow logging on a network security group." 
+   command: |                                      
+     az network watcher flow-log configure                            
+                 --nsg {{ az_network_watcher_flow_log_configure.input['nsg'] }} 
+                 {%if az_network_watcher_flow_log_configure.input['enabled'] %} --enabled az_network_watcher_flow_log_configure.input['enabled'] {%endif %} 
+                 {%if az_network_watcher_flow_log_configure.input['resource-group'] %} --resource-group az_network_watcher_flow_log_configure.input['resource-group'] {%endif %} 
+                 {%if az_network_watcher_flow_log_configure.input['retention'] %} --retention az_network_watcher_flow_log_configure.input['retention'] {%endif %} 
+                 {%if az_network_watcher_flow_log_configure.input['storage-account'] %} --storage-account az_network_watcher_flow_log_configure.input['storage-account'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_watcher_flow_log_configure: "{{ az_network_watcher_flow_log_configure|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_watcher_flow_log_configure }}" 

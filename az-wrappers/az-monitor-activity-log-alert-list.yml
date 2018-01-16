@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_monitor_activity_log_alert_list
+   set_fact: 
+     az_monitor_activity_log_alert_list:
+       input: 
+         ###  Optional parameter. Name of the resource group under which the activity log alerts are being listed. If it is omitted, all the activity log alerts under the current subscription are listed.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_monitor_activity_log_alert_list }}"          
+ - name: "az monitor activity-log alert list: List activity log alerts under a resource group or the current subscription." 
+   command: |                                      
+     az monitor activity-log alert list                            
+                 {%if az_monitor_activity_log_alert_list.input['resource-group'] %} --resource-group az_monitor_activity_log_alert_list.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_monitor_activity_log_alert_list: "{{ az_monitor_activity_log_alert_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_monitor_activity_log_alert_list }}" 

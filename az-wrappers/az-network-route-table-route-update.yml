@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_network_route_table_route_update
+   set_fact: 
+     az_network_route_table_route_update:
+       input: 
+         ###  Required parameter. Route name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Route table name.  ### 
+        'route-table-name': "{{ item['route-table-name'] | default('') }}" 
+         ###  Optional parameter. The destination CIDR to which the route applies.  ### 
+        'address-prefix': "{{ item['address-prefix'] | default('') }}" 
+         ###  Optional parameter. The IP address packets should be forwarded to when using the VirtualAppliance hop type.  ### 
+        'next-hop-ip-address': "{{ item['next-hop-ip-address'] | default('') }}" 
+         ###  Optional parameter. The type of Azure hop the packet should be sent to.  ### 
+        'next-hop-type': "{{ item['next-hop-type'] | default('') }}" 
+         ###  Optional parameter. Add an object to a list of objects by specifying a path and key value pairs.  Example: --add property.listProperty <key=value, string or JSON string>.  ### 
+        'add': "{{ item['add'] | default('') }}" 
+         ###  Optional parameter. Remove a property or an element from a list.  Example: --remove property.list <indexToRemove> OR --remove propertyToRemove.  ### 
+        'remove': "{{ item['remove'] | default('') }}" 
+         ###  Optional parameter. Update an object by specifying a property path and value to set.  Example: --set property1.property2=<value>.  ### 
+        'set': "{{ item['set'] | default('') }}" 
+ - debug: msg="{{ az_network_route_table_route_update }}"          
+ - name: "az network route-table route update: Update a route in a route table." 
+   command: |                                      
+     az network route-table route update                            
+                 --name {{ az_network_route_table_route_update.input['name'] }} 
+                 --resource-group {{ az_network_route_table_route_update.input['resource-group'] }} 
+                 --route-table-name {{ az_network_route_table_route_update.input['route-table-name'] }} 
+                 {%if az_network_route_table_route_update.input['address-prefix'] %} --address-prefix az_network_route_table_route_update.input['address-prefix'] {%endif %} 
+                 {%if az_network_route_table_route_update.input['next-hop-ip-address'] %} --next-hop-ip-address az_network_route_table_route_update.input['next-hop-ip-address'] {%endif %} 
+                 {%if az_network_route_table_route_update.input['next-hop-type'] %} --next-hop-type az_network_route_table_route_update.input['next-hop-type'] {%endif %} 
+                 {%if az_network_route_table_route_update.input['add'] %} --add az_network_route_table_route_update.input['add'] {%endif %} 
+                 {%if az_network_route_table_route_update.input['remove'] %} --remove az_network_route_table_route_update.input['remove'] {%endif %} 
+                 {%if az_network_route_table_route_update.input['set'] %} --set az_network_route_table_route_update.input['set'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_route_table_route_update: "{{ az_network_route_table_route_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_route_table_route_update }}" 

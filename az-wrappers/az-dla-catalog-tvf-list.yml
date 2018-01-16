@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_dla_catalog_tvf_list
+   set_fact: 
+     az_dla_catalog_tvf_list:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The name of the database.  ### 
+        'database-name': "{{ item['database-name'] | default('') }}" 
+         ###  Optional parameter. The name of the schema assocated with table valued functions to list.  ### 
+        'schema-name': "{{ item['schema-name'] | default('') }}" 
+ - debug: msg="{{ az_dla_catalog_tvf_list }}"          
+ - name: "az dla catalog tvf list: List table valued functions in a database or schema." 
+   command: |                                      
+     az dla catalog tvf list                            
+                 --account {{ az_dla_catalog_tvf_list.input['account'] }} 
+                 --database-name {{ az_dla_catalog_tvf_list.input['database-name'] }} 
+                 {%if az_dla_catalog_tvf_list.input['schema-name'] %} --schema-name az_dla_catalog_tvf_list.input['schema-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dla_catalog_tvf_list: "{{ az_dla_catalog_tvf_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_catalog_tvf_list }}" 

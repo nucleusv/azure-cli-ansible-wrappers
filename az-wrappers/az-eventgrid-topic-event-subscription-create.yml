@@ -1,0 +1,44 @@
+
+
+ - name: Set input params for az_eventgrid_topic_event_subscription_create
+   set_fact: 
+     az_eventgrid_topic_event_subscription_create:
+       input: 
+         ###  Required parameter. Endpoint where EventGrid should deliver events matching this event subscription. For webhook endpoint type, this should be the corresponding webhook URL. For eventhub endpoint type, this should be the Azure ResourceID of the event hub.  ### 
+        'endpoint': "{{ item['endpoint'] | default('') }}" 
+         ###  Required parameter. Name of the event subscription.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the topic.  ### 
+        'topic-name': "{{ item['topic-name'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'endpoint-type': "{{ item['endpoint-type'] | default('') }}" 
+         ###  Optional parameter. A space separated list of event types. To subscribe to all event types, the string "All" should be specified.  ### 
+        'included-event-types': "{{ item['included-event-types'] | default('') }}" 
+         ###  Optional parameter. A space separated list of labels to associate with this event subscription.  ### 
+        'labels': "{{ item['labels'] | default('') }}" 
+         ###  Optional parameter. An optional string to filter events for an event subscription based on a prefix. Wildcard characters are not supported.  ### 
+        'subject-begins-with': "{{ item['subject-begins-with'] | default('') }}" 
+         ###  Optional parameter. Specify to indicate whether the subject fields should be compared in a case sensitive manner. True if flag present.  ### 
+        'subject-case-sensitive': "{{ item['subject-case-sensitive'] | default('') }}" 
+         ###  Optional parameter. An optional string to filter events for an event subscription based on a suffix. Wildcard characters are not supported.  ### 
+        'subject-ends-with': "{{ item['subject-ends-with'] | default('') }}" 
+ - debug: msg="{{ az_eventgrid_topic_event_subscription_create }}"          
+ - name: "az eventgrid topic event-subscription create: Create a new event subscription to a topic." 
+   command: |                                      
+     az eventgrid topic event-subscription create                            
+                 --endpoint {{ az_eventgrid_topic_event_subscription_create.input['endpoint'] }} 
+                 --name {{ az_eventgrid_topic_event_subscription_create.input['name'] }} 
+                 --resource-group {{ az_eventgrid_topic_event_subscription_create.input['resource-group'] }} 
+                 --topic-name {{ az_eventgrid_topic_event_subscription_create.input['topic-name'] }} 
+                 {%if az_eventgrid_topic_event_subscription_create.input['endpoint-type'] %} --endpoint-type az_eventgrid_topic_event_subscription_create.input['endpoint-type'] {%endif %} 
+                 {%if az_eventgrid_topic_event_subscription_create.input['included-event-types'] %} --included-event-types az_eventgrid_topic_event_subscription_create.input['included-event-types'] {%endif %} 
+                 {%if az_eventgrid_topic_event_subscription_create.input['labels'] %} --labels az_eventgrid_topic_event_subscription_create.input['labels'] {%endif %} 
+                 {%if az_eventgrid_topic_event_subscription_create.input['subject-begins-with'] %} --subject-begins-with az_eventgrid_topic_event_subscription_create.input['subject-begins-with'] {%endif %} 
+                 {%if az_eventgrid_topic_event_subscription_create.input['subject-case-sensitive'] %} --subject-case-sensitive az_eventgrid_topic_event_subscription_create.input['subject-case-sensitive'] {%endif %} 
+                 {%if az_eventgrid_topic_event_subscription_create.input['subject-ends-with'] %} --subject-ends-with az_eventgrid_topic_event_subscription_create.input['subject-ends-with'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_eventgrid_topic_event_subscription_create: "{{ az_eventgrid_topic_event_subscription_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_eventgrid_topic_event_subscription_create }}" 

@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_resource_link_create
+   set_fact: 
+     az_resource_link_create:
+       input: 
+         ###  Required parameter.   ### 
+        'link-id': "{{ item['link-id'] | default('') }}" 
+         ###  Required parameter. The id of the resource link target.  ### 
+        'target-id': "{{ item['target-id'] | default('') }}" 
+         ###  Optional parameter. Notes for this link.  ### 
+        'notes': "{{ item['notes'] | default('') }}" 
+ - debug: msg="{{ az_resource_link_create }}"          
+ - name: "az resource link create: Create a new link between resources." 
+   command: |                                      
+     az resource link create                            
+                 --link-id {{ az_resource_link_create.input['link-id'] }} 
+                 --target-id {{ az_resource_link_create.input['target-id'] }} 
+                 {%if az_resource_link_create.input['notes'] %} --notes az_resource_link_create.input['notes'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_resource_link_create: "{{ az_resource_link_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_resource_link_create }}" 

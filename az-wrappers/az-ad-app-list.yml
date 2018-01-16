@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_ad_app_list
+   set_fact: 
+     az_ad_app_list:
+       input: 
+         ###  Optional parameter. Application id.  ### 
+        'app-id': "{{ item['app-id'] | default('') }}" 
+         ###  Optional parameter. The display name of the application.  ### 
+        'display-name': "{{ item['display-name'] | default('') }}" 
+         ###  Optional parameter. OData filter.  ### 
+        'filter': "{{ item['filter'] | default('') }}" 
+         ###  Optional parameter. Graph application identifier, must be in uri format.  ### 
+        'identifier-uri': "{{ item['identifier-uri'] | default('') }}" 
+ - debug: msg="{{ az_ad_app_list }}"          
+ - name: "az ad app list: List applications." 
+   command: |                                      
+     az ad app list                            
+                 {%if az_ad_app_list.input['app-id'] %} --app-id az_ad_app_list.input['app-id'] {%endif %} 
+                 {%if az_ad_app_list.input['display-name'] %} --display-name az_ad_app_list.input['display-name'] {%endif %} 
+                 {%if az_ad_app_list.input['filter'] %} --filter az_ad_app_list.input['filter'] {%endif %} 
+                 {%if az_ad_app_list.input['identifier-uri'] %} --identifier-uri az_ad_app_list.input['identifier-uri'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_ad_app_list: "{{ az_ad_app_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_ad_app_list }}" 

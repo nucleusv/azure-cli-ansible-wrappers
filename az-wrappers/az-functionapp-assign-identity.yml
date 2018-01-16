@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_functionapp_assign_identity
+   set_fact: 
+     az_functionapp_assign_identity:
+       input: 
+         ###  Required parameter. Name of the function app.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Disable the identity.  ### 
+        'disable-msi': "{{ item['disable-msi'] | default('') }}" 
+         ###  Optional parameter. Role name or id the managed identity will be assigned.  ### 
+        'role': "{{ item['role'] | default('') }}" 
+         ###  Optional parameter. The scope the managed identity has access to.  ### 
+        'scope': "{{ item['scope'] | default('') }}" 
+ - debug: msg="{{ az_functionapp_assign_identity }}"          
+ - name: "az functionapp assign-identity: (PREVIEW) assign managed service identity to the functionapp." 
+   command: |                                      
+     az functionapp assign-identity                            
+                 --name {{ az_functionapp_assign_identity.input['name'] }} 
+                 --resource-group {{ az_functionapp_assign_identity.input['resource-group'] }} 
+                 {%if az_functionapp_assign_identity.input['disable-msi'] %} --disable-msi az_functionapp_assign_identity.input['disable-msi'] {%endif %} 
+                 {%if az_functionapp_assign_identity.input['role'] %} --role az_functionapp_assign_identity.input['role'] {%endif %} 
+                 {%if az_functionapp_assign_identity.input['scope'] %} --scope az_functionapp_assign_identity.input['scope'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_functionapp_assign_identity: "{{ az_functionapp_assign_identity|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_functionapp_assign_identity }}" 

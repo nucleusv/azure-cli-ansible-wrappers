@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_extension_add
+   set_fact: 
+     az_extension_add:
+       input: 
+         ###  Optional parameter. Name of extension.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Filepath or URL to an extension.  ### 
+        'source': "{{ item['source'] | default('') }}" 
+         ###  Optional parameter. Do not prompt for confirmation.  ### 
+        'yes': "{{ item['yes'] | default('') }}" 
+ - debug: msg="{{ az_extension_add }}"          
+ - name: "az extension add: Add an extension." 
+   command: |                                      
+     az extension add                            
+                 {%if az_extension_add.input['name'] %} --name az_extension_add.input['name'] {%endif %} 
+                 {%if az_extension_add.input['source'] %} --source az_extension_add.input['source'] {%endif %} 
+                 {%if az_extension_add.input['yes'] %} --yes {%endif %} 
+   register: output  
+ - set_fact: 
+    az_extension_add: "{{ az_extension_add|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_extension_add }}" 

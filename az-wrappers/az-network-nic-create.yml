@@ -1,0 +1,68 @@
+
+
+ - name: Set input params for az_network_nic_create
+   set_fact: 
+     az_network_nic_create:
+       input: 
+         ###  Required parameter. The network interface (NIC).  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name or ID of an existing subnet. If name specified, also specify --vnet-name.  ### 
+        'subnet': "{{ item['subnet'] | default('') }}" 
+         ###  Optional parameter. Enable accelerated networking.  ### 
+        'accelerated-networking': "{{ item['accelerated-networking'] | default('') }}" 
+         ###  Optional parameter. Space separated list of application security groups.  ### 
+        'application-security-groups': "{{ item['application-security-groups'] | default('') }}" 
+         ###  Optional parameter. Enable IP forwarding.  ### 
+        'ip-forwarding': "{{ item['ip-forwarding'] | default('') }}" 
+         ###  Optional parameter. Space separated list of names or IDs of load balancer address pools to associate with the NIC. If names are used, --lb-name must be specified.  ### 
+        'lb-address-pools': "{{ item['lb-address-pools'] | default('') }}" 
+         ###  Optional parameter. Space separated list of names or IDs of load balancer inbound NAT rules to associate with the NIC. If names are used, --lb-name must be specified.  ### 
+        'lb-inbound-nat-rules': "{{ item['lb-inbound-nat-rules'] | default('') }}" 
+         ###  Optional parameter. The name of the load balancer to use when adding NAT rules or address pools by name (ignored when IDs are specified).  ### 
+        'lb-name': "{{ item['lb-name'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. Name or ID of an existing network security group, or none by default.  ### 
+        'network-security-group': "{{ item['network-security-group'] | default('') }}" 
+         ###  Optional parameter. Static private IP address to use.  ### 
+        'private-ip-address': "{{ item['private-ip-address'] | default('') }}" 
+         ###  Optional parameter. The private IP address version to use.  ### 
+        'private-ip-address-version': "{{ item['private-ip-address-version'] | default('') }}" 
+         ###  Optional parameter. Name or ID of an existing public IP address, or none by default.  ### 
+        'public-ip-address': "{{ item['public-ip-address'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. The virtual network (VNet) name.  ### 
+        'vnet-name': "{{ item['vnet-name'] | default('') }}" 
+         ###  Optional parameter. Space separated list of DNS server IP addresses.  ### 
+        'dns-servers': "{{ item['dns-servers'] | default('') }}" 
+         ###  Optional parameter. The internal DNS name label.  ### 
+        'internal-dns-name': "{{ item['internal-dns-name'] | default('') }}" 
+ - debug: msg="{{ az_network_nic_create }}"          
+ - name: "az network nic create: Create a network interface." 
+   command: |                                      
+     az network nic create                            
+                 --name {{ az_network_nic_create.input['name'] }} 
+                 --resource-group {{ az_network_nic_create.input['resource-group'] }} 
+                 --subnet {{ az_network_nic_create.input['subnet'] }} 
+                 {%if az_network_nic_create.input['accelerated-networking'] %} --accelerated-networking az_network_nic_create.input['accelerated-networking'] {%endif %} 
+                 {%if az_network_nic_create.input['application-security-groups'] %} --application-security-groups az_network_nic_create.input['application-security-groups'] {%endif %} 
+                 {%if az_network_nic_create.input['ip-forwarding'] %} --ip-forwarding az_network_nic_create.input['ip-forwarding'] {%endif %} 
+                 {%if az_network_nic_create.input['lb-address-pools'] %} --lb-address-pools az_network_nic_create.input['lb-address-pools'] {%endif %} 
+                 {%if az_network_nic_create.input['lb-inbound-nat-rules'] %} --lb-inbound-nat-rules az_network_nic_create.input['lb-inbound-nat-rules'] {%endif %} 
+                 {%if az_network_nic_create.input['lb-name'] %} --lb-name az_network_nic_create.input['lb-name'] {%endif %} 
+                 {%if az_network_nic_create.input['location'] %} --location az_network_nic_create.input['location'] {%endif %} 
+                 {%if az_network_nic_create.input['network-security-group'] %} --network-security-group az_network_nic_create.input['network-security-group'] {%endif %} 
+                 {%if az_network_nic_create.input['private-ip-address'] %} --private-ip-address az_network_nic_create.input['private-ip-address'] {%endif %} 
+                 {%if az_network_nic_create.input['private-ip-address-version'] %} --private-ip-address-version az_network_nic_create.input['private-ip-address-version'] {%endif %} 
+                 {%if az_network_nic_create.input['public-ip-address'] %} --public-ip-address az_network_nic_create.input['public-ip-address'] {%endif %} 
+                 {%if az_network_nic_create.input['rtags'] %} --tags az_network_nic_create.input['rtags'] {%endif %} 
+                 {%if az_network_nic_create.input['vnet-name'] %} --vnet-name az_network_nic_create.input['vnet-name'] {%endif %} 
+                 {%if az_network_nic_create.input['dns-servers'] %} --dns-servers az_network_nic_create.input['dns-servers'] {%endif %} 
+                 {%if az_network_nic_create.input['internal-dns-name'] %} --internal-dns-name az_network_nic_create.input['internal-dns-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_nic_create: "{{ az_network_nic_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_nic_create }}" 

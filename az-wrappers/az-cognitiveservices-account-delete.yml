@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_cognitiveservices_account_delete
+   set_fact: 
+     az_cognitiveservices_account_delete:
+       input: 
+         ###  Required parameter. Cognitive service account name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_cognitiveservices_account_delete }}"          
+ - name: "az cognitiveservices account delete: Delete an Azure Cognitive Services account." 
+   command: |                                      
+     az cognitiveservices account delete                            
+                 --name {{ az_cognitiveservices_account_delete.input['name'] }} 
+                 --resource-group {{ az_cognitiveservices_account_delete.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_cognitiveservices_account_delete: "{{ az_cognitiveservices_account_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cognitiveservices_account_delete }}" 

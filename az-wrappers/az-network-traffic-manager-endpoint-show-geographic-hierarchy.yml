@@ -1,0 +1,14 @@
+
+
+ - name: Set input params for az_network_traffic_manager_endpoint_show_geographic_hierarchy
+   set_fact: 
+     az_network_traffic_manager_endpoint_show_geographic_hierarchy:
+       input: 
+ - debug: msg="{{ az_network_traffic_manager_endpoint_show_geographic_hierarchy }}"          
+ - name: "az network traffic-manager endpoint show-geographic-hierarchy: Gets the default Geographic Hierarchy used by the Geographic traffic routing method." 
+   command: |                                      
+     az network traffic-manager endpoint show-geographic-hierarchy                            
+   register: output  
+ - set_fact: 
+    az_network_traffic_manager_endpoint_show_geographic_hierarchy: "{{ az_network_traffic_manager_endpoint_show_geographic_hierarchy|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_traffic_manager_endpoint_show_geographic_hierarchy }}" 

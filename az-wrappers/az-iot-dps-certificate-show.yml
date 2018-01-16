@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_iot_dps_certificate_show
+   set_fact: 
+     az_iot_dps_certificate_show:
+       input: 
+         ###  Required parameter. A friendly name for the certificate.  ### 
+        'certificate-name': "{{ item['certificate-name'] | default('') }}" 
+         ###  Required parameter. IoT Provisioning Service name.  ### 
+        'dps-name': "{{ item['dps-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_iot_dps_certificate_show }}"          
+ - name: "az iot dps certificate show: Show information about a particular Azure IoT Hub Device Provisioning Service certificate." 
+   command: |                                      
+     az iot dps certificate show                            
+                 --certificate-name {{ az_iot_dps_certificate_show.input['certificate-name'] }} 
+                 --dps-name {{ az_iot_dps_certificate_show.input['dps-name'] }} 
+                 --resource-group {{ az_iot_dps_certificate_show.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_iot_dps_certificate_show: "{{ az_iot_dps_certificate_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_dps_certificate_show }}" 

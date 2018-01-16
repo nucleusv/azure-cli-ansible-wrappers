@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_vm_encryption_disable
+   set_fact: 
+     az_vm_encryption_disable:
+       input: 
+         ###  Required parameter. The name of the Virtual Machine. You can configure the default using `az configure --defaults vm=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Continue by ignoring client side validation errors.  ### 
+        'force': "{{ item['force'] | default('') }}" 
+         ###  Optional parameter. Type of volume that the encryption operation is performed on.  ### 
+        'volume-type': "{{ item['volume-type'] | default('') }}" 
+ - debug: msg="{{ az_vm_encryption_disable }}"          
+ - name: "az vm encryption disable: Disable disk encryption on the OS disk and/or data disks." 
+   command: |                                      
+     az vm encryption disable                            
+                 --name {{ az_vm_encryption_disable.input['name'] }} 
+                 --resource-group {{ az_vm_encryption_disable.input['resource-group'] }} 
+                 {%if az_vm_encryption_disable.input['force'] %} --force az_vm_encryption_disable.input['force'] {%endif %} 
+                 {%if az_vm_encryption_disable.input['volume-type'] %} --volume-type az_vm_encryption_disable.input['volume-type'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_vm_encryption_disable: "{{ az_vm_encryption_disable|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_encryption_disable }}" 

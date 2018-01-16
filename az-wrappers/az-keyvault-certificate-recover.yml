@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_keyvault_certificate_recover
+   set_fact: 
+     az_keyvault_certificate_recover:
+       input: 
+         ###  Required parameter. Name of the certificate.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_certificate_recover }}"          
+ - name: "az keyvault certificate recover: Recovers the deleted certificate back to its current version under /certificates." 
+   command: |                                      
+     az keyvault certificate recover                            
+                 --name {{ az_keyvault_certificate_recover.input['name'] }} 
+                 --vault-name {{ az_keyvault_certificate_recover.input['vault-name'] }} 
+   register: output  
+ - set_fact: 
+    az_keyvault_certificate_recover: "{{ az_keyvault_certificate_recover|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_certificate_recover }}" 

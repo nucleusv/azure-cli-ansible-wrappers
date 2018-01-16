@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_network_application_gateway_waf_config_list_rule_sets
+   set_fact: 
+     az_network_application_gateway_waf_config_list_rule_sets:
+       input: 
+         ###  Optional parameter. List rules for the specified rule group. Use '*' to list rules for all groups. Omit to suppress listing individual rules.  ### 
+        'group': "{{ item['group'] | default('') }}" 
+         ###  Optional parameter. Rule set type to list. Omit to list all types.  ### 
+        'type': "{{ item['type'] | default('') }}" 
+         ###  Optional parameter. Rule set version to list. Omit to list all versions.  ### 
+        'version': "{{ item['version'] | default('') }}" 
+ - debug: msg="{{ az_network_application_gateway_waf_config_list_rule_sets }}"          
+ - name: "az network application-gateway waf-config list-rule-sets: (PREVIEW) Get information on available WAF rule sets, rule groups, and rule IDs." 
+   command: |                                      
+     az network application-gateway waf-config list-rule-sets                            
+                 {%if az_network_application_gateway_waf_config_list_rule_sets.input['group'] %} --group az_network_application_gateway_waf_config_list_rule_sets.input['group'] {%endif %} 
+                 {%if az_network_application_gateway_waf_config_list_rule_sets.input['type'] %} --type az_network_application_gateway_waf_config_list_rule_sets.input['type'] {%endif %} 
+                 {%if az_network_application_gateway_waf_config_list_rule_sets.input['version'] %} --version az_network_application_gateway_waf_config_list_rule_sets.input['version'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_application_gateway_waf_config_list_rule_sets: "{{ az_network_application_gateway_waf_config_list_rule_sets|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_application_gateway_waf_config_list_rule_sets }}" 

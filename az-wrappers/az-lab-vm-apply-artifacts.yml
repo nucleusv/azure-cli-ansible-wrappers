@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_lab_vm_apply_artifacts
+   set_fact: 
+     az_lab_vm_apply_artifacts:
+       input: 
+         ###  Required parameter. Name of the Lab.  ### 
+        'lab-name': "{{ item['lab-name'] | default('') }}" 
+         ###  Required parameter. Name of the virtual machine.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of lab's resource group.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. JSON encoded array of artifacts to be applied. Use '@{file}' to load from a file.  ### 
+        'artifacts': "{{ item['artifacts'] | default('') }}" 
+ - debug: msg="{{ az_lab_vm_apply_artifacts }}"          
+ - name: "az lab vm apply-artifacts: Apply artifacts to a virtual machine in Azure DevTest Lab." 
+   command: |                                      
+     az lab vm apply-artifacts                            
+                 --lab-name {{ az_lab_vm_apply_artifacts.input['lab-name'] }} 
+                 --name {{ az_lab_vm_apply_artifacts.input['name'] }} 
+                 --resource-group {{ az_lab_vm_apply_artifacts.input['resource-group'] }} 
+                 {%if az_lab_vm_apply_artifacts.input['artifacts'] %} --artifacts az_lab_vm_apply_artifacts.input['artifacts'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_lab_vm_apply_artifacts: "{{ az_lab_vm_apply_artifacts|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_lab_vm_apply_artifacts }}" 

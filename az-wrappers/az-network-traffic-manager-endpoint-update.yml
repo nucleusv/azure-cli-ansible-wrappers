@@ -1,0 +1,62 @@
+
+
+ - name: Set input params for az_network_traffic_manager_endpoint_update
+   set_fact: 
+     az_network_traffic_manager_endpoint_update:
+       input: 
+         ###  Required parameter. Endpoint name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of parent profile.  ### 
+        'profile-name': "{{ item['profile-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Location of the external or nested endpoints when using the 'Performance' routing method.  ### 
+        'endpoint-location': "{{ item['endpoint-location'] | default('') }}" 
+         ###  Optional parameter. The monitoring status of the endpoint.  ### 
+        'endpoint-monitor-status': "{{ item['endpoint-monitor-status'] | default('') }}" 
+         ###  Optional parameter. The status of the endpoint. If enabled the endpoint is probed for endpoint health and included in the traffic routing method.  ### 
+        'endpoint-status': "{{ item['endpoint-status'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'geo-mapping': "{{ item['geo-mapping'] | default('') }}" 
+         ###  Optional parameter. The minimum number of endpoints that must be available in the child profile for the parent profile to be considered available. Only applicable to an endpoint of type 'NestedEndpoints'.  ### 
+        'min-child-endpoints': "{{ item['min-child-endpoints'] | default('') }}" 
+         ###  Optional parameter. Priority of the endpoint when using the 'Priority' traffic routing method. Values range from 1 to 1000, with lower values representing higher priority.  ### 
+        'priority': "{{ item['priority'] | default('') }}" 
+         ###  Optional parameter. Fully-qualified DNS name of the endpoint.  ### 
+        'target': "{{ item['target'] | default('') }}" 
+         ###  Optional parameter. The Azure Resource URI of the endpoint. Not applicable for endpoints of type 'ExternalEndpoints'.  ### 
+        'target-resource-id': "{{ item['target-resource-id'] | default('') }}" 
+         ###  Optional parameter. Endpoint type.  ### 
+        'type': "{{ item['type'] | default('') }}" 
+         ###  Optional parameter. Weight of the endpoint when using the 'Weighted' traffic routing method. Values range from 1 to 1000.  ### 
+        'weight': "{{ item['weight'] | default('') }}" 
+         ###  Optional parameter. Add an object to a list of objects by specifying a path and key value pairs.  Example: --add property.listProperty <key=value, string or JSON string>.  ### 
+        'add': "{{ item['add'] | default('') }}" 
+         ###  Optional parameter. Remove a property or an element from a list.  Example: --remove property.list <indexToRemove> OR --remove propertyToRemove.  ### 
+        'remove': "{{ item['remove'] | default('') }}" 
+         ###  Optional parameter. Update an object by specifying a property path and value to set.  Example: --set property1.property2=<value>.  ### 
+        'set': "{{ item['set'] | default('') }}" 
+ - debug: msg="{{ az_network_traffic_manager_endpoint_update }}"          
+ - name: "az network traffic-manager endpoint update: Update an endpoint." 
+   command: |                                      
+     az network traffic-manager endpoint update                            
+                 --name {{ az_network_traffic_manager_endpoint_update.input['name'] }} 
+                 --profile-name {{ az_network_traffic_manager_endpoint_update.input['profile-name'] }} 
+                 --resource-group {{ az_network_traffic_manager_endpoint_update.input['resource-group'] }} 
+                 {%if az_network_traffic_manager_endpoint_update.input['endpoint-location'] %} --endpoint-location az_network_traffic_manager_endpoint_update.input['endpoint-location'] {%endif %} 
+                 {%if az_network_traffic_manager_endpoint_update.input['endpoint-monitor-status'] %} --endpoint-monitor-status az_network_traffic_manager_endpoint_update.input['endpoint-monitor-status'] {%endif %} 
+                 {%if az_network_traffic_manager_endpoint_update.input['endpoint-status'] %} --endpoint-status az_network_traffic_manager_endpoint_update.input['endpoint-status'] {%endif %} 
+                 {%if az_network_traffic_manager_endpoint_update.input['geo-mapping'] %} --geo-mapping az_network_traffic_manager_endpoint_update.input['geo-mapping'] {%endif %} 
+                 {%if az_network_traffic_manager_endpoint_update.input['min-child-endpoints'] %} --min-child-endpoints az_network_traffic_manager_endpoint_update.input['min-child-endpoints'] {%endif %} 
+                 {%if az_network_traffic_manager_endpoint_update.input['priority'] %} --priority az_network_traffic_manager_endpoint_update.input['priority'] {%endif %} 
+                 {%if az_network_traffic_manager_endpoint_update.input['target'] %} --target az_network_traffic_manager_endpoint_update.input['target'] {%endif %} 
+                 {%if az_network_traffic_manager_endpoint_update.input['target-resource-id'] %} --target-resource-id az_network_traffic_manager_endpoint_update.input['target-resource-id'] {%endif %} 
+                 {%if az_network_traffic_manager_endpoint_update.input['type'] %} --type az_network_traffic_manager_endpoint_update.input['type'] {%endif %} 
+                 {%if az_network_traffic_manager_endpoint_update.input['weight'] %} --weight az_network_traffic_manager_endpoint_update.input['weight'] {%endif %} 
+                 {%if az_network_traffic_manager_endpoint_update.input['add'] %} --add az_network_traffic_manager_endpoint_update.input['add'] {%endif %} 
+                 {%if az_network_traffic_manager_endpoint_update.input['remove'] %} --remove az_network_traffic_manager_endpoint_update.input['remove'] {%endif %} 
+                 {%if az_network_traffic_manager_endpoint_update.input['set'] %} --set az_network_traffic_manager_endpoint_update.input['set'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_traffic_manager_endpoint_update: "{{ az_network_traffic_manager_endpoint_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_traffic_manager_endpoint_update }}" 

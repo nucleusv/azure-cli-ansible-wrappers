@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_iot_hub_certificate_generate_verification_code
+   set_fact: 
+     az_iot_hub_certificate_generate_verification_code:
+       input: 
+         ###  Required parameter. Entity Tag (etag) of the object.  ### 
+        'etag': "{{ item['etag'] | default('') }}" 
+         ###  Required parameter. IoT Hub name.  ### 
+        'hub-name': "{{ item['hub-name'] | default('') }}" 
+         ###  Required parameter. A friendly name for the certificate.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_iot_hub_certificate_generate_verification_code }}"          
+ - name: "az iot hub certificate generate-verification-code: Generates a verification code for an Azure IoT Hub certificate." 
+   command: |                                      
+     az iot hub certificate generate-verification-code                            
+                 --etag {{ az_iot_hub_certificate_generate_verification_code.input['etag'] }} 
+                 --hub-name {{ az_iot_hub_certificate_generate_verification_code.input['hub-name'] }} 
+                 --name {{ az_iot_hub_certificate_generate_verification_code.input['name'] }} 
+                 {%if az_iot_hub_certificate_generate_verification_code.input['resource-group'] %} --resource-group az_iot_hub_certificate_generate_verification_code.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_hub_certificate_generate_verification_code: "{{ az_iot_hub_certificate_generate_verification_code|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_hub_certificate_generate_verification_code }}" 

@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_acr_webhook_list
+   set_fact: 
+     az_acr_webhook_list:
+       input: 
+         ###  Required parameter. The name of the container registry. You can configure the default registry name using `az configure --defaults acr=&lt;registry name&gt;`.  ### 
+        'registry': "{{ item['registry'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_acr_webhook_list }}"          
+ - name: "az acr webhook list: List all of the webhooks for a container registry." 
+   command: |                                      
+     az acr webhook list                            
+                 --registry {{ az_acr_webhook_list.input['registry'] }} 
+                 {%if az_acr_webhook_list.input['resource-group'] %} --resource-group az_acr_webhook_list.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_acr_webhook_list: "{{ az_acr_webhook_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_acr_webhook_list }}" 

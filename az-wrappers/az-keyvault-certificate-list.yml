@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_keyvault_certificate_list
+   set_fact: 
+     az_keyvault_certificate_list:
+       input: 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+         ###  Optional parameter. Maximum number of results to return in a page. If not specified the service will return up to 25 results.  ### 
+        'maxresults': "{{ item['maxresults'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_certificate_list }}"          
+ - name: "az keyvault certificate list: List certificates in a specified key vault." 
+   command: |                                      
+     az keyvault certificate list                            
+                 --vault-name {{ az_keyvault_certificate_list.input['vault-name'] }} 
+                 {%if az_keyvault_certificate_list.input['maxresults'] %} --maxresults az_keyvault_certificate_list.input['maxresults'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_keyvault_certificate_list: "{{ az_keyvault_certificate_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_certificate_list }}" 

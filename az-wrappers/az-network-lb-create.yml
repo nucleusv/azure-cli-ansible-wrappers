@@ -1,0 +1,77 @@
+
+
+ - name: Set input params for az_network_lb_create
+   set_fact: 
+     az_network_lb_create:
+       input: 
+         ###  Required parameter. The load balancer name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The name of the backend address pool.  ### 
+        'backend-pool-name': "{{ item['backend-pool-name'] | default('') }}" 
+         ###  Optional parameter. The name of the frontend IP configuration.  ### 
+        'frontend-ip-name': "{{ item['frontend-ip-name'] | default('') }}" 
+         ###  Optional parameter. Used to create internal facing Load balancer.  ### 
+        'frontend-ip-zone': "{{ item['frontend-ip-zone'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+         ###  Optional parameter. Static private IP address to use.  ### 
+        'private-ip-address': "{{ item['private-ip-address'] | default('') }}" 
+         ###  Optional parameter. Name or ID of the public IP address, or "" for none. Uses existing resource if available or will create a new resource with defaults if omitted.  ### 
+        'public-ip-address': "{{ item['public-ip-address'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'public-ip-address-allocation': "{{ item['public-ip-address-allocation'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'public-ip-address-type': "{{ item['public-ip-address-type'] | default('') }}" 
+         ###  Optional parameter. Globally unique DNS name for a new public IP.  ### 
+        'public-ip-dns-name': "{{ item['public-ip-dns-name'] | default('') }}" 
+         ###  Optional parameter. Used to created a new public ip for the load balancer, a.k.a public facing Load balancer.  ### 
+        'public-ip-zone': "{{ item['public-ip-zone'] | default('') }}" 
+         ###  Optional parameter. Load balancer SKU.  ### 
+        'sku': "{{ item['sku'] | default('') }}" 
+         ###  Optional parameter. Name or ID of a subnet. Uses existing resource or creates new if specified, or none if omitted. If name specified, also specify --vnet-name.  ### 
+        'subnet': "{{ item['subnet'] | default('') }}" 
+         ###  Optional parameter. The CIDR address prefix to use when creating a new subnet.  ### 
+        'subnet-address-prefix': "{{ item['subnet-address-prefix'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'subnet-type': "{{ item['subnet-type'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. Generate and validate the ARM template without creating any resources.  ### 
+        'validate': "{{ item['validate'] | default('') }}" 
+         ###  Optional parameter. The CIDR address prefix to use when creating a new VNet.  ### 
+        'vnet-address-prefix': "{{ item['vnet-address-prefix'] | default('') }}" 
+         ###  Optional parameter. The virtual network (VNet) name.  ### 
+        'vnet-name': "{{ item['vnet-name'] | default('') }}" 
+ - debug: msg="{{ az_network_lb_create }}"          
+ - name: "az network lb create: Create a load balancer." 
+   command: |                                      
+     az network lb create                            
+                 --name {{ az_network_lb_create.input['name'] }} 
+                 --resource-group {{ az_network_lb_create.input['resource-group'] }} 
+                 {%if az_network_lb_create.input['backend-pool-name'] %} --backend-pool-name az_network_lb_create.input['backend-pool-name'] {%endif %} 
+                 {%if az_network_lb_create.input['frontend-ip-name'] %} --frontend-ip-name az_network_lb_create.input['frontend-ip-name'] {%endif %} 
+                 {%if az_network_lb_create.input['frontend-ip-zone'] %} --frontend-ip-zone az_network_lb_create.input['frontend-ip-zone'] {%endif %} 
+                 {%if az_network_lb_create.input['location'] %} --location az_network_lb_create.input['location'] {%endif %} 
+                 {%if az_network_lb_create.input['no-wait'] %} --no-wait az_network_lb_create.input['no-wait'] {%endif %} 
+                 {%if az_network_lb_create.input['private-ip-address'] %} --private-ip-address az_network_lb_create.input['private-ip-address'] {%endif %} 
+                 {%if az_network_lb_create.input['public-ip-address'] %} --public-ip-address az_network_lb_create.input['public-ip-address'] {%endif %} 
+                 {%if az_network_lb_create.input['public-ip-address-allocation'] %} --public-ip-address-allocation az_network_lb_create.input['public-ip-address-allocation'] {%endif %} 
+                 {%if az_network_lb_create.input['public-ip-address-type'] %} --public-ip-address-type az_network_lb_create.input['public-ip-address-type'] {%endif %} 
+                 {%if az_network_lb_create.input['public-ip-dns-name'] %} --public-ip-dns-name az_network_lb_create.input['public-ip-dns-name'] {%endif %} 
+                 {%if az_network_lb_create.input['public-ip-zone'] %} --public-ip-zone az_network_lb_create.input['public-ip-zone'] {%endif %} 
+                 {%if az_network_lb_create.input['sku'] %} --sku az_network_lb_create.input['sku'] {%endif %} 
+                 {%if az_network_lb_create.input['subnet'] %} --subnet az_network_lb_create.input['subnet'] {%endif %} 
+                 {%if az_network_lb_create.input['subnet-address-prefix'] %} --subnet-address-prefix az_network_lb_create.input['subnet-address-prefix'] {%endif %} 
+                 {%if az_network_lb_create.input['subnet-type'] %} --subnet-type az_network_lb_create.input['subnet-type'] {%endif %} 
+                 {%if az_network_lb_create.input['rtags'] %} --tags az_network_lb_create.input['rtags'] {%endif %} 
+                 {%if az_network_lb_create.input['validate'] %} --validate az_network_lb_create.input['validate'] {%endif %} 
+                 {%if az_network_lb_create.input['vnet-address-prefix'] %} --vnet-address-prefix az_network_lb_create.input['vnet-address-prefix'] {%endif %} 
+                 {%if az_network_lb_create.input['vnet-name'] %} --vnet-name az_network_lb_create.input['vnet-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_lb_create: "{{ az_network_lb_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_lb_create }}" 

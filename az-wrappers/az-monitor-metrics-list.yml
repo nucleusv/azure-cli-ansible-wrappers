@@ -1,0 +1,53 @@
+
+
+ - name: Set input params for az_monitor_metrics_list
+   set_fact: 
+     az_monitor_metrics_list:
+       input: 
+         ###  Optional parameter. The list of aggregation types (space separated) to retrieve.  ### 
+        'aggregation': "{{ item['aggregation'] | default('') }}" 
+         ###  Optional parameter. The list of dimensions (space separated) the metrics are queried into.  ### 
+        'dimension': "{{ item['dimension'] | default('') }}" 
+         ###  Optional parameter. A string used to reduce the set of metric data returned. eg. "BlobType eq '*'".  ### 
+        'filter': "{{ item['filter'] | default('') }}" 
+         ###  Optional parameter. Returns the metadata values instead of metric data.  ### 
+        'metadata': "{{ item['metadata'] | default('') }}" 
+         ###  Optional parameter. The name of the metric to retrieve.  ### 
+        'metric': "{{ item['metric'] | default('') }}" 
+         ###  Required parameter. Name or ID of the target resource.  ### 
+        'resource': "{{ item['resource'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Target resource provider namespace.  ### 
+        'resource-namespace': "{{ item['resource-namespace'] | default('') }}" 
+         ###  Optional parameter. Target resource parent path, if applicable.  ### 
+        'resource-parent': "{{ item['resource-parent'] | default('') }}" 
+         ###  Optional parameter. Target resource type. Can also accept namespace/type format (Ex: 'Microsoft.Compute/virtualMachines)').  ### 
+        'resource-type': "{{ item['resource-type'] | default('') }}" 
+         ###  Optional parameter. The end time of the query. In ISO format with explicit indication of timezone, 1970-01-01T00:00:00Z, 1970-01-01T00:00:00-0500. Defaults to the current time.  ### 
+        'end-time': "{{ item['end-time'] | default('') }}" 
+         ###  Optional parameter. The interval of the metric query. In ISO 8601 duration format, eg "PT1M".  ### 
+        'interval': "{{ item['interval'] | default('') }}" 
+         ###  Optional parameter. The start time of the query. In ISO format with explicit indication of timezone, 1970-01-01T00:00:00Z, 1970-01-01T00:00:00-0500. Defaults to 1 Hour prior to the current time.  ### 
+        'start-time': "{{ item['start-time'] | default('') }}" 
+ - debug: msg="{{ az_monitor_metrics_list }}"          
+ - name: "az monitor metrics list: List the metric values for a resource." 
+   command: |                                      
+     az monitor metrics list                            
+                 {%if az_monitor_metrics_list.input['aggregation'] %} --aggregation az_monitor_metrics_list.input['aggregation'] {%endif %} 
+                 {%if az_monitor_metrics_list.input['dimension'] %} --dimension az_monitor_metrics_list.input['dimension'] {%endif %} 
+                 {%if az_monitor_metrics_list.input['filter'] %} --filter az_monitor_metrics_list.input['filter'] {%endif %} 
+                 {%if az_monitor_metrics_list.input['metadata'] %} --metadata az_monitor_metrics_list.input['metadata'] {%endif %} 
+                 {%if az_monitor_metrics_list.input['metric'] %} --metric az_monitor_metrics_list.input['metric'] {%endif %} 
+                 --resource {{ az_monitor_metrics_list.input['resource'] }} 
+                 {%if az_monitor_metrics_list.input['resource-group'] %} --resource-group az_monitor_metrics_list.input['resource-group'] {%endif %} 
+                 {%if az_monitor_metrics_list.input['resource-namespace'] %} --resource-namespace az_monitor_metrics_list.input['resource-namespace'] {%endif %} 
+                 {%if az_monitor_metrics_list.input['resource-parent'] %} --resource-parent az_monitor_metrics_list.input['resource-parent'] {%endif %} 
+                 {%if az_monitor_metrics_list.input['resource-type'] %} --resource-type az_monitor_metrics_list.input['resource-type'] {%endif %} 
+                 {%if az_monitor_metrics_list.input['end-time'] %} --end-time az_monitor_metrics_list.input['end-time'] {%endif %} 
+                 {%if az_monitor_metrics_list.input['interval'] %} --interval az_monitor_metrics_list.input['interval'] {%endif %} 
+                 {%if az_monitor_metrics_list.input['start-time'] %} --start-time az_monitor_metrics_list.input['start-time'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_monitor_metrics_list: "{{ az_monitor_metrics_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_monitor_metrics_list }}" 

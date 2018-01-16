@@ -1,0 +1,35 @@
+
+
+ - name: Set input params for az_keyvault_certificate_import
+   set_fact: 
+     az_keyvault_certificate_import:
+       input: 
+         ###  Required parameter. PKCS12 file or PEM file containing the certificate and private key.  ### 
+        'file': "{{ item['file'] | default('') }}" 
+         ###  Required parameter. Name of the certificate.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+         ###  Optional parameter. Import the certificate in disabled state.  ### 
+        'disabled': "{{ item['disabled'] | default('') }}" 
+         ###  Optional parameter. If the private key in certificate is encrypted, the password used for encryption.  ### 
+        'password': "{{ item['password'] | default('') }}" 
+         ###  Optional parameter. JSON encoded policy defintion. Use @{file} to load from a file.  ### 
+        'policy': "{{ item['policy'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_certificate_import }}"          
+ - name: "az keyvault certificate import: Import a certificate into KeyVault." 
+   command: |                                      
+     az keyvault certificate import                            
+                 --file {{ az_keyvault_certificate_import.input['file'] }} 
+                 --name {{ az_keyvault_certificate_import.input['name'] }} 
+                 --vault-name {{ az_keyvault_certificate_import.input['vault-name'] }} 
+                 {%if az_keyvault_certificate_import.input['disabled'] %} --disabled az_keyvault_certificate_import.input['disabled'] {%endif %} 
+                 {%if az_keyvault_certificate_import.input['password'] %} --password az_keyvault_certificate_import.input['password'] {%endif %} 
+                 {%if az_keyvault_certificate_import.input['policy'] %} --policy az_keyvault_certificate_import.input['policy'] {%endif %} 
+                 {%if az_keyvault_certificate_import.input['rtags'] %} --tags az_keyvault_certificate_import.input['rtags'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_keyvault_certificate_import: "{{ az_keyvault_certificate_import|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_certificate_import }}" 

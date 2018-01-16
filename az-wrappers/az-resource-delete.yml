@@ -1,0 +1,35 @@
+
+
+ - name: Set input params for az_resource_delete
+   set_fact: 
+     az_resource_delete:
+       input: 
+         ###  Optional parameter. The api version of the resource (omit for latest).  ### 
+        'api-version': "{{ item['api-version'] | default('') }}" 
+         ###  Optional parameter. One or more resource IDs (space delimited). If provided, no other "Resource Id" arguments should be specified.  ### 
+        'ids': "{{ item['ids'] | default('') }}" 
+         ###  Optional parameter. The resource name. (Ex: myC).  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Provider namespace (Ex: 'Microsoft.Provider').  ### 
+        'namespace': "{{ item['namespace'] | default('') }}" 
+         ###  Optional parameter. The parent path (Ex: 'resA/myA/resB/myB').  ### 
+        'parent': "{{ item['parent'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The resource type (Ex: 'resC'). Can also accept namespace/type format (Ex: 'Microsoft.Provider/resC').  ### 
+        'resource-type': "{{ item['resource-type'] | default('') }}" 
+ - debug: msg="{{ az_resource_delete }}"          
+ - name: "az resource delete: Delete a resource." 
+   command: |                                      
+     az resource delete                            
+                 {%if az_resource_delete.input['api-version'] %} --api-version az_resource_delete.input['api-version'] {%endif %} 
+                 {%if az_resource_delete.input['ids'] %} --ids az_resource_delete.input['ids'] {%endif %} 
+                 {%if az_resource_delete.input['name'] %} --name az_resource_delete.input['name'] {%endif %} 
+                 {%if az_resource_delete.input['namespace'] %} --namespace az_resource_delete.input['namespace'] {%endif %} 
+                 {%if az_resource_delete.input['parent'] %} --parent az_resource_delete.input['parent'] {%endif %} 
+                 {%if az_resource_delete.input['resource-group'] %} --resource-group az_resource_delete.input['resource-group'] {%endif %} 
+                 {%if az_resource_delete.input['resource-type'] %} --resource-type az_resource_delete.input['resource-type'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_resource_delete: "{{ az_resource_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_resource_delete }}" 

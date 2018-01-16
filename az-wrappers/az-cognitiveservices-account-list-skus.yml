@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_cognitiveservices_account_list_skus
+   set_fact: 
+     az_cognitiveservices_account_list_skus:
+       input: 
+         ###  Required parameter. Cognitive service account name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_cognitiveservices_account_list_skus }}"          
+ - name: "az cognitiveservices account list-skus: List the SKUs avaiable for an Azure Cognitive Services account." 
+   command: |                                      
+     az cognitiveservices account list-skus                            
+                 --name {{ az_cognitiveservices_account_list_skus.input['name'] }} 
+                 --resource-group {{ az_cognitiveservices_account_list_skus.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_cognitiveservices_account_list_skus: "{{ az_cognitiveservices_account_list_skus|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cognitiveservices_account_list_skus }}" 

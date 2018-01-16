@@ -1,0 +1,56 @@
+
+
+ - name: Set input params for az_cdn_endpoint_update
+   set_fact: 
+     az_cdn_endpoint_update:
+       input: 
+         ###  Required parameter. Name of the CDN endpoint.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the CDN profile which is unique within the resource group.  ### 
+        'profile-name': "{{ item['profile-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. List of content types on which compression applies. The value should be a valid MIME type.  ### 
+        'content-types-to-compress': "{{ item['content-types-to-compress'] | default('') }}" 
+         ###  Optional parameter. If compression is enabled, content will be served as compressed if user requests for a compressed version. Content won't be compressed on CDN when requested content is smaller than 1 byte or larger than 1 MB.  ### 
+        'enable-compression': "{{ item['enable-compression'] | default('') }}" 
+         ###  Optional parameter. Indicates whether HTTP traffic is not allowed on the endpoint. Default is to allow HTTP traffic.  ### 
+        'no-http': "{{ item['no-http'] | default('') }}" 
+         ###  Optional parameter. Indicates whether HTTPS traffic is not allowed on the endpoint. Default is to allow HTTPS traffic.  ### 
+        'no-https': "{{ item['no-https'] | default('') }}" 
+         ###  Optional parameter. The host header CDN sends along with content requests to origin. The default value is the host name of the origin.  ### 
+        'origin-host-header': "{{ item['origin-host-header'] | default('') }}" 
+         ###  Optional parameter. The path used when CDN sends request to origin.  ### 
+        'origin-path': "{{ item['origin-path'] | default('') }}" 
+         ###  Optional parameter. Defines the query string caching behavior.  ### 
+        'query-string-caching': "{{ item['query-string-caching'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. Add an object to a list of objects by specifying a path and key value pairs.  Example: --add property.listProperty <key=value, string or JSON string>.  ### 
+        'add': "{{ item['add'] | default('') }}" 
+         ###  Optional parameter. Remove a property or an element from a list.  Example: --remove property.list <indexToRemove> OR --remove propertyToRemove.  ### 
+        'remove': "{{ item['remove'] | default('') }}" 
+         ###  Optional parameter. Update an object by specifying a property path and value to set.  Example: --set property1.property2=<value>.  ### 
+        'set': "{{ item['set'] | default('') }}" 
+ - debug: msg="{{ az_cdn_endpoint_update }}"          
+ - name: "az cdn endpoint update: Update a CDN endpoint to manage how content is delivered." 
+   command: |                                      
+     az cdn endpoint update                            
+                 --name {{ az_cdn_endpoint_update.input['name'] }} 
+                 --profile-name {{ az_cdn_endpoint_update.input['profile-name'] }} 
+                 --resource-group {{ az_cdn_endpoint_update.input['resource-group'] }} 
+                 {%if az_cdn_endpoint_update.input['content-types-to-compress'] %} --content-types-to-compress az_cdn_endpoint_update.input['content-types-to-compress'] {%endif %} 
+                 {%if az_cdn_endpoint_update.input['enable-compression'] %} --enable-compression az_cdn_endpoint_update.input['enable-compression'] {%endif %} 
+                 {%if az_cdn_endpoint_update.input['no-http'] %} --no-http az_cdn_endpoint_update.input['no-http'] {%endif %} 
+                 {%if az_cdn_endpoint_update.input['no-https'] %} --no-https az_cdn_endpoint_update.input['no-https'] {%endif %} 
+                 {%if az_cdn_endpoint_update.input['origin-host-header'] %} --origin-host-header az_cdn_endpoint_update.input['origin-host-header'] {%endif %} 
+                 {%if az_cdn_endpoint_update.input['origin-path'] %} --origin-path az_cdn_endpoint_update.input['origin-path'] {%endif %} 
+                 {%if az_cdn_endpoint_update.input['query-string-caching'] %} --query-string-caching az_cdn_endpoint_update.input['query-string-caching'] {%endif %} 
+                 {%if az_cdn_endpoint_update.input['rtags'] %} --tags az_cdn_endpoint_update.input['rtags'] {%endif %} 
+                 {%if az_cdn_endpoint_update.input['add'] %} --add az_cdn_endpoint_update.input['add'] {%endif %} 
+                 {%if az_cdn_endpoint_update.input['remove'] %} --remove az_cdn_endpoint_update.input['remove'] {%endif %} 
+                 {%if az_cdn_endpoint_update.input['set'] %} --set az_cdn_endpoint_update.input['set'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_cdn_endpoint_update: "{{ az_cdn_endpoint_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cdn_endpoint_update }}" 

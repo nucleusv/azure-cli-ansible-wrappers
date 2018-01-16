@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_cdn_endpoint_validate_custom_domain
+   set_fact: 
+     az_cdn_endpoint_validate_custom_domain:
+       input: 
+         ###  Required parameter. The host name of the custom domain. Must be a domain name.  ### 
+        'host-name': "{{ item['host-name'] | default('') }}" 
+         ###  Required parameter. Name of the CDN endpoint.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the CDN profile which is unique within the resource group.  ### 
+        'profile-name': "{{ item['profile-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_cdn_endpoint_validate_custom_domain }}"          
+ - name: "az cdn endpoint validate-custom-domain: Validates the custom domain mapping to ensure it maps to the correct CDN endpoint in DNS." 
+   command: |                                      
+     az cdn endpoint validate-custom-domain                            
+                 --host-name {{ az_cdn_endpoint_validate_custom_domain.input['host-name'] }} 
+                 --name {{ az_cdn_endpoint_validate_custom_domain.input['name'] }} 
+                 --profile-name {{ az_cdn_endpoint_validate_custom_domain.input['profile-name'] }} 
+                 --resource-group {{ az_cdn_endpoint_validate_custom_domain.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_cdn_endpoint_validate_custom_domain: "{{ az_cdn_endpoint_validate_custom_domain|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cdn_endpoint_validate_custom_domain }}" 

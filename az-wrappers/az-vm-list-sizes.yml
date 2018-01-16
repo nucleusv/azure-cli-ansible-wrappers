@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_vm_list_sizes
+   set_fact: 
+     az_vm_list_sizes:
+       input: 
+         ###  Required parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+ - debug: msg="{{ az_vm_list_sizes }}"          
+ - name: "az vm list-sizes: List available sizes for VMs." 
+   command: |                                      
+     az vm list-sizes                            
+                 --location {{ az_vm_list_sizes.input['location'] }} 
+   register: output  
+ - set_fact: 
+    az_vm_list_sizes: "{{ az_vm_list_sizes|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_list_sizes }}" 

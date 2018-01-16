@@ -1,0 +1,35 @@
+
+
+ - name: Set input params for az_acr_replication_update
+   set_fact: 
+     az_acr_replication_update:
+       input: 
+         ###  Required parameter. The name of the replication.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. The name of the container registry. You can configure the default registry name using `az configure --defaults acr=&lt;registry name&gt;`.  ### 
+        'registry': "{{ item['registry'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. Add an object to a list of objects by specifying a path and key value pairs.  Example: --add property.listProperty <key=value, string or JSON string>.  ### 
+        'add': "{{ item['add'] | default('') }}" 
+         ###  Optional parameter. Remove a property or an element from a list.  Example: --remove property.list <indexToRemove> OR --remove propertyToRemove.  ### 
+        'remove': "{{ item['remove'] | default('') }}" 
+         ###  Optional parameter. Update an object by specifying a property path and value to set.  Example: --set property1.property2=<value>.  ### 
+        'set': "{{ item['set'] | default('') }}" 
+ - debug: msg="{{ az_acr_replication_update }}"          
+ - name: "az acr replication update: Updates a replication." 
+   command: |                                      
+     az acr replication update                            
+                 --name {{ az_acr_replication_update.input['name'] }} 
+                 --registry {{ az_acr_replication_update.input['registry'] }} 
+                 {%if az_acr_replication_update.input['resource-group'] %} --resource-group az_acr_replication_update.input['resource-group'] {%endif %} 
+                 {%if az_acr_replication_update.input['rtags'] %} --tags az_acr_replication_update.input['rtags'] {%endif %} 
+                 {%if az_acr_replication_update.input['add'] %} --add az_acr_replication_update.input['add'] {%endif %} 
+                 {%if az_acr_replication_update.input['remove'] %} --remove az_acr_replication_update.input['remove'] {%endif %} 
+                 {%if az_acr_replication_update.input['set'] %} --set az_acr_replication_update.input['set'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_acr_replication_update: "{{ az_acr_replication_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_acr_replication_update }}" 

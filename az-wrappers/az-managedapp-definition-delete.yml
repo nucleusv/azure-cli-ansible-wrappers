@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_managedapp_definition_delete
+   set_fact: 
+     az_managedapp_definition_delete:
+       input: 
+         ###  Required parameter. The name of the managed application definition to delete.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. The resource group of the managed application definition.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_managedapp_definition_delete }}"          
+ - name: "az managedapp definition delete: Delete a managed application definition." 
+   command: |                                      
+     az managedapp definition delete                            
+                 --name {{ az_managedapp_definition_delete.input['name'] }} 
+                 --resource-group {{ az_managedapp_definition_delete.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_managedapp_definition_delete: "{{ az_managedapp_definition_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_managedapp_definition_delete }}" 

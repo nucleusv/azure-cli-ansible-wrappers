@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_ad_sp_show
+   set_fact: 
+     az_ad_sp_show:
+       input: 
+         ###  Required parameter. Service principal name, or object id.  ### 
+        'id': "{{ item['id'] | default('') }}" 
+ - debug: msg="{{ az_ad_sp_show }}"          
+ - name: "az ad sp show: Get the details of a service principal." 
+   command: |                                      
+     az ad sp show                            
+                 --id {{ az_ad_sp_show.input['id'] }} 
+   register: output  
+ - set_fact: 
+    az_ad_sp_show: "{{ az_ad_sp_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_ad_sp_show }}" 

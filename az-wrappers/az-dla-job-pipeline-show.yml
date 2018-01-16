@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_dla_job_pipeline_show
+   set_fact: 
+     az_dla_job_pipeline_show:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. Pipeline ID.  ### 
+        'pipeline-identity': "{{ item['pipeline-identity'] | default('') }}" 
+         ###  Optional parameter. The end date for when to get the pipeline and aggregate its data. The startDateTime and endDateTime can be no more than 30 days apart.  ### 
+        'end-date-time': "{{ item['end-date-time'] | default('') }}" 
+         ###  Optional parameter. The start date for when to get the pipeline and aggregate its data. The startDateTime and endDateTime can be no more than 30 days apart.  ### 
+        'start-date-time': "{{ item['start-date-time'] | default('') }}" 
+ - debug: msg="{{ az_dla_job_pipeline_show }}"          
+ - name: "az dla job pipeline show: Retrieve a job pipeline in a Data Lake Analytics account." 
+   command: |                                      
+     az dla job pipeline show                            
+                 --account {{ az_dla_job_pipeline_show.input['account'] }} 
+                 --pipeline-identity {{ az_dla_job_pipeline_show.input['pipeline-identity'] }} 
+                 {%if az_dla_job_pipeline_show.input['end-date-time'] %} --end-date-time az_dla_job_pipeline_show.input['end-date-time'] {%endif %} 
+                 {%if az_dla_job_pipeline_show.input['start-date-time'] %} --start-date-time az_dla_job_pipeline_show.input['start-date-time'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dla_job_pipeline_show: "{{ az_dla_job_pipeline_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_job_pipeline_show }}" 

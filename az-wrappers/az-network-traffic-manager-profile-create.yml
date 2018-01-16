@@ -1,0 +1,44 @@
+
+
+ - name: Set input params for az_network_traffic_manager_profile_create
+   set_fact: 
+     az_network_traffic_manager_profile_create:
+       input: 
+         ###  Required parameter. Traffic manager profile name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Routing method.  ### 
+        'routing-method': "{{ item['routing-method'] | default('') }}" 
+         ###  Required parameter. Relative DNS name for the traffic manager profile. Resulting FQDN will be `&lt;unique-dns-name&gt;.trafficmanager.net` and must be globally unique.  ### 
+        'unique-dns-name': "{{ item['unique-dns-name'] | default('') }}" 
+         ###  Optional parameter. Path to monitor.  ### 
+        'monitor-path': "{{ item['monitor-path'] | default('') }}" 
+         ###  Optional parameter. Port to monitor.  ### 
+        'monitor-port': "{{ item['monitor-port'] | default('') }}" 
+         ###  Optional parameter. Monitor protocol.  ### 
+        'monitor-protocol': "{{ item['monitor-protocol'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'status': "{{ item['status'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. DNS config time-to-live in seconds.  ### 
+        'ttl': "{{ item['ttl'] | default('') }}" 
+ - debug: msg="{{ az_network_traffic_manager_profile_create }}"          
+ - name: "az network traffic-manager profile create: Create a profile." 
+   command: |                                      
+     az network traffic-manager profile create                            
+                 --name {{ az_network_traffic_manager_profile_create.input['name'] }} 
+                 --resource-group {{ az_network_traffic_manager_profile_create.input['resource-group'] }} 
+                 --routing-method {{ az_network_traffic_manager_profile_create.input['routing-method'] }} 
+                 --unique-dns-name {{ az_network_traffic_manager_profile_create.input['unique-dns-name'] }} 
+                 {%if az_network_traffic_manager_profile_create.input['monitor-path'] %} --monitor-path az_network_traffic_manager_profile_create.input['monitor-path'] {%endif %} 
+                 {%if az_network_traffic_manager_profile_create.input['monitor-port'] %} --monitor-port az_network_traffic_manager_profile_create.input['monitor-port'] {%endif %} 
+                 {%if az_network_traffic_manager_profile_create.input['monitor-protocol'] %} --monitor-protocol az_network_traffic_manager_profile_create.input['monitor-protocol'] {%endif %} 
+                 {%if az_network_traffic_manager_profile_create.input['status'] %} --status az_network_traffic_manager_profile_create.input['status'] {%endif %} 
+                 {%if az_network_traffic_manager_profile_create.input['rtags'] %} --tags az_network_traffic_manager_profile_create.input['rtags'] {%endif %} 
+                 {%if az_network_traffic_manager_profile_create.input['ttl'] %} --ttl az_network_traffic_manager_profile_create.input['ttl'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_traffic_manager_profile_create: "{{ az_network_traffic_manager_profile_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_traffic_manager_profile_create }}" 

@@ -1,0 +1,35 @@
+
+
+ - name: Set input params for az_keyvault_certificate_issuer_update
+   set_fact: 
+     az_keyvault_certificate_issuer_update:
+       input: 
+         ###  Required parameter. Certificate issuer name.  ### 
+        'issuer-name': "{{ item['issuer-name'] | default('') }}" 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+         ###  Optional parameter. Set issuer enabled state.  ### 
+        'enabled': "{{ item['enabled'] | default('') }}" 
+         ###  Optional parameter. The certificate provider name. Must be registered with your tenant ID and in your region.  ### 
+        'provider-name': "{{ item['provider-name'] | default('') }}" 
+         ###  Optional parameter. The issuer account id/username/etc.  ### 
+        'account-id': "{{ item['account-id'] | default('') }}" 
+         ###  Optional parameter. The issuer account password/secret/etc.  ### 
+        'password': "{{ item['password'] | default('') }}" 
+         ###  Optional parameter. The organization id.  ### 
+        'organization-id': "{{ item['organization-id'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_certificate_issuer_update }}"          
+ - name: "az keyvault certificate issuer update: Update a certificate issuer record." 
+   command: |                                      
+     az keyvault certificate issuer update                            
+                 --issuer-name {{ az_keyvault_certificate_issuer_update.input['issuer-name'] }} 
+                 --vault-name {{ az_keyvault_certificate_issuer_update.input['vault-name'] }} 
+                 {%if az_keyvault_certificate_issuer_update.input['enabled'] %} --enabled az_keyvault_certificate_issuer_update.input['enabled'] {%endif %} 
+                 {%if az_keyvault_certificate_issuer_update.input['provider-name'] %} --provider-name az_keyvault_certificate_issuer_update.input['provider-name'] {%endif %} 
+                 {%if az_keyvault_certificate_issuer_update.input['account-id'] %} --account-id az_keyvault_certificate_issuer_update.input['account-id'] {%endif %} 
+                 {%if az_keyvault_certificate_issuer_update.input['password'] %} --password az_keyvault_certificate_issuer_update.input['password'] {%endif %} 
+                 {%if az_keyvault_certificate_issuer_update.input['organization-id'] %} --organization-id az_keyvault_certificate_issuer_update.input['organization-id'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_keyvault_certificate_issuer_update: "{{ az_keyvault_certificate_issuer_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_certificate_issuer_update }}" 

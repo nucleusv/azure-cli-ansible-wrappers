@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_iot_device_message_receive
+   set_fact: 
+     az_iot_device_message_receive:
+       input: 
+         ###  Required parameter. Device Id.  ### 
+        'device-id': "{{ item['device-id'] | default('') }}" 
+         ###  Required parameter. IoT Hub name.  ### 
+        'hub-name': "{{ item['hub-name'] | default('') }}" 
+         ###  Optional parameter. In case a message returned to this call, this specifies the amount of time in seconds, the message will be invisible to other receive calls.  ### 
+        'lock-timeout': "{{ item['lock-timeout'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_iot_device_message_receive }}"          
+ - name: "az iot device message receive: Receive a cloud-to-device message." 
+   command: |                                      
+     az iot device message receive                            
+                 --device-id {{ az_iot_device_message_receive.input['device-id'] }} 
+                 --hub-name {{ az_iot_device_message_receive.input['hub-name'] }} 
+                 {%if az_iot_device_message_receive.input['lock-timeout'] %} --lock-timeout az_iot_device_message_receive.input['lock-timeout'] {%endif %} 
+                 {%if az_iot_device_message_receive.input['resource-group'] %} --resource-group az_iot_device_message_receive.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_device_message_receive: "{{ az_iot_device_message_receive|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_device_message_receive }}" 

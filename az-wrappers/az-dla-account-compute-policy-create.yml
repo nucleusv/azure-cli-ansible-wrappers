@@ -1,0 +1,35 @@
+
+
+ - name: Set input params for az_dla_account_compute_policy_create
+   set_fact: 
+     az_dla_account_compute_policy_create:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The name of the compute policy to create.  ### 
+        'compute-policy-name': "{{ item['compute-policy-name'] | default('') }}" 
+         ###  Required parameter. The Azure Active Directory object ID of the user, group, or service principal to apply the policy to.  ### 
+        'object-id': "{{ item['object-id'] | default('') }}" 
+         ###  Required parameter. The Azure Active Directory object type associated with the supplied object ID.  ### 
+        'object-type': "{{ item['object-type'] | default('') }}" 
+         ###  Optional parameter. The maximum degree of parallelism allowed per job for this policy. At least one of `--min-priority-per-job` and `--max-dop-per-job` must be specified.  ### 
+        'max-dop-per-job': "{{ item['max-dop-per-job'] | default('') }}" 
+         ###  Optional parameter. The minimum priority allowed per job for this policy. At least one of `--min-priority-per-job` and `--max-dop-per-job` must be specified.  ### 
+        'min-priority-per-job': "{{ item['min-priority-per-job'] | default('') }}" 
+         ###  Optional parameter. If not specified, will attempt to discover the resource group for the specified Data Lake Analytics account.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_dla_account_compute_policy_create }}"          
+ - name: "az dla account compute-policy create: Create a compute policy in the Data Lake Analytics account." 
+   command: |                                      
+     az dla account compute-policy create                            
+                 --account {{ az_dla_account_compute_policy_create.input['account'] }} 
+                 --compute-policy-name {{ az_dla_account_compute_policy_create.input['compute-policy-name'] }} 
+                 --object-id {{ az_dla_account_compute_policy_create.input['object-id'] }} 
+                 --object-type {{ az_dla_account_compute_policy_create.input['object-type'] }} 
+                 {%if az_dla_account_compute_policy_create.input['max-dop-per-job'] %} --max-dop-per-job az_dla_account_compute_policy_create.input['max-dop-per-job'] {%endif %} 
+                 {%if az_dla_account_compute_policy_create.input['min-priority-per-job'] %} --min-priority-per-job az_dla_account_compute_policy_create.input['min-priority-per-job'] {%endif %} 
+                 {%if az_dla_account_compute_policy_create.input['resource-group'] %} --resource-group az_dla_account_compute_policy_create.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dla_account_compute_policy_create: "{{ az_dla_account_compute_policy_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_account_compute_policy_create }}" 

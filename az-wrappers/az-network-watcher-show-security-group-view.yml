@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_network_watcher_show_security_group_view
+   set_fact: 
+     az_network_watcher_show_security_group_view:
+       input: 
+         ###  Required parameter. Name of the resource group the target VM is in. Do not use when supplying VM ID.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name or ID of the VM to target.  ### 
+        'vm': "{{ item['vm'] | default('') }}" 
+ - debug: msg="{{ az_network_watcher_show_security_group_view }}"          
+ - name: "az network watcher show-security-group-view: Get detailed security information on a VM for the currently configured network security group." 
+   command: |                                      
+     az network watcher show-security-group-view                            
+                 --resource-group {{ az_network_watcher_show_security_group_view.input['resource-group'] }} 
+                 --vm {{ az_network_watcher_show_security_group_view.input['vm'] }} 
+   register: output  
+ - set_fact: 
+    az_network_watcher_show_security_group_view: "{{ az_network_watcher_show_security_group_view|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_watcher_show_security_group_view }}" 

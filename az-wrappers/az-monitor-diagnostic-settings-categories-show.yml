@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_monitor_diagnostic_settings_categories_show
+   set_fact: 
+     az_monitor_diagnostic_settings_categories_show:
+       input: 
+         ###  Required parameter. The name of the diagnostic setting.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name or ID of the target resource.  ### 
+        'resource': "{{ item['resource'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Target resource provider namespace.  ### 
+        'resource-namespace': "{{ item['resource-namespace'] | default('') }}" 
+         ###  Optional parameter. Target resource parent path, if applicable.  ### 
+        'resource-parent': "{{ item['resource-parent'] | default('') }}" 
+         ###  Optional parameter. Target resource type. Can also accept namespace/type format (Ex: 'Microsoft.Compute/virtualMachines)').  ### 
+        'resource-type': "{{ item['resource-type'] | default('') }}" 
+ - debug: msg="{{ az_monitor_diagnostic_settings_categories_show }}"          
+ - name: "az monitor diagnostic-settings categories show: Gets the diagnostic settings category for the specified resource." 
+   command: |                                      
+     az monitor diagnostic-settings categories show                            
+                 --name {{ az_monitor_diagnostic_settings_categories_show.input['name'] }} 
+                 --resource {{ az_monitor_diagnostic_settings_categories_show.input['resource'] }} 
+                 {%if az_monitor_diagnostic_settings_categories_show.input['resource-group'] %} --resource-group az_monitor_diagnostic_settings_categories_show.input['resource-group'] {%endif %} 
+                 {%if az_monitor_diagnostic_settings_categories_show.input['resource-namespace'] %} --resource-namespace az_monitor_diagnostic_settings_categories_show.input['resource-namespace'] {%endif %} 
+                 {%if az_monitor_diagnostic_settings_categories_show.input['resource-parent'] %} --resource-parent az_monitor_diagnostic_settings_categories_show.input['resource-parent'] {%endif %} 
+                 {%if az_monitor_diagnostic_settings_categories_show.input['resource-type'] %} --resource-type az_monitor_diagnostic_settings_categories_show.input['resource-type'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_monitor_diagnostic_settings_categories_show: "{{ az_monitor_diagnostic_settings_categories_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_monitor_diagnostic_settings_categories_show }}" 

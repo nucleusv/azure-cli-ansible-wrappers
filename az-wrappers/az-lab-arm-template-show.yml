@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_lab_arm_template_show
+   set_fact: 
+     az_lab_arm_template_show:
+       input: 
+         ###  Required parameter. Name of the artifact source.  ### 
+        'artifact-source-name': "{{ item['artifact-source-name'] | default('') }}" 
+         ###  Required parameter. Name of the lab.  ### 
+        'lab-name': "{{ item['lab-name'] | default('') }}" 
+         ###  Required parameter. Name of the Azure Resource Manager template.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of lab's resource group.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Whether or not to export parameters template.  ### 
+        'export-parameters': "{{ item['export-parameters'] | default('') }}" 
+ - debug: msg="{{ az_lab_arm_template_show }}"          
+ - name: "az lab arm-template show: Get the details of an ARM template in a lab." 
+   command: |                                      
+     az lab arm-template show                            
+                 --artifact-source-name {{ az_lab_arm_template_show.input['artifact-source-name'] }} 
+                 --lab-name {{ az_lab_arm_template_show.input['lab-name'] }} 
+                 --name {{ az_lab_arm_template_show.input['name'] }} 
+                 --resource-group {{ az_lab_arm_template_show.input['resource-group'] }} 
+                 {%if az_lab_arm_template_show.input['export-parameters'] %} --export-parameters az_lab_arm_template_show.input['export-parameters'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_lab_arm_template_show: "{{ az_lab_arm_template_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_lab_arm_template_show }}" 

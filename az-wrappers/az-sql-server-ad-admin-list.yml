@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_sql_server_ad_admin_list
+   set_fact: 
+     az_sql_server_ad_admin_list:
+       input: 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The name of the SQL Server.  ### 
+        'server-name': "{{ item['server-name'] | default('') }}" 
+ - debug: msg="{{ az_sql_server_ad_admin_list }}"          
+ - name: "az sql server ad-admin list: Returns a list of server Administrators." 
+   command: |                                      
+     az sql server ad-admin list                            
+                 --resource-group {{ az_sql_server_ad_admin_list.input['resource-group'] }} 
+                 --server-name {{ az_sql_server_ad_admin_list.input['server-name'] }} 
+   register: output  
+ - set_fact: 
+    az_sql_server_ad_admin_list: "{{ az_sql_server_ad_admin_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sql_server_ad_admin_list }}" 

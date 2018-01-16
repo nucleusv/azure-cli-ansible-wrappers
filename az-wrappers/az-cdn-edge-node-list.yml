@@ -1,0 +1,14 @@
+
+
+ - name: Set input params for az_cdn_edge_node_list
+   set_fact: 
+     az_cdn_edge_node_list:
+       input: 
+ - debug: msg="{{ az_cdn_edge_node_list }}"          
+ - name: "az cdn edge-node list: Lists all the edge nodes of a CDN service." 
+   command: |                                      
+     az cdn edge-node list                            
+   register: output  
+ - set_fact: 
+    az_cdn_edge_node_list: "{{ az_cdn_edge_node_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cdn_edge_node_list }}" 

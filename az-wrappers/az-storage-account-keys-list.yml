@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_storage_account_keys_list
+   set_fact: 
+     az_storage_account_keys_list:
+       input: 
+         ###  Required parameter. The storage account name.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_storage_account_keys_list }}"          
+ - name: "az storage account keys list: List the primary and secondary keys for a storage account." 
+   command: |                                      
+     az storage account keys list                            
+                 --account-name {{ az_storage_account_keys_list.input['account-name'] }} 
+                 --resource-group {{ az_storage_account_keys_list.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_storage_account_keys_list: "{{ az_storage_account_keys_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_storage_account_keys_list }}" 

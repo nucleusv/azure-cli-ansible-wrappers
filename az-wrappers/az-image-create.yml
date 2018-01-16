@@ -1,0 +1,35 @@
+
+
+ - name: Set input params for az_image_create
+   set_fact: 
+     az_image_create:
+       input: 
+         ###  Required parameter. New image name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. OS disk source from the same region, including a virtual machine ID or name, OS disk blob URI, managed OS disk ID or name, or OS snapshot ID or name.  ### 
+        'source': "{{ item['source'] | default('') }}" 
+         ###  Optional parameter. Space separated list of data disk sources, including unmanaged blob URI, managed disk ID or name, or snapshot ID or name.  ### 
+        'data-disk-sources': "{{ item['data-disk-sources'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'os-type': "{{ item['os-type'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+ - debug: msg="{{ az_image_create }}"          
+ - name: "az image create: Create a custom Virtual Machine Image from managed disks or snapshots." 
+   command: |                                      
+     az image create                            
+                 --name {{ az_image_create.input['name'] }} 
+                 --resource-group {{ az_image_create.input['resource-group'] }} 
+                 --source {{ az_image_create.input['source'] }} 
+                 {%if az_image_create.input['data-disk-sources'] %} --data-disk-sources az_image_create.input['data-disk-sources'] {%endif %} 
+                 {%if az_image_create.input['location'] %} --location az_image_create.input['location'] {%endif %} 
+                 {%if az_image_create.input['os-type'] %} --os-type az_image_create.input['os-type'] {%endif %} 
+                 {%if az_image_create.input['rtags'] %} --tags az_image_create.input['rtags'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_image_create: "{{ az_image_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_image_create }}" 

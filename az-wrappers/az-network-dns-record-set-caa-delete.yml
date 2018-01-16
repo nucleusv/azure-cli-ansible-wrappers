@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_network_dns_record_set_caa_delete
+   set_fact: 
+     az_network_dns_record_set_caa_delete:
+       input: 
+         ###  Required parameter. The name of the record set, relative to the name of the zone.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The name of the zone.  ### 
+        'zone-name': "{{ item['zone-name'] | default('') }}" 
+         ###  Optional parameter. The etag of the record set. Omit this value to always delete the current record set. Specify the last-seen etag value to prevent accidentally deleting any concurrent changes.  ### 
+        'if-match': "{{ item['if-match'] | default('') }}" 
+         ###  Optional parameter. Do not prompt for confirmation.  ### 
+        'yes': "{{ item['yes'] | default('') }}" 
+ - debug: msg="{{ az_network_dns_record_set_caa_delete }}"          
+ - name: "az network dns record-set caa delete: Delete a CAA record set and all associated records." 
+   command: |                                      
+     az network dns record-set caa delete                            
+                 --name {{ az_network_dns_record_set_caa_delete.input['name'] }} 
+                 --resource-group {{ az_network_dns_record_set_caa_delete.input['resource-group'] }} 
+                 --zone-name {{ az_network_dns_record_set_caa_delete.input['zone-name'] }} 
+                 {%if az_network_dns_record_set_caa_delete.input['if-match'] %} --if-match az_network_dns_record_set_caa_delete.input['if-match'] {%endif %} 
+                 {%if az_network_dns_record_set_caa_delete.input['yes'] %} --yes {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_dns_record_set_caa_delete: "{{ az_network_dns_record_set_caa_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_dns_record_set_caa_delete }}" 

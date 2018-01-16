@@ -1,0 +1,14 @@
+
+
+ - name: Set input params for az_identity_list_operations
+   set_fact: 
+     az_identity_list_operations:
+       input: 
+ - debug: msg="{{ az_identity_list_operations }}"          
+ - name: "az identity list-operations: Lists available operations for the Managed Identity provider." 
+   command: |                                      
+     az identity list-operations                            
+   register: output  
+ - set_fact: 
+    az_identity_list_operations: "{{ az_identity_list_operations|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_identity_list_operations }}" 

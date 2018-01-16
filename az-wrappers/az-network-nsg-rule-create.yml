@@ -1,0 +1,56 @@
+
+
+ - name: Set input params for az_network_nsg_rule_create
+   set_fact: 
+     az_network_nsg_rule_create:
+       input: 
+         ###  Required parameter. Name of the network security group rule.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the network security group.  ### 
+        'nsg-name': "{{ item['nsg-name'] | default('') }}" 
+         ###  Required parameter. Rule priority, between 100 (highest priority) and 4096 (lowest priority). Must be unique for each rule in the collection.  ### 
+        'priority': "{{ item['priority'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'access': "{{ item['access'] | default('') }}" 
+         ###  Optional parameter. Rule description.  ### 
+        'description': "{{ item['description'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'direction': "{{ item['direction'] | default('') }}" 
+         ###  Optional parameter. Network protocol this rule applies to.  ### 
+        'protocol': "{{ item['protocol'] | default('') }}" 
+         ###  Optional parameter. Space-separated list of CIDR prefixes or IP ranges. Alternatively, specify ONE of 'VirtualNetwork', 'AzureLoadBalancer', 'Internet' or '*' to match all IPs.  ### 
+        'destination-address-prefixes': "{{ item['destination-address-prefixes'] | default('') }}" 
+         ###  Optional parameter. Space-separated list of application security group names or IDs.  ### 
+        'destination-asgs': "{{ item['destination-asgs'] | default('') }}" 
+         ###  Optional parameter. Space-separated list of ports or port ranges between 0-65535. Use '*' to match all ports.  ### 
+        'destination-port-ranges': "{{ item['destination-port-ranges'] | default('') }}" 
+         ###  Optional parameter. Space-separated list of CIDR prefixes or IP ranges. Alternatively, specify ONE of 'VirtualNetwork', 'AzureLoadBalancer', 'Internet' or '*' to match all IPs.  ### 
+        'source-address-prefixes': "{{ item['source-address-prefixes'] | default('') }}" 
+         ###  Optional parameter. Space-separated list of application security group names or IDs.  ### 
+        'source-asgs': "{{ item['source-asgs'] | default('') }}" 
+         ###  Optional parameter. Space-separated list of ports or port ranges between 0-65535. Use '*' to match all ports.  ### 
+        'source-port-ranges': "{{ item['source-port-ranges'] | default('') }}" 
+ - debug: msg="{{ az_network_nsg_rule_create }}"          
+ - name: "az network nsg rule create: Create a network security group rule." 
+   command: |                                      
+     az network nsg rule create                            
+                 --name {{ az_network_nsg_rule_create.input['name'] }} 
+                 --nsg-name {{ az_network_nsg_rule_create.input['nsg-name'] }} 
+                 --priority {{ az_network_nsg_rule_create.input['priority'] }} 
+                 --resource-group {{ az_network_nsg_rule_create.input['resource-group'] }} 
+                 {%if az_network_nsg_rule_create.input['access'] %} --access az_network_nsg_rule_create.input['access'] {%endif %} 
+                 {%if az_network_nsg_rule_create.input['description'] %} --description az_network_nsg_rule_create.input['description'] {%endif %} 
+                 {%if az_network_nsg_rule_create.input['direction'] %} --direction az_network_nsg_rule_create.input['direction'] {%endif %} 
+                 {%if az_network_nsg_rule_create.input['protocol'] %} --protocol az_network_nsg_rule_create.input['protocol'] {%endif %} 
+                 {%if az_network_nsg_rule_create.input['destination-address-prefixes'] %} --destination-address-prefixes az_network_nsg_rule_create.input['destination-address-prefixes'] {%endif %} 
+                 {%if az_network_nsg_rule_create.input['destination-asgs'] %} --destination-asgs az_network_nsg_rule_create.input['destination-asgs'] {%endif %} 
+                 {%if az_network_nsg_rule_create.input['destination-port-ranges'] %} --destination-port-ranges az_network_nsg_rule_create.input['destination-port-ranges'] {%endif %} 
+                 {%if az_network_nsg_rule_create.input['source-address-prefixes'] %} --source-address-prefixes az_network_nsg_rule_create.input['source-address-prefixes'] {%endif %} 
+                 {%if az_network_nsg_rule_create.input['source-asgs'] %} --source-asgs az_network_nsg_rule_create.input['source-asgs'] {%endif %} 
+                 {%if az_network_nsg_rule_create.input['source-port-ranges'] %} --source-port-ranges az_network_nsg_rule_create.input['source-port-ranges'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_nsg_rule_create: "{{ az_network_nsg_rule_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_nsg_rule_create }}" 

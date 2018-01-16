@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_cdn_profile_show
+   set_fact: 
+     az_cdn_profile_show:
+       input: 
+         ###  Required parameter. Name of the CDN profile which is unique within the resource group.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_cdn_profile_show }}"          
+ - name: "az cdn profile show: Gets a CDN profile with the specified profile name under the specified subscription and resource group." 
+   command: |                                      
+     az cdn profile show                            
+                 --name {{ az_cdn_profile_show.input['name'] }} 
+                 --resource-group {{ az_cdn_profile_show.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_cdn_profile_show: "{{ az_cdn_profile_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cdn_profile_show }}" 

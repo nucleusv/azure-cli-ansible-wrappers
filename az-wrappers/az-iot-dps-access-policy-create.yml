@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_iot_dps_access_policy_create
+   set_fact: 
+     az_iot_dps_access_policy_create:
+       input: 
+         ###  Required parameter. A friendly name for DPS access policy.  ### 
+        'access-policy-name': "{{ item['access-policy-name'] | default('') }}" 
+         ###  Required parameter. IoT Provisioning Service name.  ### 
+        'dps-name': "{{ item['dps-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Access rights for the IoT provisioning service. Use space separated list for multiple rights.  ### 
+        'rights': "{{ item['rights'] | default('') }}" 
+         ###  Optional parameter. Primary SAS key value.  ### 
+        'primary-key': "{{ item['primary-key'] | default('') }}" 
+         ###  Optional parameter. Secondary SAS key value.  ### 
+        'secondary-key': "{{ item['secondary-key'] | default('') }}" 
+ - debug: msg="{{ az_iot_dps_access_policy_create }}"          
+ - name: "az iot dps access-policy create: Create a new shared access policy in an Azure IoT Hub device provisioning service." 
+   command: |                                      
+     az iot dps access-policy create                            
+                 --access-policy-name {{ az_iot_dps_access_policy_create.input['access-policy-name'] }} 
+                 --dps-name {{ az_iot_dps_access_policy_create.input['dps-name'] }} 
+                 --resource-group {{ az_iot_dps_access_policy_create.input['resource-group'] }} 
+                 --rights {{ az_iot_dps_access_policy_create.input['rights'] }} 
+                 {%if az_iot_dps_access_policy_create.input['primary-key'] %} --primary-key az_iot_dps_access_policy_create.input['primary-key'] {%endif %} 
+                 {%if az_iot_dps_access_policy_create.input['secondary-key'] %} --secondary-key az_iot_dps_access_policy_create.input['secondary-key'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_dps_access_policy_create: "{{ az_iot_dps_access_policy_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_dps_access_policy_create }}" 

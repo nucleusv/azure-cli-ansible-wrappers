@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_webapp_config_connection_string_delete
+   set_fact: 
+     az_webapp_config_connection_string_delete:
+       input: 
+         ###  Required parameter. Name of the web. You can configure the default using 'az configure --defaults web=<name>'.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Space separated connection-string names.  ### 
+        'setting-names': "{{ item['setting-names'] | default('') }}" 
+         ###  Optional parameter. The name of the slot. Default to the productions slot if not specified.  ### 
+        'slot': "{{ item['slot'] | default('') }}" 
+ - debug: msg="{{ az_webapp_config_connection_string_delete }}"          
+ - name: "az webapp config connection-string delete: Delete a web app's connection strings." 
+   command: |                                      
+     az webapp config connection-string delete                            
+                 --name {{ az_webapp_config_connection_string_delete.input['name'] }} 
+                 --resource-group {{ az_webapp_config_connection_string_delete.input['resource-group'] }} 
+                 --setting-names {{ az_webapp_config_connection_string_delete.input['setting-names'] }} 
+                 {%if az_webapp_config_connection_string_delete.input['slot'] %} --slot az_webapp_config_connection_string_delete.input['slot'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_webapp_config_connection_string_delete: "{{ az_webapp_config_connection_string_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_webapp_config_connection_string_delete }}" 

@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_keyvault_key_recover
+   set_fact: 
+     az_keyvault_key_recover:
+       input: 
+         ###  Required parameter. Name of the key.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_key_recover }}"          
+ - name: "az keyvault key recover: Recovers the deleted key back to its current version under /keys." 
+   command: |                                      
+     az keyvault key recover                            
+                 --name {{ az_keyvault_key_recover.input['name'] }} 
+                 --vault-name {{ az_keyvault_key_recover.input['vault-name'] }} 
+   register: output  
+ - set_fact: 
+    az_keyvault_key_recover: "{{ az_keyvault_key_recover|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_key_recover }}" 

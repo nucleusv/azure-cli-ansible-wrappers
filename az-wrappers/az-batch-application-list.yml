@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_batch_application_list
+   set_fact: 
+     az_batch_application_list:
+       input: 
+         ###  Required parameter. Name of the Batch account.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the resource group.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The maximum number of items to return in the response.  ### 
+        'maxresults': "{{ item['maxresults'] | default('') }}" 
+ - debug: msg="{{ az_batch_application_list }}"          
+ - name: "az batch application list: Lists all of the applications in the specified account." 
+   command: |                                      
+     az batch application list                            
+                 --name {{ az_batch_application_list.input['name'] }} 
+                 --resource-group {{ az_batch_application_list.input['resource-group'] }} 
+                 {%if az_batch_application_list.input['maxresults'] %} --maxresults az_batch_application_list.input['maxresults'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_application_list: "{{ az_batch_application_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_application_list }}" 

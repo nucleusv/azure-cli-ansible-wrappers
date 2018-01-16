@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_account_lock_list
+   set_fact: 
+     az_account_lock_list:
+       input: 
+         ###  Optional parameter. A query filter to use to restrict the results.  ### 
+        'filter-string': "{{ item['filter-string'] | default('') }}" 
+ - debug: msg="{{ az_account_lock_list }}"          
+ - name: "az account lock list: List lock information in the subscription." 
+   command: |                                      
+     az account lock list                            
+                 {%if az_account_lock_list.input['filter-string'] %} --filter-string az_account_lock_list.input['filter-string'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_account_lock_list: "{{ az_account_lock_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_account_lock_list }}" 

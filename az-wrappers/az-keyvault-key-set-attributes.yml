@@ -1,0 +1,38 @@
+
+
+ - name: Set input params for az_keyvault_key_set_attributes
+   set_fact: 
+     az_keyvault_key_set_attributes:
+       input: 
+         ###  Required parameter. Name of the key.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+         ###  Optional parameter. Enable the key.  ### 
+        'enabled': "{{ item['enabled'] | default('') }}" 
+         ###  Optional parameter. Expiration UTC datetime  (Y-m-d'T'H:M:S'Z').  ### 
+        'expires': "{{ item['expires'] | default('') }}" 
+         ###  Optional parameter. Key not usable before the provided UTC datetime  (Y-m-d'T'H:M:S'Z').  ### 
+        'not-before': "{{ item['not-before'] | default('') }}" 
+         ###  Optional parameter. Space separated list of permitted JSON web key operations.  ### 
+        'ops': "{{ item['ops'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. The key version. If omitted, uses the latest version.  ### 
+        'version': "{{ item['version'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_key_set_attributes }}"          
+ - name: "az keyvault key set-attributes: The update key operation changes specified attributes of a stored key and can be applied to any key type and key version stored in Azure Key Vault." 
+   command: |                                      
+     az keyvault key set-attributes                            
+                 --name {{ az_keyvault_key_set_attributes.input['name'] }} 
+                 --vault-name {{ az_keyvault_key_set_attributes.input['vault-name'] }} 
+                 {%if az_keyvault_key_set_attributes.input['enabled'] %} --enabled az_keyvault_key_set_attributes.input['enabled'] {%endif %} 
+                 {%if az_keyvault_key_set_attributes.input['expires'] %} --expires az_keyvault_key_set_attributes.input['expires'] {%endif %} 
+                 {%if az_keyvault_key_set_attributes.input['not-before'] %} --not-before az_keyvault_key_set_attributes.input['not-before'] {%endif %} 
+                 {%if az_keyvault_key_set_attributes.input['ops'] %} --ops az_keyvault_key_set_attributes.input['ops'] {%endif %} 
+                 {%if az_keyvault_key_set_attributes.input['rtags'] %} --tags az_keyvault_key_set_attributes.input['rtags'] {%endif %} 
+                 {%if az_keyvault_key_set_attributes.input['version'] %} --version az_keyvault_key_set_attributes.input['version'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_keyvault_key_set_attributes: "{{ az_keyvault_key_set_attributes|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_key_set_attributes }}" 

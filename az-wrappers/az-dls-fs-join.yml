@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_dls_fs_join
+   set_fact: 
+     az_dls_fs_join:
+       input: 
+         ###  Required parameter. Name of the Data Lake Store account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The destination path in the Data Lake Store account.  ### 
+        'destination-path': "{{ item['destination-path'] | default('') }}" 
+         ###  Required parameter. The space-separated list of files in the Data Lake Store account to join.  ### 
+        'source-paths': "{{ item['source-paths'] | default('') }}" 
+         ###  Optional parameter. Indicates that, if the destination file already exists, it should be overwritten.  ### 
+        'force': "{{ item['force'] | default('') }}" 
+ - debug: msg="{{ az_dls_fs_join }}"          
+ - name: "az dls fs join: Join files in a Data Lake Store account into one file." 
+   command: |                                      
+     az dls fs join                            
+                 --account {{ az_dls_fs_join.input['account'] }} 
+                 --destination-path {{ az_dls_fs_join.input['destination-path'] }} 
+                 --source-paths {{ az_dls_fs_join.input['source-paths'] }} 
+                 {%if az_dls_fs_join.input['force'] %} --force az_dls_fs_join.input['force'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dls_fs_join: "{{ az_dls_fs_join|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dls_fs_join }}" 

@@ -1,0 +1,38 @@
+
+
+ - name: Set input params for az_resource_tag
+   set_fact: 
+     az_resource_tag:
+       input: 
+         ###  Required parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. The api version of the resource (omit for latest).  ### 
+        'api-version': "{{ item['api-version'] | default('') }}" 
+         ###  Optional parameter. One or more resource IDs (space delimited). If provided, no other "Resource Id" arguments should be specified.  ### 
+        'ids': "{{ item['ids'] | default('') }}" 
+         ###  Optional parameter. The resource name. (Ex: myC).  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Provider namespace (Ex: 'Microsoft.Provider').  ### 
+        'namespace': "{{ item['namespace'] | default('') }}" 
+         ###  Optional parameter. The parent path (Ex: 'resA/myA/resB/myB').  ### 
+        'parent': "{{ item['parent'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The resource type (Ex: 'resC'). Can also accept namespace/type format (Ex: 'Microsoft.Provider/resC').  ### 
+        'resource-type': "{{ item['resource-type'] | default('') }}" 
+ - debug: msg="{{ az_resource_tag }}"          
+ - name: "az resource tag: Tag a resource." 
+   command: |                                      
+     az resource tag                            
+                 --rtags {{ az_resource_tag.input['rtags'] }} 
+                 {%if az_resource_tag.input['api-version'] %} --api-version az_resource_tag.input['api-version'] {%endif %} 
+                 {%if az_resource_tag.input['ids'] %} --ids az_resource_tag.input['ids'] {%endif %} 
+                 {%if az_resource_tag.input['name'] %} --name az_resource_tag.input['name'] {%endif %} 
+                 {%if az_resource_tag.input['namespace'] %} --namespace az_resource_tag.input['namespace'] {%endif %} 
+                 {%if az_resource_tag.input['parent'] %} --parent az_resource_tag.input['parent'] {%endif %} 
+                 {%if az_resource_tag.input['resource-group'] %} --resource-group az_resource_tag.input['resource-group'] {%endif %} 
+                 {%if az_resource_tag.input['resource-type'] %} --resource-type az_resource_tag.input['resource-type'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_resource_tag: "{{ az_resource_tag|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_resource_tag }}" 

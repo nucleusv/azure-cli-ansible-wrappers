@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_vm_unmanaged_disk_detach
+   set_fact: 
+     az_vm_unmanaged_disk_detach:
+       input: 
+         ###  Required parameter. The data disk name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The name of the Virtual Machine. You can configure the default using `az configure --defaults vm=&lt;name&gt;`.  ### 
+        'vm-name': "{{ item['vm-name'] | default('') }}" 
+ - debug: msg="{{ az_vm_unmanaged_disk_detach }}"          
+ - name: "az vm unmanaged-disk detach: Detatch an unmanaged disk from a VM." 
+   command: |                                      
+     az vm unmanaged-disk detach                            
+                 --name {{ az_vm_unmanaged_disk_detach.input['name'] }} 
+                 --resource-group {{ az_vm_unmanaged_disk_detach.input['resource-group'] }} 
+                 --vm-name {{ az_vm_unmanaged_disk_detach.input['vm-name'] }} 
+   register: output  
+ - set_fact: 
+    az_vm_unmanaged_disk_detach: "{{ az_vm_unmanaged_disk_detach|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_unmanaged_disk_detach }}" 

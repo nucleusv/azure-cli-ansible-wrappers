@@ -1,0 +1,62 @@
+
+
+ - name: Set input params for az_network_express_route_peering_update
+   set_fact: 
+     az_network_express_route_peering_update:
+       input: 
+         ###  Required parameter. ExpressRoute circuit name.  ### 
+        'circuit-name': "{{ item['circuit-name'] | default('') }}" 
+         ###  Required parameter. The name of the peering.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Autonomous system number of the customer/connectivity provider.  ### 
+        'peer-asn': "{{ item['peer-asn'] | default('') }}" 
+         ###  Optional parameter. /30 subnet used to configure IP addresses for primary interface.  ### 
+        'primary-peer-subnet': "{{ item['primary-peer-subnet'] | default('') }}" 
+         ###  Optional parameter. /30 subnet used to configure IP addresses for secondary interface.  ### 
+        'secondary-peer-subnet': "{{ item['secondary-peer-subnet'] | default('') }}" 
+         ###  Optional parameter. Key for generating an MD5 for the BGP session.  ### 
+        'shared-key': "{{ item['shared-key'] | default('') }}" 
+         ###  Optional parameter. Identifier used to identify the customer.  ### 
+        'vlan-id': "{{ item['vlan-id'] | default('') }}" 
+         ###  Optional parameter. Space separated list of prefixes to be advertised through the BGP peering.  ### 
+        'advertised-public-prefixes': "{{ item['advertised-public-prefixes'] | default('') }}" 
+         ###  Optional parameter. Autonomous system number of the customer.  ### 
+        'customer-asn': "{{ item['customer-asn'] | default('') }}" 
+         ###  Optional parameter. The IP version to update Microsoft Peering settings for.  ### 
+        'ip-version': "{{ item['ip-version'] | default('') }}" 
+         ###  Optional parameter. Name or ID of a route filter to apply to the peering settings.  ### 
+        'route-filter': "{{ item['route-filter'] | default('') }}" 
+         ###  Optional parameter. Internet Routing Registry / Regional Internet Registry.  ### 
+        'routing-registry-name': "{{ item['routing-registry-name'] | default('') }}" 
+         ###  Optional parameter. Add an object to a list of objects by specifying a path and key value pairs.  Example: --add property.listProperty <key=value, string or JSON string>.  ### 
+        'add': "{{ item['add'] | default('') }}" 
+         ###  Optional parameter. Remove a property or an element from a list.  Example: --remove property.list <indexToRemove> OR --remove propertyToRemove.  ### 
+        'remove': "{{ item['remove'] | default('') }}" 
+         ###  Optional parameter. Update an object by specifying a property path and value to set.  Example: --set property1.property2=<value>.  ### 
+        'set': "{{ item['set'] | default('') }}" 
+ - debug: msg="{{ az_network_express_route_peering_update }}"          
+ - name: "az network express-route peering update: Update peering settings." 
+   command: |                                      
+     az network express-route peering update                            
+                 --circuit-name {{ az_network_express_route_peering_update.input['circuit-name'] }} 
+                 --name {{ az_network_express_route_peering_update.input['name'] }} 
+                 --resource-group {{ az_network_express_route_peering_update.input['resource-group'] }} 
+                 {%if az_network_express_route_peering_update.input['peer-asn'] %} --peer-asn az_network_express_route_peering_update.input['peer-asn'] {%endif %} 
+                 {%if az_network_express_route_peering_update.input['primary-peer-subnet'] %} --primary-peer-subnet az_network_express_route_peering_update.input['primary-peer-subnet'] {%endif %} 
+                 {%if az_network_express_route_peering_update.input['secondary-peer-subnet'] %} --secondary-peer-subnet az_network_express_route_peering_update.input['secondary-peer-subnet'] {%endif %} 
+                 {%if az_network_express_route_peering_update.input['shared-key'] %} --shared-key az_network_express_route_peering_update.input['shared-key'] {%endif %} 
+                 {%if az_network_express_route_peering_update.input['vlan-id'] %} --vlan-id az_network_express_route_peering_update.input['vlan-id'] {%endif %} 
+                 {%if az_network_express_route_peering_update.input['advertised-public-prefixes'] %} --advertised-public-prefixes az_network_express_route_peering_update.input['advertised-public-prefixes'] {%endif %} 
+                 {%if az_network_express_route_peering_update.input['customer-asn'] %} --customer-asn az_network_express_route_peering_update.input['customer-asn'] {%endif %} 
+                 {%if az_network_express_route_peering_update.input['ip-version'] %} --ip-version az_network_express_route_peering_update.input['ip-version'] {%endif %} 
+                 {%if az_network_express_route_peering_update.input['route-filter'] %} --route-filter az_network_express_route_peering_update.input['route-filter'] {%endif %} 
+                 {%if az_network_express_route_peering_update.input['routing-registry-name'] %} --routing-registry-name az_network_express_route_peering_update.input['routing-registry-name'] {%endif %} 
+                 {%if az_network_express_route_peering_update.input['add'] %} --add az_network_express_route_peering_update.input['add'] {%endif %} 
+                 {%if az_network_express_route_peering_update.input['remove'] %} --remove az_network_express_route_peering_update.input['remove'] {%endif %} 
+                 {%if az_network_express_route_peering_update.input['set'] %} --set az_network_express_route_peering_update.input['set'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_express_route_peering_update: "{{ az_network_express_route_peering_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_express_route_peering_update }}" 

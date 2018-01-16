@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_vm_unmanaged_disk_list
+   set_fact: 
+     az_vm_unmanaged_disk_list:
+       input: 
+         ###  Required parameter. The name of the Virtual Machine. You can configure the default using `az configure --defaults vm=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_vm_unmanaged_disk_list }}"          
+ - name: "az vm unmanaged-disk list: List unamanaged disks of a VM." 
+   command: |                                      
+     az vm unmanaged-disk list                            
+                 --name {{ az_vm_unmanaged_disk_list.input['name'] }} 
+                 --resource-group {{ az_vm_unmanaged_disk_list.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_vm_unmanaged_disk_list: "{{ az_vm_unmanaged_disk_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_unmanaged_disk_list }}" 

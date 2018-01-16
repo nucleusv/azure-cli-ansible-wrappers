@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_vmss_rolling_upgrade_start
+   set_fact: 
+     az_vmss_rolling_upgrade_start:
+       input: 
+         ###  Required parameter. Scale set name. You can configure the default using `az configure --defaults vmss=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_vmss_rolling_upgrade_start }}"          
+ - name: "az vmss rolling-upgrade start: Starts a rolling upgrade to move all virtual machine scale set instances to the latest available Platform Image OS version." 
+   command: |                                      
+     az vmss rolling-upgrade start                            
+                 --name {{ az_vmss_rolling_upgrade_start.input['name'] }} 
+                 --resource-group {{ az_vmss_rolling_upgrade_start.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_vmss_rolling_upgrade_start: "{{ az_vmss_rolling_upgrade_start|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vmss_rolling_upgrade_start }}" 

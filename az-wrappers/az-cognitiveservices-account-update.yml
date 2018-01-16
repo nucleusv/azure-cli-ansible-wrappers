@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_cognitiveservices_account_update
+   set_fact: 
+     az_cognitiveservices_account_update:
+       input: 
+         ###  Required parameter. Cognitive service account name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The Sku of cognitive services account.  ### 
+        'sku': "{{ item['sku'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+ - debug: msg="{{ az_cognitiveservices_account_update }}"          
+ - name: "az cognitiveservices account update: Update the properties of an Azure Cognitive Services account." 
+   command: |                                      
+     az cognitiveservices account update                            
+                 --name {{ az_cognitiveservices_account_update.input['name'] }} 
+                 --resource-group {{ az_cognitiveservices_account_update.input['resource-group'] }} 
+                 {%if az_cognitiveservices_account_update.input['sku'] %} --sku az_cognitiveservices_account_update.input['sku'] {%endif %} 
+                 {%if az_cognitiveservices_account_update.input['rtags'] %} --tags az_cognitiveservices_account_update.input['rtags'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_cognitiveservices_account_update: "{{ az_cognitiveservices_account_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cognitiveservices_account_update }}" 

@@ -1,0 +1,47 @@
+
+
+ - name: Set input params for az_managedapp_definition_create
+   set_fact: 
+     az_managedapp_definition_create:
+       input: 
+         ###  Required parameter. Space separated authorization pairs in a format of <principalId>:<roleDefinitionId>.  ### 
+        'authorizations': "{{ item['authorizations'] | default('') }}" 
+         ###  Required parameter. The managed application definition description.  ### 
+        'description': "{{ item['description'] | default('') }}" 
+         ###  Required parameter. The managed application definition display name.  ### 
+        'display-name': "{{ item['display-name'] | default('') }}" 
+         ###  Required parameter.   ### 
+        'lock-level': "{{ item['lock-level'] | default('') }}" 
+         ###  Required parameter. The managed application definition name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. The resource group of the managed application definition.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The managed application definition create ui definition.  ### 
+        'create-ui-definition': "{{ item['create-ui-definition'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. The managed application definition main template.  ### 
+        'main-template': "{{ item['main-template'] | default('') }}" 
+         ###  Optional parameter. The managed application definition package file uri.  ### 
+        'package-file-uri': "{{ item['package-file-uri'] | default('') }}" 
+         ###  Optional parameter. Tags in 'a=b c' format.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+ - debug: msg="{{ az_managedapp_definition_create }}"          
+ - name: "az managedapp definition create: Create a managed application definition." 
+   command: |                                      
+     az managedapp definition create                            
+                 --authorizations {{ az_managedapp_definition_create.input['authorizations'] }} 
+                 --description {{ az_managedapp_definition_create.input['description'] }} 
+                 --display-name {{ az_managedapp_definition_create.input['display-name'] }} 
+                 --lock-level {{ az_managedapp_definition_create.input['lock-level'] }} 
+                 --name {{ az_managedapp_definition_create.input['name'] }} 
+                 --resource-group {{ az_managedapp_definition_create.input['resource-group'] }} 
+                 {%if az_managedapp_definition_create.input['create-ui-definition'] %} --create-ui-definition az_managedapp_definition_create.input['create-ui-definition'] {%endif %} 
+                 {%if az_managedapp_definition_create.input['location'] %} --location az_managedapp_definition_create.input['location'] {%endif %} 
+                 {%if az_managedapp_definition_create.input['main-template'] %} --main-template az_managedapp_definition_create.input['main-template'] {%endif %} 
+                 {%if az_managedapp_definition_create.input['package-file-uri'] %} --package-file-uri az_managedapp_definition_create.input['package-file-uri'] {%endif %} 
+                 {%if az_managedapp_definition_create.input['rtags'] %} --tags az_managedapp_definition_create.input['rtags'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_managedapp_definition_create: "{{ az_managedapp_definition_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_managedapp_definition_create }}" 

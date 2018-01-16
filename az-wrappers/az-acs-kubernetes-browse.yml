@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_acs_kubernetes_browse
+   set_fact: 
+     az_acs_kubernetes_browse:
+       input: 
+         ###  Required parameter. Name of the container service. You can configure the default using `az configure --defaults acs=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter.   ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Do not open browser after opening a proxy to the cluster web user interface.  ### 
+        'disable-browser': "{{ item['disable-browser'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'ssh-key-file': "{{ item['ssh-key-file'] | default('') }}" 
+ - debug: msg="{{ az_acs_kubernetes_browse }}"          
+ - name: "az acs kubernetes browse: Launch a proxy and browse the Kubernetes web UI." 
+   command: |                                      
+     az acs kubernetes browse                            
+                 --name {{ az_acs_kubernetes_browse.input['name'] }} 
+                 --resource-group {{ az_acs_kubernetes_browse.input['resource-group'] }} 
+                 {%if az_acs_kubernetes_browse.input['disable-browser'] %} --disable-browser az_acs_kubernetes_browse.input['disable-browser'] {%endif %} 
+                 {%if az_acs_kubernetes_browse.input['ssh-key-file'] %} --ssh-key-file az_acs_kubernetes_browse.input['ssh-key-file'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_acs_kubernetes_browse: "{{ az_acs_kubernetes_browse|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_acs_kubernetes_browse }}" 

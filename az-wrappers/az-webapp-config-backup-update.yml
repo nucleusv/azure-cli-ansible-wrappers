@@ -1,0 +1,44 @@
+
+
+ - name: Set input params for az_webapp_config_backup_update
+   set_fact: 
+     az_webapp_config_backup_update:
+       input: 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The name of the webapp.  ### 
+        'webapp-name': "{{ item['webapp-name'] | default('') }}" 
+         ###  Optional parameter. URL with SAS token to the blob storage container.  ### 
+        'container-url': "{{ item['container-url'] | default('') }}" 
+         ###  Optional parameter. How often to backup. Use a number followed by d or h, e.g. 5d = 5 days, 2h = 2 hours.  ### 
+        'frequency': "{{ item['frequency'] | default('') }}" 
+         ###  Optional parameter. Always keep one backup, regardless of how old it is.  ### 
+        'retain-one': "{{ item['retain-one'] | default('') }}" 
+         ###  Optional parameter. How many days to keep a backup before automatically deleting it. Set to 0 for indefinite retention.  ### 
+        'retention': "{{ item['retention'] | default('') }}" 
+         ###  Optional parameter. The name of the slot. Default to the productions slot if not specified.  ### 
+        'slot': "{{ item['slot'] | default('') }}" 
+         ###  Optional parameter. Connection string for the database in the backup.  ### 
+        'db-connection-string': "{{ item['db-connection-string'] | default('') }}" 
+         ###  Optional parameter. Name of the database in the backup.  ### 
+        'db-name': "{{ item['db-name'] | default('') }}" 
+         ###  Optional parameter. Type of database in the backup.  ### 
+        'db-type': "{{ item['db-type'] | default('') }}" 
+ - debug: msg="{{ az_webapp_config_backup_update }}"          
+ - name: "az webapp config backup update: Configure a new backup schedule for a web app." 
+   command: |                                      
+     az webapp config backup update                            
+                 --resource-group {{ az_webapp_config_backup_update.input['resource-group'] }} 
+                 --webapp-name {{ az_webapp_config_backup_update.input['webapp-name'] }} 
+                 {%if az_webapp_config_backup_update.input['container-url'] %} --container-url az_webapp_config_backup_update.input['container-url'] {%endif %} 
+                 {%if az_webapp_config_backup_update.input['frequency'] %} --frequency az_webapp_config_backup_update.input['frequency'] {%endif %} 
+                 {%if az_webapp_config_backup_update.input['retain-one'] %} --retain-one az_webapp_config_backup_update.input['retain-one'] {%endif %} 
+                 {%if az_webapp_config_backup_update.input['retention'] %} --retention az_webapp_config_backup_update.input['retention'] {%endif %} 
+                 {%if az_webapp_config_backup_update.input['slot'] %} --slot az_webapp_config_backup_update.input['slot'] {%endif %} 
+                 {%if az_webapp_config_backup_update.input['db-connection-string'] %} --db-connection-string az_webapp_config_backup_update.input['db-connection-string'] {%endif %} 
+                 {%if az_webapp_config_backup_update.input['db-name'] %} --db-name az_webapp_config_backup_update.input['db-name'] {%endif %} 
+                 {%if az_webapp_config_backup_update.input['db-type'] %} --db-type az_webapp_config_backup_update.input['db-type'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_webapp_config_backup_update: "{{ az_webapp_config_backup_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_webapp_config_backup_update }}" 

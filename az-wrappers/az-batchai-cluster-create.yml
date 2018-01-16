@@ -1,0 +1,77 @@
+
+
+ - name: Set input params for az_batchai_cluster_create
+   set_fact: 
+     az_batchai_cluster_create:
+       input: 
+         ###  Required parameter. Name of the cluster.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+         ###  Optional parameter. Password.  ### 
+        'password': "{{ item['password'] | default('') }}" 
+         ###  Optional parameter. SSH public key value or path.  ### 
+        'ssh-key': "{{ item['ssh-key'] | default('') }}" 
+         ###  Optional parameter. Name of the admin user to be created on every compute node.  ### 
+        'user-name': "{{ item['user-name'] | default('') }}" 
+         ###  Optional parameter. A path to a json file containing cluster create parameters (json representation of azure.mgmt.batchai.models.ClusterCreateParameters).  ### 
+        'config': "{{ item['config'] | default('') }}" 
+         ###  Optional parameter. Relative mount path for Azure File share. The file share will be available at $AZ_BATCHAI_MOUNT_ROOT/<relative_mount_path> folder.  ### 
+        'afs-mount-path': "{{ item['afs-mount-path'] | default('') }}" 
+         ###  Optional parameter. Name of the azure file share to mount. Must be used in conjunction with --storage-account-name and --storage-account-key arguments or AZURE_BATCHAI_STORAGE_ACCOUNT and AZURE_BATCHAI_STORAGE_KEY environment variables.  If you need to mount more than one Azure File share, configure them in a configuration file and use --config option.  ### 
+        'afs-name': "{{ item['afs-name'] | default('') }}" 
+         ###  Optional parameter. Relative mount path for Azure Storage container. The container will be available at $AZ_BATCHAI_MOUNT_ROOT/<relative_mount_path> folder.  ### 
+        'container-mount-path': "{{ item['container-mount-path'] | default('') }}" 
+         ###  Optional parameter. Name of Azure Storage container to mount. Must be used in conjunction with --storage-account-name and --storage-account-key arguments or AZURE_BATCHAI_STORAGE_ACCOUNT and AZURE_BATCHAI_STORAGE_KEY environment variables. If you need to mount more than one Azure Storage container, configure them in a configuration file and use --config option.  ### 
+        'container-name': "{{ item['container-name'] | default('') }}" 
+         ###  Optional parameter. Name of a file server to mount. If you need to mount more than one file server, configure them in a configuration file and use --config option.  ### 
+        'nfs': "{{ item['nfs'] | default('') }}" 
+         ###  Optional parameter. Relative mount path for nfs. The nfs will be available at $AZ_BATCHAI_MOUNT_ROOT/<relative_mount_path> folder.  ### 
+        'nfs-mount-path': "{{ item['nfs-mount-path'] | default('') }}" 
+         ###  Optional parameter. Resource group in which file server is created. Can be omitted if the file server and the cluster belong to the same resource group.  ### 
+        'nfs-resource-group': "{{ item['nfs-resource-group'] | default('') }}" 
+         ###  Optional parameter. Operation system.  ### 
+        'image': "{{ item['image'] | default('') }}" 
+         ###  Optional parameter. Max nodes count.  ### 
+        'max': "{{ item['max'] | default('') }}" 
+         ###  Optional parameter. Min nodes count.  ### 
+        'min': "{{ item['min'] | default('') }}" 
+         ###  Optional parameter. VM size (e.g. Standard_NC6 for 1 GPU node).  ### 
+        'vm-size': "{{ item['vm-size'] | default('') }}" 
+         ###  Optional parameter. Storage account key. Must be used in conjunction with --storage-account-name. Environment variable: AZURE_BATCHAI_STORAGE_KEY.  ### 
+        'storage-account-key': "{{ item['storage-account-key'] | default('') }}" 
+         ###  Optional parameter. Storage account name for Azure File Shares and/or Azure Storage Containers mounting. Related environment variable: AZURE_BATCHAI_STORAGE_ACCOUNT. Must be used in conjunction with --storage-account-key. If the key is not provided, the command will try to query the storage account key using the authenticated Azure account.  ### 
+        'storage-account-name': "{{ item['storage-account-name'] | default('') }}" 
+ - debug: msg="{{ az_batchai_cluster_create }}"          
+ - name: "az batchai cluster create: Create a cluster." 
+   command: |                                      
+     az batchai cluster create                            
+                 --name {{ az_batchai_cluster_create.input['name'] }} 
+                 --resource-group {{ az_batchai_cluster_create.input['resource-group'] }} 
+                 {%if az_batchai_cluster_create.input['location'] %} --location az_batchai_cluster_create.input['location'] {%endif %} 
+                 {%if az_batchai_cluster_create.input['no-wait'] %} --no-wait az_batchai_cluster_create.input['no-wait'] {%endif %} 
+                 {%if az_batchai_cluster_create.input['password'] %} --password az_batchai_cluster_create.input['password'] {%endif %} 
+                 {%if az_batchai_cluster_create.input['ssh-key'] %} --ssh-key az_batchai_cluster_create.input['ssh-key'] {%endif %} 
+                 {%if az_batchai_cluster_create.input['user-name'] %} --user-name az_batchai_cluster_create.input['user-name'] {%endif %} 
+                 {%if az_batchai_cluster_create.input['config'] %} --config az_batchai_cluster_create.input['config'] {%endif %} 
+                 {%if az_batchai_cluster_create.input['afs-mount-path'] %} --afs-mount-path az_batchai_cluster_create.input['afs-mount-path'] {%endif %} 
+                 {%if az_batchai_cluster_create.input['afs-name'] %} --afs-name az_batchai_cluster_create.input['afs-name'] {%endif %} 
+                 {%if az_batchai_cluster_create.input['container-mount-path'] %} --container-mount-path az_batchai_cluster_create.input['container-mount-path'] {%endif %} 
+                 {%if az_batchai_cluster_create.input['container-name'] %} --container-name az_batchai_cluster_create.input['container-name'] {%endif %} 
+                 {%if az_batchai_cluster_create.input['nfs'] %} --nfs az_batchai_cluster_create.input['nfs'] {%endif %} 
+                 {%if az_batchai_cluster_create.input['nfs-mount-path'] %} --nfs-mount-path az_batchai_cluster_create.input['nfs-mount-path'] {%endif %} 
+                 {%if az_batchai_cluster_create.input['nfs-resource-group'] %} --nfs-resource-group az_batchai_cluster_create.input['nfs-resource-group'] {%endif %} 
+                 {%if az_batchai_cluster_create.input['image'] %} --image az_batchai_cluster_create.input['image'] {%endif %} 
+                 {%if az_batchai_cluster_create.input['max'] %} --max az_batchai_cluster_create.input['max'] {%endif %} 
+                 {%if az_batchai_cluster_create.input['min'] %} --min az_batchai_cluster_create.input['min'] {%endif %} 
+                 {%if az_batchai_cluster_create.input['vm-size'] %} --vm-size az_batchai_cluster_create.input['vm-size'] {%endif %} 
+                 {%if az_batchai_cluster_create.input['storage-account-key'] %} --storage-account-key az_batchai_cluster_create.input['storage-account-key'] {%endif %} 
+                 {%if az_batchai_cluster_create.input['storage-account-name'] %} --storage-account-name az_batchai_cluster_create.input['storage-account-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batchai_cluster_create: "{{ az_batchai_cluster_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batchai_cluster_create }}" 

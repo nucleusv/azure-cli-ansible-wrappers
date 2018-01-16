@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_monitor_log_profiles_create
+   set_fact: 
+     az_monitor_log_profiles_create:
+       input: 
+         ###  Required parameter. Space separated categories of the logs.Some values are: 'Write', 'Delete', and/or 'Action.'.  ### 
+        'categories': "{{ item['categories'] | default('') }}" 
+         ###  Required parameter. The number of days for the retention in days. A value of 0 will retain the events indefinitely.  ### 
+        'days': "{{ item['days'] | default('') }}" 
+         ###  Required parameter. A value indicating whether the retention policy is enabled.  ### 
+        'enabled': "{{ item['enabled'] | default('') }}" 
+         ###  Required parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Required parameter. Space separated list of regions for which Activity Log events should be stored.  ### 
+        'locations': "{{ item['locations'] | default('') }}" 
+         ###  Required parameter. The name of the log profile.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. The service bus rule ID of the service bus namespace in which you would like to have Event Hubs created for streaming the Activity Log. The rule ID is of the format: '{service bus resource ID}/authorizationrules/{key name}'.  ### 
+        'service-bus-rule-id': "{{ item['service-bus-rule-id'] | default('') }}" 
+         ###  Optional parameter. The resource id of the storage account to which you would like to send the Activity Log.  ### 
+        'storage-account-id': "{{ item['storage-account-id'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+ - debug: msg="{{ az_monitor_log_profiles_create }}"          
+ - name: "az monitor log-profiles create: Create or update a log profile in Azure Monitoring REST API." 
+   command: |                                      
+     az monitor log-profiles create                            
+                 --categories {{ az_monitor_log_profiles_create.input['categories'] }} 
+                 --days {{ az_monitor_log_profiles_create.input['days'] }} 
+                 --enabled {{ az_monitor_log_profiles_create.input['enabled'] }} 
+                 --location {{ az_monitor_log_profiles_create.input['location'] }} 
+                 --locations {{ az_monitor_log_profiles_create.input['locations'] }} 
+                 --name {{ az_monitor_log_profiles_create.input['name'] }} 
+                 {%if az_monitor_log_profiles_create.input['service-bus-rule-id'] %} --service-bus-rule-id az_monitor_log_profiles_create.input['service-bus-rule-id'] {%endif %} 
+                 {%if az_monitor_log_profiles_create.input['storage-account-id'] %} --storage-account-id az_monitor_log_profiles_create.input['storage-account-id'] {%endif %} 
+                 {%if az_monitor_log_profiles_create.input['rtags'] %} --tags az_monitor_log_profiles_create.input['rtags'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_monitor_log_profiles_create: "{{ az_monitor_log_profiles_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_monitor_log_profiles_create }}" 

@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_keyvault_certificate_pending_show
+   set_fact: 
+     az_keyvault_certificate_pending_show:
+       input: 
+         ###  Required parameter. Name of the pending certificate.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_certificate_pending_show }}"          
+ - name: "az keyvault certificate pending show: Gets the operation associated with a specified certificate." 
+   command: |                                      
+     az keyvault certificate pending show                            
+                 --name {{ az_keyvault_certificate_pending_show.input['name'] }} 
+                 --vault-name {{ az_keyvault_certificate_pending_show.input['vault-name'] }} 
+   register: output  
+ - set_fact: 
+    az_keyvault_certificate_pending_show: "{{ az_keyvault_certificate_pending_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_certificate_pending_show }}" 

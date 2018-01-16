@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_network_vnet_gateway_root_cert_create
+   set_fact: 
+     az_network_vnet_gateway_root_cert_create:
+       input: 
+         ###  Required parameter. Virtual network gateway name.  ### 
+        'gateway-name': "{{ item['gateway-name'] | default('') }}" 
+         ###  Required parameter. Root certificate name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Base64 contents of the root certificate file or file path.  ### 
+        'public-cert-data': "{{ item['public-cert-data'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_network_vnet_gateway_root_cert_create }}"          
+ - name: "az network vnet-gateway root-cert create: Upload a root certificate." 
+   command: |                                      
+     az network vnet-gateway root-cert create                            
+                 --gateway-name {{ az_network_vnet_gateway_root_cert_create.input['gateway-name'] }} 
+                 --name {{ az_network_vnet_gateway_root_cert_create.input['name'] }} 
+                 --public-cert-data {{ az_network_vnet_gateway_root_cert_create.input['public-cert-data'] }} 
+                 --resource-group {{ az_network_vnet_gateway_root_cert_create.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_network_vnet_gateway_root_cert_create: "{{ az_network_vnet_gateway_root_cert_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_vnet_gateway_root_cert_create }}" 

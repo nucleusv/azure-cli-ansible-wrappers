@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_dla_account_firewall_show
+   set_fact: 
+     az_dla_account_firewall_show:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The name of the firewall rule to retrieve.  ### 
+        'firewall-rule-name': "{{ item['firewall-rule-name'] | default('') }}" 
+         ###  Optional parameter. If not specified, will attempt to discover the resource group for the specified Data Lake Analytics account.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_dla_account_firewall_show }}"          
+ - name: "az dla account firewall show: Retrieve a firewall rule in a Data Lake Analytics account." 
+   command: |                                      
+     az dla account firewall show                            
+                 --account {{ az_dla_account_firewall_show.input['account'] }} 
+                 --firewall-rule-name {{ az_dla_account_firewall_show.input['firewall-rule-name'] }} 
+                 {%if az_dla_account_firewall_show.input['resource-group'] %} --resource-group az_dla_account_firewall_show.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dla_account_firewall_show: "{{ az_dla_account_firewall_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_account_firewall_show }}" 

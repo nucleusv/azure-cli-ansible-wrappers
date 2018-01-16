@@ -1,0 +1,44 @@
+
+
+ - name: Set input params for az_resource_create
+   set_fact: 
+     az_resource_create:
+       input: 
+         ###  Required parameter. A JSON-formatted string containing resource properties.  ### 
+        'properties': "{{ item['properties'] | default('') }}" 
+         ###  Optional parameter. Resource ID.  ### 
+        'id': "{{ item['id'] | default('') }}" 
+         ###  Optional parameter. Indicates that the properties object includes other options such as location, tags, sku, and/or plan.  ### 
+        'is-full-object': "{{ item['is-full-object'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. The api version of the resource (omit for latest).  ### 
+        'api-version': "{{ item['api-version'] | default('') }}" 
+         ###  Optional parameter. The resource name. (Ex: myC).  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Provider namespace (Ex: 'Microsoft.Provider').  ### 
+        'namespace': "{{ item['namespace'] | default('') }}" 
+         ###  Optional parameter. The parent path (Ex: 'resA/myA/resB/myB').  ### 
+        'parent': "{{ item['parent'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The resource type (Ex: 'resC'). Can also accept namespace/type format (Ex: 'Microsoft.Provider/resC').  ### 
+        'resource-type': "{{ item['resource-type'] | default('') }}" 
+ - debug: msg="{{ az_resource_create }}"          
+ - name: "az resource create: Create a resource." 
+   command: |                                      
+     az resource create                            
+                 --properties {{ az_resource_create.input['properties'] }} 
+                 {%if az_resource_create.input['id'] %} --id az_resource_create.input['id'] {%endif %} 
+                 {%if az_resource_create.input['is-full-object'] %} --is-full-object az_resource_create.input['is-full-object'] {%endif %} 
+                 {%if az_resource_create.input['location'] %} --location az_resource_create.input['location'] {%endif %} 
+                 {%if az_resource_create.input['api-version'] %} --api-version az_resource_create.input['api-version'] {%endif %} 
+                 {%if az_resource_create.input['name'] %} --name az_resource_create.input['name'] {%endif %} 
+                 {%if az_resource_create.input['namespace'] %} --namespace az_resource_create.input['namespace'] {%endif %} 
+                 {%if az_resource_create.input['parent'] %} --parent az_resource_create.input['parent'] {%endif %} 
+                 {%if az_resource_create.input['resource-group'] %} --resource-group az_resource_create.input['resource-group'] {%endif %} 
+                 {%if az_resource_create.input['resource-type'] %} --resource-type az_resource_create.input['resource-type'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_resource_create: "{{ az_resource_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_resource_create }}" 

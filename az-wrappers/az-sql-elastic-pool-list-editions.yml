@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_sql_elastic_pool_list_editions
+   set_fact: 
+     az_sql_elastic_pool_list_editions:
+       input: 
+         ###  Required parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. List of additional details to include in output.  ### 
+        'show-details': "{{ item['show-details'] | default('') }}" 
+         ###  Optional parameter. Elastic pool DTU limit to search for. If unspecified, all DTU limits are shown.  ### 
+        'dtu': "{{ item['dtu'] | default('') }}" 
+         ###  Optional parameter. Edition to search for. If unspecified, all editions are shown.  ### 
+        'edition': "{{ item['edition'] | default('') }}" 
+ - debug: msg="{{ az_sql_elastic_pool_list_editions }}"          
+ - name: "az sql elastic-pool list-editions: List elastic pool editions available for the active subscription." 
+   command: |                                      
+     az sql elastic-pool list-editions                            
+                 --location {{ az_sql_elastic_pool_list_editions.input['location'] }} 
+                 {%if az_sql_elastic_pool_list_editions.input['show-details'] %} --show-details az_sql_elastic_pool_list_editions.input['show-details'] {%endif %} 
+                 {%if az_sql_elastic_pool_list_editions.input['dtu'] %} --dtu az_sql_elastic_pool_list_editions.input['dtu'] {%endif %} 
+                 {%if az_sql_elastic_pool_list_editions.input['edition'] %} --edition az_sql_elastic_pool_list_editions.input['edition'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_sql_elastic_pool_list_editions: "{{ az_sql_elastic_pool_list_editions|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sql_elastic_pool_list_editions }}" 

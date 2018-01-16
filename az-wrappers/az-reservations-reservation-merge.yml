@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_reservations_reservation_merge
+   set_fact: 
+     az_reservations_reservation_merge:
+       input: 
+         ###  Required parameter. Id of the first reservation to merge.  ### 
+        'reservation-id-1': "{{ item['reservation-id-1'] | default('') }}" 
+         ###  Required parameter. Id of the second reservation to merge.  ### 
+        'reservation-id-2': "{{ item['reservation-id-2'] | default('') }}" 
+         ###  Required parameter. Order id of original reservation.  ### 
+        'reservation-order-id': "{{ item['reservation-order-id'] | default('') }}" 
+ - debug: msg="{{ az_reservations_reservation_merge }}"          
+ - name: "az reservations reservation merge: Merge two reservations." 
+   command: |                                      
+     az reservations reservation merge                            
+                 --reservation-id-1 {{ az_reservations_reservation_merge.input['reservation-id-1'] }} 
+                 --reservation-id-2 {{ az_reservations_reservation_merge.input['reservation-id-2'] }} 
+                 --reservation-order-id {{ az_reservations_reservation_merge.input['reservation-order-id'] }} 
+   register: output  
+ - set_fact: 
+    az_reservations_reservation_merge: "{{ az_reservations_reservation_merge|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_reservations_reservation_merge }}" 

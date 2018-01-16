@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_dla_job_recurrence_list
+   set_fact: 
+     az_dla_job_recurrence_list:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Optional parameter. The end date for when to get the list of recurrences. The startDateTime and endDateTime can be no more than 30 days apart.  ### 
+        'end-date-time': "{{ item['end-date-time'] | default('') }}" 
+         ###  Optional parameter. The start date for when to get the list of recurrences. The startDateTime and endDateTime can be no more than 30 days apart.  ### 
+        'start-date-time': "{{ item['start-date-time'] | default('') }}" 
+ - debug: msg="{{ az_dla_job_recurrence_list }}"          
+ - name: "az dla job recurrence list: List job recurrences in a Data Lake Analytics account." 
+   command: |                                      
+     az dla job recurrence list                            
+                 --account {{ az_dla_job_recurrence_list.input['account'] }} 
+                 {%if az_dla_job_recurrence_list.input['end-date-time'] %} --end-date-time az_dla_job_recurrence_list.input['end-date-time'] {%endif %} 
+                 {%if az_dla_job_recurrence_list.input['start-date-time'] %} --start-date-time az_dla_job_recurrence_list.input['start-date-time'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dla_job_recurrence_list: "{{ az_dla_job_recurrence_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_job_recurrence_list }}" 

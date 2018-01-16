@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_acr_webhook_get_config
+   set_fact: 
+     az_acr_webhook_get_config:
+       input: 
+         ###  Required parameter. The name of the webhook.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. The name of the container registry. You can configure the default registry name using `az configure --defaults acr=&lt;registry name&gt;`.  ### 
+        'registry': "{{ item['registry'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_acr_webhook_get_config }}"          
+ - name: "az acr webhook get-config: Get the service URI and custom headers for the webhook." 
+   command: |                                      
+     az acr webhook get-config                            
+                 --name {{ az_acr_webhook_get_config.input['name'] }} 
+                 --registry {{ az_acr_webhook_get_config.input['registry'] }} 
+                 {%if az_acr_webhook_get_config.input['resource-group'] %} --resource-group az_acr_webhook_get_config.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_acr_webhook_get_config: "{{ az_acr_webhook_get_config|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_acr_webhook_get_config }}" 

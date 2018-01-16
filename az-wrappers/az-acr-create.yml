@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_acr_create
+   set_fact: 
+     az_acr_create:
+       input: 
+         ###  Required parameter. The name of the container registry. You can configure the default registry name using `az configure --defaults acr=&lt;registry name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The SKU of the container registry.  ### 
+        'sku': "{{ item['sku'] | default('') }}" 
+         ###  Optional parameter. Indicates whether the admin user is enabled.  ### 
+        'admin-enabled': "{{ item['admin-enabled'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. Provide the name of an existing storage account if you're recreating a container registry over a previous registry created storage account. Only applicable to Classic SKU.  ### 
+        'storage-account-name': "{{ item['storage-account-name'] | default('') }}" 
+ - debug: msg="{{ az_acr_create }}"          
+ - name: "az acr create: Creates a container registry." 
+   command: |                                      
+     az acr create                            
+                 --name {{ az_acr_create.input['name'] }} 
+                 --resource-group {{ az_acr_create.input['resource-group'] }} 
+                 --sku {{ az_acr_create.input['sku'] }} 
+                 {%if az_acr_create.input['admin-enabled'] %} --admin-enabled az_acr_create.input['admin-enabled'] {%endif %} 
+                 {%if az_acr_create.input['location'] %} --location az_acr_create.input['location'] {%endif %} 
+                 {%if az_acr_create.input['storage-account-name'] %} --storage-account-name az_acr_create.input['storage-account-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_acr_create: "{{ az_acr_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_acr_create }}" 

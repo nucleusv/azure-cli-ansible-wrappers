@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_cognitiveservices_account_keys_regenerate
+   set_fact: 
+     az_cognitiveservices_account_keys_regenerate:
+       input: 
+         ###  Required parameter. Key name to generate.  ### 
+        'key-name': "{{ item['key-name'] | default('') }}" 
+         ###  Required parameter. Cognitive service account name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_cognitiveservices_account_keys_regenerate }}"          
+ - name: "az cognitiveservices account keys regenerate: Regenerate the keys of an Azure Cognitive Services account." 
+   command: |                                      
+     az cognitiveservices account keys regenerate                            
+                 --key-name {{ az_cognitiveservices_account_keys_regenerate.input['key-name'] }} 
+                 --name {{ az_cognitiveservices_account_keys_regenerate.input['name'] }} 
+                 --resource-group {{ az_cognitiveservices_account_keys_regenerate.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_cognitiveservices_account_keys_regenerate: "{{ az_cognitiveservices_account_keys_regenerate|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cognitiveservices_account_keys_regenerate }}" 

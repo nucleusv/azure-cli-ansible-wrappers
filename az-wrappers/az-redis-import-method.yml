@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_redis_import_method
+   set_fact: 
+     az_redis_import_method:
+       input: 
+         ###  Required parameter.   ### 
+        'file-format': "{{ item['file-format'] | default('') }}" 
+         ###  Required parameter.   ### 
+        'files': "{{ item['files'] | default('') }}" 
+         ###  Required parameter. Name of the redis cache.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_redis_import_method }}"          
+ - name: "az redis import-method: Import data into a Redis cache." 
+   command: |                                      
+     az redis import-method                            
+                 --file-format {{ az_redis_import_method.input['file-format'] }} 
+                 --files {{ az_redis_import_method.input['files'] }} 
+                 --name {{ az_redis_import_method.input['name'] }} 
+                 --resource-group {{ az_redis_import_method.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_redis_import_method: "{{ az_redis_import_method|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_redis_import_method }}" 

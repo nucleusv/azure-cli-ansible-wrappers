@@ -1,0 +1,50 @@
+
+
+ - name: Set input params for az_monitor_diagnostic_settings_create
+   set_fact: 
+     az_monitor_diagnostic_settings_create:
+       input: 
+         ###  Required parameter. The name of the diagnostic settings.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. The name of the event hub. If none is specified, the default event hub will be selected.  ### 
+        'event-hub': "{{ item['event-hub'] | default('') }}" 
+         ###  Optional parameter. The resource Id for the event hub authorization rule.  ### 
+        'event-hub-rule': "{{ item['event-hub-rule'] | default('') }}" 
+         ###  Optional parameter. JSON encoded list of logs settings. Use '@{file}' to load from a file.  ### 
+        'logs': "{{ item['logs'] | default('') }}" 
+         ###  Optional parameter. JSON encoded list of metric settings. Use '@{file}' to load from a file.  ### 
+        'metrics': "{{ item['metrics'] | default('') }}" 
+         ###  Optional parameter. Name or ID of the storage account to send diagnostic logs to.  ### 
+        'storage-account': "{{ item['storage-account'] | default('') }}" 
+         ###  Optional parameter. Name or ID of the Log Analytics workspace to send diagnostic logs to.  ### 
+        'workspace': "{{ item['workspace'] | default('') }}" 
+         ###  Required parameter. Name or ID of the target resource.  ### 
+        'resource': "{{ item['resource'] | default('') }}" 
+         ###  Optional parameter. Name of the resource group for the Log Analytics and Storage Account when the name of the service instead of a full resource ID is given.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Target resource provider namespace.  ### 
+        'resource-namespace': "{{ item['resource-namespace'] | default('') }}" 
+         ###  Optional parameter. Target resource parent path, if applicable.  ### 
+        'resource-parent': "{{ item['resource-parent'] | default('') }}" 
+         ###  Optional parameter. Target resource type. Can also accept namespace/type format (Ex: 'Microsoft.Compute/virtualMachines)').  ### 
+        'resource-type': "{{ item['resource-type'] | default('') }}" 
+ - debug: msg="{{ az_monitor_diagnostic_settings_create }}"          
+ - name: "az monitor diagnostic-settings create: Create diagnostic settings for the specified resource." 
+   command: |                                      
+     az monitor diagnostic-settings create                            
+                 --name {{ az_monitor_diagnostic_settings_create.input['name'] }} 
+                 {%if az_monitor_diagnostic_settings_create.input['event-hub'] %} --event-hub az_monitor_diagnostic_settings_create.input['event-hub'] {%endif %} 
+                 {%if az_monitor_diagnostic_settings_create.input['event-hub-rule'] %} --event-hub-rule az_monitor_diagnostic_settings_create.input['event-hub-rule'] {%endif %} 
+                 {%if az_monitor_diagnostic_settings_create.input['logs'] %} --logs az_monitor_diagnostic_settings_create.input['logs'] {%endif %} 
+                 {%if az_monitor_diagnostic_settings_create.input['metrics'] %} --metrics az_monitor_diagnostic_settings_create.input['metrics'] {%endif %} 
+                 {%if az_monitor_diagnostic_settings_create.input['storage-account'] %} --storage-account az_monitor_diagnostic_settings_create.input['storage-account'] {%endif %} 
+                 {%if az_monitor_diagnostic_settings_create.input['workspace'] %} --workspace az_monitor_diagnostic_settings_create.input['workspace'] {%endif %} 
+                 --resource {{ az_monitor_diagnostic_settings_create.input['resource'] }} 
+                 {%if az_monitor_diagnostic_settings_create.input['resource-group'] %} --resource-group az_monitor_diagnostic_settings_create.input['resource-group'] {%endif %} 
+                 {%if az_monitor_diagnostic_settings_create.input['resource-namespace'] %} --resource-namespace az_monitor_diagnostic_settings_create.input['resource-namespace'] {%endif %} 
+                 {%if az_monitor_diagnostic_settings_create.input['resource-parent'] %} --resource-parent az_monitor_diagnostic_settings_create.input['resource-parent'] {%endif %} 
+                 {%if az_monitor_diagnostic_settings_create.input['resource-type'] %} --resource-type az_monitor_diagnostic_settings_create.input['resource-type'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_monitor_diagnostic_settings_create: "{{ az_monitor_diagnostic_settings_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_monitor_diagnostic_settings_create }}" 

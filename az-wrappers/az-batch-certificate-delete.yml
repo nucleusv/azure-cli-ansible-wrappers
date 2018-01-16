@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_batch_certificate_delete
+   set_fact: 
+     az_batch_certificate_delete:
+       input: 
+         ###  Required parameter. The certificate thumbprint.  ### 
+        'thumbprint': "{{ item['thumbprint'] | default('') }}" 
+         ###  Optional parameter. Cancel the failed certificate deletion operation.  ### 
+        'abort': "{{ item['abort'] | default('') }}" 
+         ###  Optional parameter. Do not prompt for confirmation.  ### 
+        'yes': "{{ item['yes'] | default('') }}" 
+         ###  Optional parameter. Batch service endpoint. Alternatively, set by environment variable: AZURE_BATCH_ENDPOINT.  ### 
+        'account-endpoint': "{{ item['account-endpoint'] | default('') }}" 
+         ###  Optional parameter. The Batch account key. Alternatively, set by environment variable: AZURE_BATCH_ACCESS_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. The Batch account name. Alternatively, set by environment variable: AZURE_BATCH_ACCOUNT.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+ - debug: msg="{{ az_batch_certificate_delete }}"          
+ - name: "az batch certificate delete: Delete a certificate from a Batch account." 
+   command: |                                      
+     az batch certificate delete                            
+                 --thumbprint {{ az_batch_certificate_delete.input['thumbprint'] }} 
+                 {%if az_batch_certificate_delete.input['abort'] %} --abort az_batch_certificate_delete.input['abort'] {%endif %} 
+                 {%if az_batch_certificate_delete.input['yes'] %} --yes {%endif %} 
+                 {%if az_batch_certificate_delete.input['account-endpoint'] %} --account-endpoint az_batch_certificate_delete.input['account-endpoint'] {%endif %} 
+                 {%if az_batch_certificate_delete.input['account-key'] %} --account-key az_batch_certificate_delete.input['account-key'] {%endif %} 
+                 {%if az_batch_certificate_delete.input['account-name'] %} --account-name az_batch_certificate_delete.input['account-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_certificate_delete: "{{ az_batch_certificate_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_certificate_delete }}" 

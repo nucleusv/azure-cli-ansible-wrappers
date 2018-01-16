@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_sf_cluster_client_certificate_add
+   set_fact: 
+     az_sf_cluster_client_certificate_add:
+       input: 
+         ###  Required parameter. Specify the name of the cluster, if not given it will be same as resource group name.  ### 
+        'cluster-name': "{{ item['cluster-name'] | default('') }}" 
+         ###  Required parameter. The resource group name.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Client certificate thumbprint that only has admin permission.  ### 
+        'admin-client-thumbprints': "{{ item['admin-client-thumbprints'] | default('') }}" 
+         ###  Optional parameter. Client certificate common name.  ### 
+        'certificate-common-name': "{{ item['certificate-common-name'] | default('') }}" 
+         ###  Optional parameter. Client certificate issuer thumbprint.  ### 
+        'certificate-issuer-thumbprint': "{{ item['certificate-issuer-thumbprint'] | default('') }}" 
+         ###  Optional parameter. JSON encoded parameters configuration. Use @{file} to load from a file. For example: [{"isAdmin":true, "certificateCommonName": "test.com", "certificateIssuerThumbprint": "22B4AE296B504E512DF880A77A2CAE20200FF922"}].  ### 
+        'client-certificate-common-names': "{{ item['client-certificate-common-names'] | default('') }}" 
+         ###  Optional parameter. Client authentication type.  ### 
+        'is-admin': "{{ item['is-admin'] | default('') }}" 
+         ###  Optional parameter. Space separated list of client certificate thumbprint that has read only permission.  ### 
+        'readonly-client-thumbprints': "{{ item['readonly-client-thumbprints'] | default('') }}" 
+         ###  Optional parameter. Client certificate thumbprint.  ### 
+        'thumbprint': "{{ item['thumbprint'] | default('') }}" 
+ - debug: msg="{{ az_sf_cluster_client_certificate_add }}"          
+ - name: "az sf cluster client-certificate add: Add a common name or certificate thumbprint to the cluster for client authentication." 
+   command: |                                      
+     az sf cluster client-certificate add                            
+                 --cluster-name {{ az_sf_cluster_client_certificate_add.input['cluster-name'] }} 
+                 --resource-group {{ az_sf_cluster_client_certificate_add.input['resource-group'] }} 
+                 {%if az_sf_cluster_client_certificate_add.input['admin-client-thumbprints'] %} --admin-client-thumbprints az_sf_cluster_client_certificate_add.input['admin-client-thumbprints'] {%endif %} 
+                 {%if az_sf_cluster_client_certificate_add.input['certificate-common-name'] %} --certificate-common-name az_sf_cluster_client_certificate_add.input['certificate-common-name'] {%endif %} 
+                 {%if az_sf_cluster_client_certificate_add.input['certificate-issuer-thumbprint'] %} --certificate-issuer-thumbprint az_sf_cluster_client_certificate_add.input['certificate-issuer-thumbprint'] {%endif %} 
+                 {%if az_sf_cluster_client_certificate_add.input['client-certificate-common-names'] %} --client-certificate-common-names az_sf_cluster_client_certificate_add.input['client-certificate-common-names'] {%endif %} 
+                 {%if az_sf_cluster_client_certificate_add.input['is-admin'] %} --is-admin az_sf_cluster_client_certificate_add.input['is-admin'] {%endif %} 
+                 {%if az_sf_cluster_client_certificate_add.input['readonly-client-thumbprints'] %} --readonly-client-thumbprints az_sf_cluster_client_certificate_add.input['readonly-client-thumbprints'] {%endif %} 
+                 {%if az_sf_cluster_client_certificate_add.input['thumbprint'] %} --thumbprint az_sf_cluster_client_certificate_add.input['thumbprint'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_sf_cluster_client_certificate_add: "{{ az_sf_cluster_client_certificate_add|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sf_cluster_client_certificate_add }}" 

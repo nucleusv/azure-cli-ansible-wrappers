@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_webapp_config_ssl_upload
+   set_fact: 
+     az_webapp_config_ssl_upload:
+       input: 
+         ###  Required parameter. The filepath for the .pfx file.  ### 
+        'certificate-file': "{{ item['certificate-file'] | default('') }}" 
+         ###  Required parameter. The ssl cert password.  ### 
+        'certificate-password': "{{ item['certificate-password'] | default('') }}" 
+         ###  Required parameter. Name of the web. You can configure the default using 'az configure --defaults web=<name>'.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_webapp_config_ssl_upload }}"          
+ - name: "az webapp config ssl upload: Upload an SSL certificate to a web app." 
+   command: |                                      
+     az webapp config ssl upload                            
+                 --certificate-file {{ az_webapp_config_ssl_upload.input['certificate-file'] }} 
+                 --certificate-password {{ az_webapp_config_ssl_upload.input['certificate-password'] }} 
+                 --name {{ az_webapp_config_ssl_upload.input['name'] }} 
+                 --resource-group {{ az_webapp_config_ssl_upload.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_webapp_config_ssl_upload: "{{ az_webapp_config_ssl_upload|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_webapp_config_ssl_upload }}" 

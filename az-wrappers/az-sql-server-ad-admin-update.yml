@@ -1,0 +1,35 @@
+
+
+ - name: Set input params for az_sql_server_ad_admin_update
+   set_fact: 
+     az_sql_server_ad_admin_update:
+       input: 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The name of the SQL Server.  ### 
+        'server-name': "{{ item['server-name'] | default('') }}" 
+         ###  Optional parameter. Display name of the Azure AD administrator user or group.  ### 
+        'display-name': "{{ item['display-name'] | default('') }}" 
+         ###  Optional parameter. The unique ID of the Azure AD administrator.  ### 
+        'object-id': "{{ item['object-id'] | default('') }}" 
+         ###  Optional parameter. Add an object to a list of objects by specifying a path and key value pairs.  Example: --add property.listProperty <key=value, string or JSON string>.  ### 
+        'add': "{{ item['add'] | default('') }}" 
+         ###  Optional parameter. Remove a property or an element from a list.  Example: --remove property.list <indexToRemove> OR --remove propertyToRemove.  ### 
+        'remove': "{{ item['remove'] | default('') }}" 
+         ###  Optional parameter. Update an object by specifying a property path and value to set.  Example: --set property1.property2=<value>.  ### 
+        'set': "{{ item['set'] | default('') }}" 
+ - debug: msg="{{ az_sql_server_ad_admin_update }}"          
+ - name: "az sql server ad-admin update: Update an existing server Active Directory administrator." 
+   command: |                                      
+     az sql server ad-admin update                            
+                 --resource-group {{ az_sql_server_ad_admin_update.input['resource-group'] }} 
+                 --server-name {{ az_sql_server_ad_admin_update.input['server-name'] }} 
+                 {%if az_sql_server_ad_admin_update.input['display-name'] %} --display-name az_sql_server_ad_admin_update.input['display-name'] {%endif %} 
+                 {%if az_sql_server_ad_admin_update.input['object-id'] %} --object-id az_sql_server_ad_admin_update.input['object-id'] {%endif %} 
+                 {%if az_sql_server_ad_admin_update.input['add'] %} --add az_sql_server_ad_admin_update.input['add'] {%endif %} 
+                 {%if az_sql_server_ad_admin_update.input['remove'] %} --remove az_sql_server_ad_admin_update.input['remove'] {%endif %} 
+                 {%if az_sql_server_ad_admin_update.input['set'] %} --set az_sql_server_ad_admin_update.input['set'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_sql_server_ad_admin_update: "{{ az_sql_server_ad_admin_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sql_server_ad_admin_update }}" 

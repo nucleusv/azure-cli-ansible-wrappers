@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_cdn_profile_delete
+   set_fact: 
+     az_cdn_profile_delete:
+       input: 
+         ###  Required parameter. Name of the CDN profile which is unique within the resource group.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_cdn_profile_delete }}"          
+ - name: "az cdn profile delete: Delete a CDN profile." 
+   command: |                                      
+     az cdn profile delete                            
+                 --name {{ az_cdn_profile_delete.input['name'] }} 
+                 --resource-group {{ az_cdn_profile_delete.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_cdn_profile_delete: "{{ az_cdn_profile_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cdn_profile_delete }}" 

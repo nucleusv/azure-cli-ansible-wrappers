@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_monitor_diagnostic_settings_list
+   set_fact: 
+     az_monitor_diagnostic_settings_list:
+       input: 
+         ###  Required parameter. Name or ID of the target resource.  ### 
+        'resource': "{{ item['resource'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Target resource provider namespace.  ### 
+        'resource-namespace': "{{ item['resource-namespace'] | default('') }}" 
+         ###  Optional parameter. Target resource parent path, if applicable.  ### 
+        'resource-parent': "{{ item['resource-parent'] | default('') }}" 
+         ###  Optional parameter. Target resource type. Can also accept namespace/type format (Ex: 'Microsoft.Compute/virtualMachines)').  ### 
+        'resource-type': "{{ item['resource-type'] | default('') }}" 
+ - debug: msg="{{ az_monitor_diagnostic_settings_list }}"          
+ - name: "az monitor diagnostic-settings list: Gets the active diagnostic settings list for the specified resource." 
+   command: |                                      
+     az monitor diagnostic-settings list                            
+                 --resource {{ az_monitor_diagnostic_settings_list.input['resource'] }} 
+                 {%if az_monitor_diagnostic_settings_list.input['resource-group'] %} --resource-group az_monitor_diagnostic_settings_list.input['resource-group'] {%endif %} 
+                 {%if az_monitor_diagnostic_settings_list.input['resource-namespace'] %} --resource-namespace az_monitor_diagnostic_settings_list.input['resource-namespace'] {%endif %} 
+                 {%if az_monitor_diagnostic_settings_list.input['resource-parent'] %} --resource-parent az_monitor_diagnostic_settings_list.input['resource-parent'] {%endif %} 
+                 {%if az_monitor_diagnostic_settings_list.input['resource-type'] %} --resource-type az_monitor_diagnostic_settings_list.input['resource-type'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_monitor_diagnostic_settings_list: "{{ az_monitor_diagnostic_settings_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_monitor_diagnostic_settings_list }}" 

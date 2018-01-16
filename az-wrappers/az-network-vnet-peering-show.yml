@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_network_vnet_peering_show
+   set_fact: 
+     az_network_vnet_peering_show:
+       input: 
+         ###  Required parameter. The name of the VNet peering.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The virtual network (VNet) name.  ### 
+        'vnet-name': "{{ item['vnet-name'] | default('') }}" 
+ - debug: msg="{{ az_network_vnet_peering_show }}"          
+ - name: "az network vnet peering show: Show details of a peering." 
+   command: |                                      
+     az network vnet peering show                            
+                 --name {{ az_network_vnet_peering_show.input['name'] }} 
+                 --resource-group {{ az_network_vnet_peering_show.input['resource-group'] }} 
+                 --vnet-name {{ az_network_vnet_peering_show.input['vnet-name'] }} 
+   register: output  
+ - set_fact: 
+    az_network_vnet_peering_show: "{{ az_network_vnet_peering_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_vnet_peering_show }}" 

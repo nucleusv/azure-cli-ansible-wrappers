@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_network_nic_ip_config_address_pool_add
+   set_fact: 
+     az_network_nic_ip_config_address_pool_add:
+       input: 
+         ###  Required parameter. The name or ID of an existing backend address pool.  ### 
+        'address-pool': "{{ item['address-pool'] | default('') }}" 
+         ###  Required parameter. The name of the IP configuration.  ### 
+        'ip-config-name': "{{ item['ip-config-name'] | default('') }}" 
+         ###  Required parameter. The network interface (NIC).  ### 
+        'nic-name': "{{ item['nic-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The name of the load balancer associated with the address pool (Omit if suppying an address pool ID).  ### 
+        'lb-name': "{{ item['lb-name'] | default('') }}" 
+ - debug: msg="{{ az_network_nic_ip_config_address_pool_add }}"          
+ - name: "az network nic ip-config address-pool add: Add a backend address pool." 
+   command: |                                      
+     az network nic ip-config address-pool add                            
+                 --address-pool {{ az_network_nic_ip_config_address_pool_add.input['address-pool'] }} 
+                 --ip-config-name {{ az_network_nic_ip_config_address_pool_add.input['ip-config-name'] }} 
+                 --nic-name {{ az_network_nic_ip_config_address_pool_add.input['nic-name'] }} 
+                 --resource-group {{ az_network_nic_ip_config_address_pool_add.input['resource-group'] }} 
+                 {%if az_network_nic_ip_config_address_pool_add.input['lb-name'] %} --lb-name az_network_nic_ip_config_address_pool_add.input['lb-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_nic_ip_config_address_pool_add: "{{ az_network_nic_ip_config_address_pool_add|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_nic_ip_config_address_pool_add }}" 

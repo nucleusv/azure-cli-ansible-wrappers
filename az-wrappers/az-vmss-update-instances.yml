@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_vmss_update_instances
+   set_fact: 
+     az_vmss_update_instances:
+       input: 
+         ###  Required parameter. Space separated list of IDs (ex: 1 2 3 ...) or * for all instances.  ### 
+        'instance-ids': "{{ item['instance-ids'] | default('') }}" 
+         ###  Required parameter. Scale set name. You can configure the default using `az configure --defaults vmss=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+ - debug: msg="{{ az_vmss_update_instances }}"          
+ - name: "az vmss update-instances: Upgrade VMs within a VMSS." 
+   command: |                                      
+     az vmss update-instances                            
+                 --instance-ids {{ az_vmss_update_instances.input['instance-ids'] }} 
+                 --name {{ az_vmss_update_instances.input['name'] }} 
+                 --resource-group {{ az_vmss_update_instances.input['resource-group'] }} 
+                 {%if az_vmss_update_instances.input['no-wait'] %} --no-wait az_vmss_update_instances.input['no-wait'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_vmss_update_instances: "{{ az_vmss_update_instances|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vmss_update_instances }}" 

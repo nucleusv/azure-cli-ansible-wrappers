@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_role_definition_update
+   set_fact: 
+     az_role_definition_update:
+       input: 
+         ###  Required parameter. Description of a role as JSON, or a path to a file containing a JSON description.  ### 
+        'role-definition': "{{ item['role-definition'] | default('') }}" 
+ - debug: msg="{{ az_role_definition_update }}"          
+ - name: "az role definition update: Update a role definition." 
+   command: |                                      
+     az role definition update                            
+                 --role-definition {{ az_role_definition_update.input['role-definition'] }} 
+   register: output  
+ - set_fact: 
+    az_role_definition_update: "{{ az_role_definition_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_role_definition_update }}" 

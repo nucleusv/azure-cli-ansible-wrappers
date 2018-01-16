@@ -1,0 +1,44 @@
+
+
+ - name: Set input params for az_sql_db_copy
+   set_fact: 
+     az_sql_db_copy:
+       input: 
+         ###  Required parameter. Name of the database that will be created as the copy destination.  ### 
+        'dest-name': "{{ item['dest-name'] | default('') }}" 
+         ###  Required parameter. Name of the Azure SQL Database.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the Azure SQL server.  ### 
+        'server': "{{ item['server'] | default('') }}" 
+         ###  Optional parameter. Name of the resouce group to create the copy in. If unspecified, defaults to the origin resource group.  ### 
+        'dest-resource-group': "{{ item['dest-resource-group'] | default('') }}" 
+         ###  Optional parameter. Name of the server to create the copy in. If unspecified, defaults to the origin server.  ### 
+        'dest-server': "{{ item['dest-server'] | default('') }}" 
+         ###  Optional parameter. Name of the elastic pool to create the new database in.  ### 
+        'elastic-pool': "{{ item['elastic-pool'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+         ###  Optional parameter. Name of the service objective for the new database.  ### 
+        'service-objective': "{{ item['service-objective'] | default('') }}" 
+         ###  Optional parameter. Resource tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+ - debug: msg="{{ az_sql_db_copy }}"          
+ - name: "az sql db copy: Create a copy of a database." 
+   command: |                                      
+     az sql db copy                            
+                 --dest-name {{ az_sql_db_copy.input['dest-name'] }} 
+                 --name {{ az_sql_db_copy.input['name'] }} 
+                 --resource-group {{ az_sql_db_copy.input['resource-group'] }} 
+                 --server {{ az_sql_db_copy.input['server'] }} 
+                 {%if az_sql_db_copy.input['dest-resource-group'] %} --dest-resource-group az_sql_db_copy.input['dest-resource-group'] {%endif %} 
+                 {%if az_sql_db_copy.input['dest-server'] %} --dest-server az_sql_db_copy.input['dest-server'] {%endif %} 
+                 {%if az_sql_db_copy.input['elastic-pool'] %} --elastic-pool az_sql_db_copy.input['elastic-pool'] {%endif %} 
+                 {%if az_sql_db_copy.input['no-wait'] %} --no-wait az_sql_db_copy.input['no-wait'] {%endif %} 
+                 {%if az_sql_db_copy.input['service-objective'] %} --service-objective az_sql_db_copy.input['service-objective'] {%endif %} 
+                 {%if az_sql_db_copy.input['rtags'] %} --tags az_sql_db_copy.input['rtags'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_sql_db_copy: "{{ az_sql_db_copy|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sql_db_copy }}" 

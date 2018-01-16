@@ -1,0 +1,38 @@
+
+
+ - name: Set input params for az_network_vnet_peering_create
+   set_fact: 
+     az_network_vnet_peering_create:
+       input: 
+         ###  Required parameter. The name of the VNet peering.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. ID of the remote VNet.  ### 
+        'remote-vnet-id': "{{ item['remote-vnet-id'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The virtual network (VNet) name.  ### 
+        'vnet-name': "{{ item['vnet-name'] | default('') }}" 
+         ###  Optional parameter. Allows forwarded traffic from the VMs in the remote VNet.  ### 
+        'allow-forwarded-traffic': "{{ item['allow-forwarded-traffic'] | default('') }}" 
+         ###  Optional parameter. Allows gateway link to be used in the remote VNet.  ### 
+        'allow-gateway-transit': "{{ item['allow-gateway-transit'] | default('') }}" 
+         ###  Optional parameter. Allows VMs in the remote VNet to access all VMs in the local VNet.  ### 
+        'allow-vnet-access': "{{ item['allow-vnet-access'] | default('') }}" 
+         ###  Optional parameter. Allows VNet to use the remote VNet's gateway. Remote VNet gateway must have --allow-gateway-transit enabled for remote peering. Only 1 peering can have this flag enabled. Cannot be set if the VNet already has a gateway.  ### 
+        'use-remote-gateways': "{{ item['use-remote-gateways'] | default('') }}" 
+ - debug: msg="{{ az_network_vnet_peering_create }}"          
+ - name: "az network vnet peering create: Create a peering." 
+   command: |                                      
+     az network vnet peering create                            
+                 --name {{ az_network_vnet_peering_create.input['name'] }} 
+                 --remote-vnet-id {{ az_network_vnet_peering_create.input['remote-vnet-id'] }} 
+                 --resource-group {{ az_network_vnet_peering_create.input['resource-group'] }} 
+                 --vnet-name {{ az_network_vnet_peering_create.input['vnet-name'] }} 
+                 {%if az_network_vnet_peering_create.input['allow-forwarded-traffic'] %} --allow-forwarded-traffic az_network_vnet_peering_create.input['allow-forwarded-traffic'] {%endif %} 
+                 {%if az_network_vnet_peering_create.input['allow-gateway-transit'] %} --allow-gateway-transit az_network_vnet_peering_create.input['allow-gateway-transit'] {%endif %} 
+                 {%if az_network_vnet_peering_create.input['allow-vnet-access'] %} --allow-vnet-access az_network_vnet_peering_create.input['allow-vnet-access'] {%endif %} 
+                 {%if az_network_vnet_peering_create.input['use-remote-gateways'] %} --use-remote-gateways az_network_vnet_peering_create.input['use-remote-gateways'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_vnet_peering_create: "{{ az_network_vnet_peering_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_vnet_peering_create }}" 

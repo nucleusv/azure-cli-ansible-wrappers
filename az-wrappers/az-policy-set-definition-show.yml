@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_policy_set_definition_show
+   set_fact: 
+     az_policy_set_definition_show:
+       input: 
+         ###  Required parameter. The policy set definition name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+ - debug: msg="{{ az_policy_set_definition_show }}"          
+ - name: "az policy set-definition show: Get a policy set definition." 
+   command: |                                      
+     az policy set-definition show                            
+                 --name {{ az_policy_set_definition_show.input['name'] }} 
+   register: output  
+ - set_fact: 
+    az_policy_set_definition_show: "{{ az_policy_set_definition_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_policy_set_definition_show }}" 

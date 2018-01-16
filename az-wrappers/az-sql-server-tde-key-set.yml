@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_sql_server_tde_key_set
+   set_fact: 
+     az_sql_server_tde_key_set:
+       input: 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the Azure SQL server.  ### 
+        'server': "{{ item['server'] | default('') }}" 
+         ###  Required parameter. The type of the server key.  ### 
+        'server-key-type': "{{ item['server-key-type'] | default('') }}" 
+         ###  Optional parameter. The Azure Key Vault key identifier of the server key to be made encryption protector.An example key identifier is "<a href="https://YourVaultName.vault.azure.net/keys/YourKeyName/01234567890123456789012345678901">https://YourVaultName.vault.azure.net/keys/YourKeyName/01234567890123456789012345678901</a>".  ### 
+        'kid': "{{ item['kid'] | default('') }}" 
+ - debug: msg="{{ az_sql_server_tde_key_set }}"          
+ - name: "az sql server tde-key set: Sets the server's encryption protector." 
+   command: |                                      
+     az sql server tde-key set                            
+                 --resource-group {{ az_sql_server_tde_key_set.input['resource-group'] }} 
+                 --server {{ az_sql_server_tde_key_set.input['server'] }} 
+                 --server-key-type {{ az_sql_server_tde_key_set.input['server-key-type'] }} 
+                 {%if az_sql_server_tde_key_set.input['kid'] %} --kid az_sql_server_tde_key_set.input['kid'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_sql_server_tde_key_set: "{{ az_sql_server_tde_key_set|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sql_server_tde_key_set }}" 

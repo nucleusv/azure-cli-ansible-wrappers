@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_iot_dps_linked_hub_create
+   set_fact: 
+     az_iot_dps_linked_hub_create:
+       input: 
+         ###  Required parameter. Connection string of the IoT hub.  ### 
+        'connection-string': "{{ item['connection-string'] | default('') }}" 
+         ###  Required parameter. IoT Provisioning Service name.  ### 
+        'dps-name': "{{ item['dps-name'] | default('') }}" 
+         ###  Required parameter. Location of the IoT hub.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Allocation weight of the IoT hub.  ### 
+        'allocation-weight': "{{ item['allocation-weight'] | default('') }}" 
+         ###  Optional parameter. A boolean indicating whether to apply allocation policy to the IoT hub.  ### 
+        'apply-allocation-policy': "{{ item['apply-allocation-policy'] | default('') }}" 
+ - debug: msg="{{ az_iot_dps_linked_hub_create }}"          
+ - name: "az iot dps linked-hub create: Create a linked IoT hub in an Azure IoT Hub device provisioning service." 
+   command: |                                      
+     az iot dps linked-hub create                            
+                 --connection-string {{ az_iot_dps_linked_hub_create.input['connection-string'] }} 
+                 --dps-name {{ az_iot_dps_linked_hub_create.input['dps-name'] }} 
+                 --location {{ az_iot_dps_linked_hub_create.input['location'] }} 
+                 --resource-group {{ az_iot_dps_linked_hub_create.input['resource-group'] }} 
+                 {%if az_iot_dps_linked_hub_create.input['allocation-weight'] %} --allocation-weight az_iot_dps_linked_hub_create.input['allocation-weight'] {%endif %} 
+                 {%if az_iot_dps_linked_hub_create.input['apply-allocation-policy'] %} --apply-allocation-policy az_iot_dps_linked_hub_create.input['apply-allocation-policy'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_dps_linked_hub_create: "{{ az_iot_dps_linked_hub_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_dps_linked_hub_create }}" 

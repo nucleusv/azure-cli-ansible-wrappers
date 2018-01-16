@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_managedapp_show
+   set_fact: 
+     az_managedapp_show:
+       input: 
+         ###  Optional parameter. The managed application name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. The resource group of the managed application.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_managedapp_show }}"          
+ - name: "az managedapp show: Gets a managed application." 
+   command: |                                      
+     az managedapp show                            
+                 {%if az_managedapp_show.input['name'] %} --name az_managedapp_show.input['name'] {%endif %} 
+                 {%if az_managedapp_show.input['resource-group'] %} --resource-group az_managedapp_show.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_managedapp_show: "{{ az_managedapp_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_managedapp_show }}" 

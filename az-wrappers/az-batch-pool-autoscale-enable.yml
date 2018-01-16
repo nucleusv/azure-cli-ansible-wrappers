@@ -1,0 +1,44 @@
+
+
+ - name: Set input params for az_batch_pool_autoscale_enable
+   set_fact: 
+     az_batch_pool_autoscale_enable:
+       input: 
+         ###  Required parameter. The ID of the pool on which to enable automatic scaling.  ### 
+        'pool-id': "{{ item['pool-id'] | default('') }}" 
+         ###  Optional parameter. The time interval at which to automatically adjust the pool size according to the autoscale formula. The default value is 15 minutes. The minimum and maximum value are 5 minutes and 168 hours respectively. If you specify a value less than 5 minutes or greater than 168 hours, the Batch service rejects the request with an invalid property value error; if you are calling the REST API directly, the HTTP status code is 400 (Bad Request). If you specify a new interval, then the existing autoscale evaluation schedule will be stopped and a new autoscale evaluation schedule will be started, with its starting time being the time when this request was issued.  ### 
+        'auto-scale-evaluation-interval': "{{ item['auto-scale-evaluation-interval'] | default('') }}" 
+         ###  Optional parameter. The formula for the desired number of compute nodes in the pool. The formula is checked for validity before it is applied to the pool. If the formula is not valid, the Batch service rejects the request with detailed error information. For more information about specifying this formula, see Automatically scale compute nodes in an Azure Batch pool (<a href="https://azure.microsoft.com/en-us/documentation/articles/batch-automatic-scaling">https://azure.microsoft.com/en-us/documentation/articles/batch-automatic-scaling</a>).  ### 
+        'auto-scale-formula': "{{ item['auto-scale-formula'] | default('') }}" 
+         ###  Optional parameter. Batch service endpoint. Alternatively, set by environment variable: AZURE_BATCH_ENDPOINT.  ### 
+        'account-endpoint': "{{ item['account-endpoint'] | default('') }}" 
+         ###  Optional parameter. Batch account key. Alternatively, set by environment variable: AZURE_BATCH_ACCESS_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Batch account name. Alternatively, set by environment variable: AZURE_BATCH_ACCOUNT.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+         ###  Optional parameter. An ETag value associated with the version of the resource known to the client. The operation will be performed only if the resource's current ETag on the service exactly matches the value specified by the client.  ### 
+        'if-match': "{{ item['if-match'] | default('') }}" 
+         ###  Optional parameter. A timestamp indicating the last modified time of the resource known to the client. The operation will be performed only if the resource on the service has been modified since the specified time.  ### 
+        'if-modified-since': "{{ item['if-modified-since'] | default('') }}" 
+         ###  Optional parameter. An ETag value associated with the version of the resource known to the client. The operation will be performed only if the resource's current ETag on the service does not match the value specified by the client.  ### 
+        'if-none-match': "{{ item['if-none-match'] | default('') }}" 
+         ###  Optional parameter. A timestamp indicating the last modified time of the resource known to the client. The operation will be performed only if the resource on the service has not been modified since the specified time.  ### 
+        'if-unmodified-since': "{{ item['if-unmodified-since'] | default('') }}" 
+ - debug: msg="{{ az_batch_pool_autoscale_enable }}"          
+ - name: "az batch pool autoscale enable: Enables automatic scaling for a pool." 
+   command: |                                      
+     az batch pool autoscale enable                            
+                 --pool-id {{ az_batch_pool_autoscale_enable.input['pool-id'] }} 
+                 {%if az_batch_pool_autoscale_enable.input['auto-scale-evaluation-interval'] %} --auto-scale-evaluation-interval az_batch_pool_autoscale_enable.input['auto-scale-evaluation-interval'] {%endif %} 
+                 {%if az_batch_pool_autoscale_enable.input['auto-scale-formula'] %} --auto-scale-formula az_batch_pool_autoscale_enable.input['auto-scale-formula'] {%endif %} 
+                 {%if az_batch_pool_autoscale_enable.input['account-endpoint'] %} --account-endpoint az_batch_pool_autoscale_enable.input['account-endpoint'] {%endif %} 
+                 {%if az_batch_pool_autoscale_enable.input['account-key'] %} --account-key az_batch_pool_autoscale_enable.input['account-key'] {%endif %} 
+                 {%if az_batch_pool_autoscale_enable.input['account-name'] %} --account-name az_batch_pool_autoscale_enable.input['account-name'] {%endif %} 
+                 {%if az_batch_pool_autoscale_enable.input['if-match'] %} --if-match az_batch_pool_autoscale_enable.input['if-match'] {%endif %} 
+                 {%if az_batch_pool_autoscale_enable.input['if-modified-since'] %} --if-modified-since az_batch_pool_autoscale_enable.input['if-modified-since'] {%endif %} 
+                 {%if az_batch_pool_autoscale_enable.input['if-none-match'] %} --if-none-match az_batch_pool_autoscale_enable.input['if-none-match'] {%endif %} 
+                 {%if az_batch_pool_autoscale_enable.input['if-unmodified-since'] %} --if-unmodified-since az_batch_pool_autoscale_enable.input['if-unmodified-since'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_pool_autoscale_enable: "{{ az_batch_pool_autoscale_enable|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_pool_autoscale_enable }}" 

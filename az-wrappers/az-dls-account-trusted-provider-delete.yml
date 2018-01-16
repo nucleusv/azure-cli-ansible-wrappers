@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_dls_account_trusted_provider_delete
+   set_fact: 
+     az_dls_account_trusted_provider_delete:
+       input: 
+         ###  Required parameter. Name of the Data Lake Store account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The name of the trusted identity provider to delete.  ### 
+        'trusted-id-provider-name': "{{ item['trusted-id-provider-name'] | default('') }}" 
+         ###  Optional parameter. If not specified, will attempt to discover the resource group for the specified Data Lake Store account.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_dls_account_trusted_provider_delete }}"          
+ - name: "az dls account trusted-provider delete: Deletes the specified trusted identity provider from the specified Data Lake Store account." 
+   command: |                                      
+     az dls account trusted-provider delete                            
+                 --account {{ az_dls_account_trusted_provider_delete.input['account'] }} 
+                 --trusted-id-provider-name {{ az_dls_account_trusted_provider_delete.input['trusted-id-provider-name'] }} 
+                 {%if az_dls_account_trusted_provider_delete.input['resource-group'] %} --resource-group az_dls_account_trusted_provider_delete.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dls_account_trusted_provider_delete: "{{ az_dls_account_trusted_provider_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dls_account_trusted_provider_delete }}" 

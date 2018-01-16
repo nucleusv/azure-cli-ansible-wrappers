@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_backup_policy_show
+   set_fact: 
+     az_backup_policy_show:
+       input: 
+         ###  Required parameter. Name of the backup policy. You can use the backup policy list command to get the name of a policy.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the Recovery services vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+ - debug: msg="{{ az_backup_policy_show }}"          
+ - name: "az backup policy show: Show details of a particular policy." 
+   command: |                                      
+     az backup policy show                            
+                 --name {{ az_backup_policy_show.input['name'] }} 
+                 --resource-group {{ az_backup_policy_show.input['resource-group'] }} 
+                 --vault-name {{ az_backup_policy_show.input['vault-name'] }} 
+   register: output  
+ - set_fact: 
+    az_backup_policy_show: "{{ az_backup_policy_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_backup_policy_show }}" 

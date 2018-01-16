@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_account_show
+   set_fact: 
+     az_account_show:
+       input: 
+         ###  Optional parameter. Output result in compatible with Azure SDK auth file.  ### 
+        'sdk-auth': "{{ item['sdk-auth'] | default('') }}" 
+         ###  Optional parameter. Name or ID of subscription.  ### 
+        'subscription': "{{ item['subscription'] | default('') }}" 
+ - debug: msg="{{ az_account_show }}"          
+ - name: "az account show: Get the details of a subscription." 
+   command: |                                      
+     az account show                            
+                 {%if az_account_show.input['sdk-auth'] %} --sdk-auth az_account_show.input['sdk-auth'] {%endif %} 
+                 {%if az_account_show.input['subscription'] %} --subscription az_account_show.input['subscription'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_account_show: "{{ az_account_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_account_show }}" 

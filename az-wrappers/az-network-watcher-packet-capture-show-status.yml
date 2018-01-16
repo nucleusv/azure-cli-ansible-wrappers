@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_network_watcher_packet_capture_show_status
+   set_fact: 
+     az_network_watcher_packet_capture_show_status:
+       input: 
+         ###  Required parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Required parameter. The name given to the packet capture session.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+ - debug: msg="{{ az_network_watcher_packet_capture_show_status }}"          
+ - name: "az network watcher packet-capture show-status: Query the status of a running packet capture session." 
+   command: |                                      
+     az network watcher packet-capture show-status                            
+                 --location {{ az_network_watcher_packet_capture_show_status.input['location'] }} 
+                 --name {{ az_network_watcher_packet_capture_show_status.input['name'] }} 
+   register: output  
+ - set_fact: 
+    az_network_watcher_packet_capture_show_status: "{{ az_network_watcher_packet_capture_show_status|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_watcher_packet_capture_show_status }}" 

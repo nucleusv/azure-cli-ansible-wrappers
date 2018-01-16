@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_iot_dps_create
+   set_fact: 
+     az_iot_dps_create:
+       input: 
+         ###  Required parameter. IoT Provisioning Service name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Location of your IoT Provisioning Service. Default is the location of target resource group.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. Pricing tier for the IoT provisioning service.  ### 
+        'sku': "{{ item['sku'] | default('') }}" 
+         ###  Optional parameter. Units in your IoT Provisioning Service.  ### 
+        'unit': "{{ item['unit'] | default('') }}" 
+ - debug: msg="{{ az_iot_dps_create }}"          
+ - name: "az iot dps create: Create an Azure IoT Hub device provisioning service." 
+   command: |                                      
+     az iot dps create                            
+                 --name {{ az_iot_dps_create.input['name'] }} 
+                 --resource-group {{ az_iot_dps_create.input['resource-group'] }} 
+                 {%if az_iot_dps_create.input['location'] %} --location az_iot_dps_create.input['location'] {%endif %} 
+                 {%if az_iot_dps_create.input['sku'] %} --sku az_iot_dps_create.input['sku'] {%endif %} 
+                 {%if az_iot_dps_create.input['unit'] %} --unit az_iot_dps_create.input['unit'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_dps_create: "{{ az_iot_dps_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_dps_create }}" 

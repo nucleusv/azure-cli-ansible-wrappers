@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_network_dns_record_set_txt_remove_record
+   set_fact: 
+     az_network_dns_record_set_txt_remove_record:
+       input: 
+         ###  Required parameter. The name of the record set relative to the zone.  ### 
+        'record-set-name': "{{ item['record-set-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Space separated list of text values which will be concatenated together.  ### 
+        'value': "{{ item['value'] | default('') }}" 
+         ###  Required parameter. The name of the zone.  ### 
+        'zone-name': "{{ item['zone-name'] | default('') }}" 
+         ###  Optional parameter. Keep the empty record set if the last record is removed.  ### 
+        'keep-empty-record-set': "{{ item['keep-empty-record-set'] | default('') }}" 
+ - debug: msg="{{ az_network_dns_record_set_txt_remove_record }}"          
+ - name: "az network dns record-set txt remove-record: Remove a TXT record from its record set." 
+   command: |                                      
+     az network dns record-set txt remove-record                            
+                 --record-set-name {{ az_network_dns_record_set_txt_remove_record.input['record-set-name'] }} 
+                 --resource-group {{ az_network_dns_record_set_txt_remove_record.input['resource-group'] }} 
+                 --value {{ az_network_dns_record_set_txt_remove_record.input['value'] }} 
+                 --zone-name {{ az_network_dns_record_set_txt_remove_record.input['zone-name'] }} 
+                 {%if az_network_dns_record_set_txt_remove_record.input['keep-empty-record-set'] %} --keep-empty-record-set az_network_dns_record_set_txt_remove_record.input['keep-empty-record-set'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_dns_record_set_txt_remove_record: "{{ az_network_dns_record_set_txt_remove_record|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_dns_record_set_txt_remove_record }}" 

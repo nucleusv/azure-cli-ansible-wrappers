@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_backup_policy_set
+   set_fact: 
+     az_backup_policy_set:
+       input: 
+         ###  Required parameter. JSON encoded policy definition. Use the show command with JSON output to obtain a policy object. Modify the values using a file editor and pass the object.  ### 
+        'policy': "{{ item['policy'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the Recovery services vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+ - debug: msg="{{ az_backup_policy_set }}"          
+ - name: "az backup policy set: Update the properties of the backup policy." 
+   command: |                                      
+     az backup policy set                            
+                 --policy {{ az_backup_policy_set.input['policy'] }} 
+                 --resource-group {{ az_backup_policy_set.input['resource-group'] }} 
+                 --vault-name {{ az_backup_policy_set.input['vault-name'] }} 
+   register: output  
+ - set_fact: 
+    az_backup_policy_set: "{{ az_backup_policy_set|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_backup_policy_set }}" 

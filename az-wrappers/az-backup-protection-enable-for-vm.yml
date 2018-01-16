@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_backup_protection_enable_for_vm
+   set_fact: 
+     az_backup_protection_enable_for_vm:
+       input: 
+         ###  Required parameter. Name of the backup policy.  ### 
+        'policy-name': "{{ item['policy-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the Recovery services vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+         ###  Required parameter. Name or ID of the Virtual Machine to be protected.  ### 
+        'vm': "{{ item['vm'] | default('') }}" 
+ - debug: msg="{{ az_backup_protection_enable_for_vm }}"          
+ - name: "az backup protection enable-for-vm: Start protecting a previously unprotected Azure VM as per the specified policy to a Recovery services vault." 
+   command: |                                      
+     az backup protection enable-for-vm                            
+                 --policy-name {{ az_backup_protection_enable_for_vm.input['policy-name'] }} 
+                 --resource-group {{ az_backup_protection_enable_for_vm.input['resource-group'] }} 
+                 --vault-name {{ az_backup_protection_enable_for_vm.input['vault-name'] }} 
+                 --vm {{ az_backup_protection_enable_for_vm.input['vm'] }} 
+   register: output  
+ - set_fact: 
+    az_backup_protection_enable_for_vm: "{{ az_backup_protection_enable_for_vm|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_backup_protection_enable_for_vm }}" 

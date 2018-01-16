@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_monitor_autoscale_settings_create
+   set_fact: 
+     az_monitor_autoscale_settings_create:
+       input: 
+         ###  Required parameter. The autoscale setting name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. JSON encoded parameters configuration. Use @{file} to load from a file. Use az autoscale-settings get-parameters-template to export json template.  ### 
+        'parameters': "{{ item['parameters'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_monitor_autoscale_settings_create }}"          
+ - name: "az monitor autoscale-settings create: Creates or updates an autoscale setting." 
+   command: |                                      
+     az monitor autoscale-settings create                            
+                 --name {{ az_monitor_autoscale_settings_create.input['name'] }} 
+                 --parameters {{ az_monitor_autoscale_settings_create.input['parameters'] }} 
+                 --resource-group {{ az_monitor_autoscale_settings_create.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_monitor_autoscale_settings_create: "{{ az_monitor_autoscale_settings_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_monitor_autoscale_settings_create }}" 

@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_policy_definition_update
+   set_fact: 
+     az_policy_definition_update:
+       input: 
+         ###  Required parameter. The policy definition name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Description of policy definition.  ### 
+        'description': "{{ item['description'] | default('') }}" 
+         ###  Optional parameter. Display name of policy definition.  ### 
+        'display-name': "{{ item['display-name'] | default('') }}" 
+         ###  Optional parameter. JSON formatted string or a path to a file or uri with parameter definitions.  ### 
+        'params': "{{ item['params'] | default('') }}" 
+         ###  Optional parameter. JSON formatted string or a path to a file with such content.  ### 
+        'rules': "{{ item['rules'] | default('') }}" 
+ - debug: msg="{{ az_policy_definition_update }}"          
+ - name: "az policy definition update: Update a policy definition." 
+   command: |                                      
+     az policy definition update                            
+                 --name {{ az_policy_definition_update.input['name'] }} 
+                 {%if az_policy_definition_update.input['description'] %} --description az_policy_definition_update.input['description'] {%endif %} 
+                 {%if az_policy_definition_update.input['display-name'] %} --display-name az_policy_definition_update.input['display-name'] {%endif %} 
+                 {%if az_policy_definition_update.input['params'] %} --params az_policy_definition_update.input['params'] {%endif %} 
+                 {%if az_policy_definition_update.input['rules'] %} --rules az_policy_definition_update.input['rules'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_policy_definition_update: "{{ az_policy_definition_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_policy_definition_update }}" 

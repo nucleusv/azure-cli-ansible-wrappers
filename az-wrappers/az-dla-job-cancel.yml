@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_dla_job_cancel
+   set_fact: 
+     az_dla_job_cancel:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. JobInfo ID to cancel.  ### 
+        'job-identity': "{{ item['job-identity'] | default('') }}" 
+ - debug: msg="{{ az_dla_job_cancel }}"          
+ - name: "az dla job cancel: Cancel a Data Lake Analytics job." 
+   command: |                                      
+     az dla job cancel                            
+                 --account {{ az_dla_job_cancel.input['account'] }} 
+                 --job-identity {{ az_dla_job_cancel.input['job-identity'] }} 
+   register: output  
+ - set_fact: 
+    az_dla_job_cancel: "{{ az_dla_job_cancel|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_job_cancel }}" 

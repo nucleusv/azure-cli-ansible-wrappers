@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_dla_account_blob_storage_delete
+   set_fact: 
+     az_dla_account_blob_storage_delete:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The name of the Azure Storage account to remove.  ### 
+        'storage-account-name': "{{ item['storage-account-name'] | default('') }}" 
+         ###  Optional parameter. If not specified, will attempt to discover the resource group for the specified Data Lake Analytics account.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_dla_account_blob_storage_delete }}"          
+ - name: "az dla account blob-storage delete: Updates the specified Data Lake Analytics account to remove an Azure Storage account." 
+   command: |                                      
+     az dla account blob-storage delete                            
+                 --account {{ az_dla_account_blob_storage_delete.input['account'] }} 
+                 --storage-account-name {{ az_dla_account_blob_storage_delete.input['storage-account-name'] }} 
+                 {%if az_dla_account_blob_storage_delete.input['resource-group'] %} --resource-group az_dla_account_blob_storage_delete.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dla_account_blob_storage_delete: "{{ az_dla_account_blob_storage_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_account_blob_storage_delete }}" 

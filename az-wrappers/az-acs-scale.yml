@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_acs_scale
+   set_fact: 
+     az_acs_scale:
+       input: 
+         ###  Required parameter. Name of the container service. You can configure the default using `az configure --defaults acs=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter.   ### 
+        'new-agent-count': "{{ item['new-agent-count'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_acs_scale }}"          
+ - name: "az acs scale: Change the private agent count of a container service." 
+   command: |                                      
+     az acs scale                            
+                 --name {{ az_acs_scale.input['name'] }} 
+                 --new-agent-count {{ az_acs_scale.input['new-agent-count'] }} 
+                 --resource-group {{ az_acs_scale.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_acs_scale: "{{ az_acs_scale|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_acs_scale }}" 

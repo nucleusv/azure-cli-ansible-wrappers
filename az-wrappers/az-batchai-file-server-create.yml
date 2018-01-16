@@ -1,0 +1,50 @@
+
+
+ - name: Set input params for az_batchai_file_server_create
+   set_fact: 
+     az_batchai_file_server_create:
+       input: 
+         ###  Required parameter. Name of the file server.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+         ###  Optional parameter. VM size.  ### 
+        'vm-size': "{{ item['vm-size'] | default('') }}" 
+         ###  Optional parameter. Name of the admin user to be created on every compute node.  ### 
+        'admin-user-name': "{{ item['admin-user-name'] | default('') }}" 
+         ###  Optional parameter. Password.  ### 
+        'password': "{{ item['password'] | default('') }}" 
+         ###  Optional parameter. SSH public key value or path.  ### 
+        'ssh-key': "{{ item['ssh-key'] | default('') }}" 
+         ###  Optional parameter. A path to a json file containing file server create parameters (json representation of azure.mgmt.batchai.models.FileServerCreateParameters). Note, parameters given via command line will overwrite parameters specified in the configuration file.  ### 
+        'config': "{{ item['config'] | default('') }}" 
+         ###  Optional parameter. Number of disks.  ### 
+        'disk-count': "{{ item['disk-count'] | default('') }}" 
+         ###  Optional parameter. Disk size in Gb.  ### 
+        'disk-size': "{{ item['disk-size'] | default('') }}" 
+         ###  Optional parameter. The sku of storage account to persist VM.  ### 
+        'storage-sku': "{{ item['storage-sku'] | default('') }}" 
+ - debug: msg="{{ az_batchai_file_server_create }}"          
+ - name: "az batchai file-server create: Create a file server." 
+   command: |                                      
+     az batchai file-server create                            
+                 --name {{ az_batchai_file_server_create.input['name'] }} 
+                 --resource-group {{ az_batchai_file_server_create.input['resource-group'] }} 
+                 {%if az_batchai_file_server_create.input['location'] %} --location az_batchai_file_server_create.input['location'] {%endif %} 
+                 {%if az_batchai_file_server_create.input['no-wait'] %} --no-wait az_batchai_file_server_create.input['no-wait'] {%endif %} 
+                 {%if az_batchai_file_server_create.input['vm-size'] %} --vm-size az_batchai_file_server_create.input['vm-size'] {%endif %} 
+                 {%if az_batchai_file_server_create.input['admin-user-name'] %} --admin-user-name az_batchai_file_server_create.input['admin-user-name'] {%endif %} 
+                 {%if az_batchai_file_server_create.input['password'] %} --password az_batchai_file_server_create.input['password'] {%endif %} 
+                 {%if az_batchai_file_server_create.input['ssh-key'] %} --ssh-key az_batchai_file_server_create.input['ssh-key'] {%endif %} 
+                 {%if az_batchai_file_server_create.input['config'] %} --config az_batchai_file_server_create.input['config'] {%endif %} 
+                 {%if az_batchai_file_server_create.input['disk-count'] %} --disk-count az_batchai_file_server_create.input['disk-count'] {%endif %} 
+                 {%if az_batchai_file_server_create.input['disk-size'] %} --disk-size az_batchai_file_server_create.input['disk-size'] {%endif %} 
+                 {%if az_batchai_file_server_create.input['storage-sku'] %} --storage-sku az_batchai_file_server_create.input['storage-sku'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batchai_file_server_create: "{{ az_batchai_file_server_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batchai_file_server_create }}" 

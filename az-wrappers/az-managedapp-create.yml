@@ -1,0 +1,50 @@
+
+
+ - name: Set input params for az_managedapp_create
+   set_fact: 
+     az_managedapp_create:
+       input: 
+         ###  Required parameter. The managed application kind. can be marketplace or servicecatalog.  ### 
+        'kind': "{{ item['kind'] | default('') }}" 
+         ###  Required parameter. The resource group managed by the managed application.  ### 
+        'managed-rg-id': "{{ item['managed-rg-id'] | default('') }}" 
+         ###  Required parameter. The managed application name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. The resource group of the managed application.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The managed application location.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. The full qualified managed application definition id.  ### 
+        'managedapp-definition-id': "{{ item['managedapp-definition-id'] | default('') }}" 
+         ###  Optional parameter. JSON formatted string or a path to a file with such content.  ### 
+        'parameters': "{{ item['parameters'] | default('') }}" 
+         ###  Optional parameter. The managed application package plan name.  ### 
+        'plan-name': "{{ item['plan-name'] | default('') }}" 
+         ###  Optional parameter. The managed application package plan product.  ### 
+        'plan-product': "{{ item['plan-product'] | default('') }}" 
+         ###  Optional parameter. The managed application package plan publisher.  ### 
+        'plan-publisher': "{{ item['plan-publisher'] | default('') }}" 
+         ###  Optional parameter. The managed application package plan version.  ### 
+        'plan-version': "{{ item['plan-version'] | default('') }}" 
+         ###  Optional parameter. Tags in 'a=b c' format.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+ - debug: msg="{{ az_managedapp_create }}"          
+ - name: "az managedapp create: Create a managed application." 
+   command: |                                      
+     az managedapp create                            
+                 --kind {{ az_managedapp_create.input['kind'] }} 
+                 --managed-rg-id {{ az_managedapp_create.input['managed-rg-id'] }} 
+                 --name {{ az_managedapp_create.input['name'] }} 
+                 --resource-group {{ az_managedapp_create.input['resource-group'] }} 
+                 {%if az_managedapp_create.input['location'] %} --location az_managedapp_create.input['location'] {%endif %} 
+                 {%if az_managedapp_create.input['managedapp-definition-id'] %} --managedapp-definition-id az_managedapp_create.input['managedapp-definition-id'] {%endif %} 
+                 {%if az_managedapp_create.input['parameters'] %} --parameters az_managedapp_create.input['parameters'] {%endif %} 
+                 {%if az_managedapp_create.input['plan-name'] %} --plan-name az_managedapp_create.input['plan-name'] {%endif %} 
+                 {%if az_managedapp_create.input['plan-product'] %} --plan-product az_managedapp_create.input['plan-product'] {%endif %} 
+                 {%if az_managedapp_create.input['plan-publisher'] %} --plan-publisher az_managedapp_create.input['plan-publisher'] {%endif %} 
+                 {%if az_managedapp_create.input['plan-version'] %} --plan-version az_managedapp_create.input['plan-version'] {%endif %} 
+                 {%if az_managedapp_create.input['rtags'] %} --tags az_managedapp_create.input['rtags'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_managedapp_create: "{{ az_managedapp_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_managedapp_create }}" 

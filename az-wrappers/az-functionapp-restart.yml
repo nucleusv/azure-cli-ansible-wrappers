@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_functionapp_restart
+   set_fact: 
+     az_functionapp_restart:
+       input: 
+         ###  Required parameter. Name of the function app.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_functionapp_restart }}"          
+ - name: "az functionapp restart: Restart a function app." 
+   command: |                                      
+     az functionapp restart                            
+                 --name {{ az_functionapp_restart.input['name'] }} 
+                 --resource-group {{ az_functionapp_restart.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_functionapp_restart: "{{ az_functionapp_restart|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_functionapp_restart }}" 

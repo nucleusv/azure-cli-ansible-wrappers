@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_acs_dcos_browse
+   set_fact: 
+     az_acs_dcos_browse:
+       input: 
+         ###  Required parameter. Name of the container service. You can configure the default using `az configure --defaults acs=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter.   ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Do not open browser after opening a proxy to the cluster web user interface.  ### 
+        'disable-browser': "{{ item['disable-browser'] | default('') }}" 
+         ###  Optional parameter. Path to an SSH key file to use.  ### 
+        'ssh-key-file': "{{ item['ssh-key-file'] | default('') }}" 
+ - debug: msg="{{ az_acs_dcos_browse }}"          
+ - name: "az acs dcos browse: Creates an SSH tunnel to the Azure container service, and opens the Mesosphere DC/OS dashboard in the browser." 
+   command: |                                      
+     az acs dcos browse                            
+                 --name {{ az_acs_dcos_browse.input['name'] }} 
+                 --resource-group {{ az_acs_dcos_browse.input['resource-group'] }} 
+                 {%if az_acs_dcos_browse.input['disable-browser'] %} --disable-browser az_acs_dcos_browse.input['disable-browser'] {%endif %} 
+                 {%if az_acs_dcos_browse.input['ssh-key-file'] %} --ssh-key-file az_acs_dcos_browse.input['ssh-key-file'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_acs_dcos_browse: "{{ az_acs_dcos_browse|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_acs_dcos_browse }}" 

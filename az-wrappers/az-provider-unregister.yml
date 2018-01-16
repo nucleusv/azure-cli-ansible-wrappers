@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_provider_unregister
+   set_fact: 
+     az_provider_unregister:
+       input: 
+         ###  Required parameter. The resource namespace, aka 'provider'.  ### 
+        'namespace': "{{ item['namespace'] | default('') }}" 
+         ###  Optional parameter. Wait for unregistration to finish.  ### 
+        'wait': "{{ item['wait'] | default('') }}" 
+ - debug: msg="{{ az_provider_unregister }}"          
+ - name: "az provider unregister: Unregister a provider." 
+   command: |                                      
+     az provider unregister                            
+                 --namespace {{ az_provider_unregister.input['namespace'] }} 
+                 {%if az_provider_unregister.input['wait'] %} --wait az_provider_unregister.input['wait'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_provider_unregister: "{{ az_provider_unregister|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_provider_unregister }}" 

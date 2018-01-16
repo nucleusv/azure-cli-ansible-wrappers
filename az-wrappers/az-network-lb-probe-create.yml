@@ -1,0 +1,38 @@
+
+
+ - name: Set input params for az_network_lb_probe_create
+   set_fact: 
+     az_network_lb_probe_create:
+       input: 
+         ###  Required parameter. The load balancer name.  ### 
+        'lb-name': "{{ item['lb-name'] | default('') }}" 
+         ###  Required parameter. The name of the probe.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. The port to interrogate.  ### 
+        'port': "{{ item['port'] | default('') }}" 
+         ###  Required parameter. The protocol to probe.  ### 
+        'protocol': "{{ item['protocol'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Probing time interval in seconds.  ### 
+        'interval': "{{ item['interval'] | default('') }}" 
+         ###  Optional parameter. The endpoint to interrogate (http only).  ### 
+        'path': "{{ item['path'] | default('') }}" 
+         ###  Optional parameter. The number of consecutive probe failures before an instance is deemed unhealthy.  ### 
+        'threshold': "{{ item['threshold'] | default('') }}" 
+ - debug: msg="{{ az_network_lb_probe_create }}"          
+ - name: "az network lb probe create: Create a probe." 
+   command: |                                      
+     az network lb probe create                            
+                 --lb-name {{ az_network_lb_probe_create.input['lb-name'] }} 
+                 --name {{ az_network_lb_probe_create.input['name'] }} 
+                 --port {{ az_network_lb_probe_create.input['port'] }} 
+                 --protocol {{ az_network_lb_probe_create.input['protocol'] }} 
+                 --resource-group {{ az_network_lb_probe_create.input['resource-group'] }} 
+                 {%if az_network_lb_probe_create.input['interval'] %} --interval az_network_lb_probe_create.input['interval'] {%endif %} 
+                 {%if az_network_lb_probe_create.input['path'] %} --path az_network_lb_probe_create.input['path'] {%endif %} 
+                 {%if az_network_lb_probe_create.input['threshold'] %} --threshold az_network_lb_probe_create.input['threshold'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_lb_probe_create: "{{ az_network_lb_probe_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_lb_probe_create }}" 

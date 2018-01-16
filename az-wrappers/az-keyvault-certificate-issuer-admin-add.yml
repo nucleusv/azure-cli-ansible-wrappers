@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_keyvault_certificate_issuer_admin_add
+   set_fact: 
+     az_keyvault_certificate_issuer_admin_add:
+       input: 
+         ###  Required parameter. Admin e-mail address. Must be unique within the vault.  ### 
+        'email': "{{ item['email'] | default('') }}" 
+         ###  Required parameter. Certificate issuer name.  ### 
+        'issuer-name': "{{ item['issuer-name'] | default('') }}" 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'first-name': "{{ item['first-name'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'last-name': "{{ item['last-name'] | default('') }}" 
+         ###  Optional parameter. Amin phone number.  ### 
+        'phone': "{{ item['phone'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_certificate_issuer_admin_add }}"          
+ - name: "az keyvault certificate issuer admin add: Add admin details for a specified certificate issuer." 
+   command: |                                      
+     az keyvault certificate issuer admin add                            
+                 --email {{ az_keyvault_certificate_issuer_admin_add.input['email'] }} 
+                 --issuer-name {{ az_keyvault_certificate_issuer_admin_add.input['issuer-name'] }} 
+                 --vault-name {{ az_keyvault_certificate_issuer_admin_add.input['vault-name'] }} 
+                 {%if az_keyvault_certificate_issuer_admin_add.input['first-name'] %} --first-name az_keyvault_certificate_issuer_admin_add.input['first-name'] {%endif %} 
+                 {%if az_keyvault_certificate_issuer_admin_add.input['last-name'] %} --last-name az_keyvault_certificate_issuer_admin_add.input['last-name'] {%endif %} 
+                 {%if az_keyvault_certificate_issuer_admin_add.input['phone'] %} --phone az_keyvault_certificate_issuer_admin_add.input['phone'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_keyvault_certificate_issuer_admin_add: "{{ az_keyvault_certificate_issuer_admin_add|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_certificate_issuer_admin_add }}" 

@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_cosmosdb_database_create
+   set_fact: 
+     az_cosmosdb_database_create:
+       input: 
+         ###  Required parameter. Database Name.  ### 
+        'db-name': "{{ item['db-name'] | default('') }}" 
+         ###  Optional parameter. Cosmos DB account key. Must be used in conjunction with cosmosdb account name or url-connection.  ### 
+        'key': "{{ item['key'] | default('') }}" 
+         ###  Optional parameter. Cosmos DB account name. Must be used in conjunction with either name of the resource group or cosmosdb account key.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Name of the resource group. Must be used in conjunction with cosmosdb account name.  ### 
+        'resource-group-name': "{{ item['resource-group-name'] | default('') }}" 
+         ###  Optional parameter. Cosmos DB account url connection. Must be used in conjunction with cosmosdb account key.  ### 
+        'url-connection': "{{ item['url-connection'] | default('') }}" 
+ - debug: msg="{{ az_cosmosdb_database_create }}"          
+ - name: "az cosmosdb database create: Creates an Azure Cosmos DB database." 
+   command: |                                      
+     az cosmosdb database create                            
+                 --db-name {{ az_cosmosdb_database_create.input['db-name'] }} 
+                 {%if az_cosmosdb_database_create.input['key'] %} --key az_cosmosdb_database_create.input['key'] {%endif %} 
+                 {%if az_cosmosdb_database_create.input['name'] %} --name az_cosmosdb_database_create.input['name'] {%endif %} 
+                 {%if az_cosmosdb_database_create.input['resource-group-name'] %} --resource-group-name az_cosmosdb_database_create.input['resource-group-name'] {%endif %} 
+                 {%if az_cosmosdb_database_create.input['url-connection'] %} --url-connection az_cosmosdb_database_create.input['url-connection'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_cosmosdb_database_create: "{{ az_cosmosdb_database_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cosmosdb_database_create }}" 

@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_role_definition_list
+   set_fact: 
+     az_role_definition_list:
+       input: 
+         ###  Optional parameter. Custom roles only(vs. build-in ones).  ### 
+        'custom-role-only': "{{ item['custom-role-only'] | default('') }}" 
+         ###  Optional parameter. The role's name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Use it only if the role or assignment was added at the level of a resource group.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Scope at which the role assignment or definition applies to, e.g., /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333, /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup, or /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup/providers/Microsoft.Compute/virtualMachines/myVM.  ### 
+        'scope': "{{ item['scope'] | default('') }}" 
+ - debug: msg="{{ az_role_definition_list }}"          
+ - name: "az role definition list: List role definitions." 
+   command: |                                      
+     az role definition list                            
+                 {%if az_role_definition_list.input['custom-role-only'] %} --custom-role-only az_role_definition_list.input['custom-role-only'] {%endif %} 
+                 {%if az_role_definition_list.input['name'] %} --name az_role_definition_list.input['name'] {%endif %} 
+                 {%if az_role_definition_list.input['resource-group'] %} --resource-group az_role_definition_list.input['resource-group'] {%endif %} 
+                 {%if az_role_definition_list.input['scope'] %} --scope az_role_definition_list.input['scope'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_role_definition_list: "{{ az_role_definition_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_role_definition_list }}" 

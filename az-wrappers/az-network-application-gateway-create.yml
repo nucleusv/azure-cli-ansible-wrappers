@@ -1,0 +1,89 @@
+
+
+ - name: Set input params for az_network_application_gateway_create
+   set_fact: 
+     az_network_application_gateway_create:
+       input: 
+         ###  Required parameter. The name of the application gateway.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. Generate and validate the ARM template without creating any resources.  ### 
+        'validate': "{{ item['validate'] | default('') }}" 
+         ###  Optional parameter. The number of instances to use with the application gateway.  ### 
+        'capacity': "{{ item['capacity'] | default('') }}" 
+         ###  Optional parameter. The path to the PFX certificate file.  ### 
+        'cert-file': "{{ item['cert-file'] | default('') }}" 
+         ###  Optional parameter. The certificate password.  ### 
+        'cert-password': "{{ item['cert-password'] | default('') }}" 
+         ###  Optional parameter. The time in seconds after a backend server is removed during which on open connection remains active. Range: 0 (disabled) to 3600.  ### 
+        'connection-draining-timeout': "{{ item['connection-draining-timeout'] | default('') }}" 
+         ###  Optional parameter. The front end port number.  ### 
+        'frontend-port': "{{ item['frontend-port'] | default('') }}" 
+         ###  Optional parameter. Enable or disable HTTP settings cookie-based affinity.  ### 
+        'http-settings-cookie-based-affinity': "{{ item['http-settings-cookie-based-affinity'] | default('') }}" 
+         ###  Optional parameter. The HTTP settings port.  ### 
+        'http-settings-port': "{{ item['http-settings-port'] | default('') }}" 
+         ###  Optional parameter. The HTTP settings protocol.  ### 
+        'http-settings-protocol': "{{ item['http-settings-protocol'] | default('') }}" 
+         ###  Optional parameter. Use HTTP2 for the application gateway.  ### 
+        'http2': "{{ item['http2'] | default('') }}" 
+         ###  Optional parameter. The request routing rule type.  ### 
+        'routing-rule-type': "{{ item['routing-rule-type'] | default('') }}" 
+         ###  Optional parameter. Space separated list of IP addresses or DNS names corresponding to backend servers.  ### 
+        'servers': "{{ item['servers'] | default('') }}" 
+         ###  Optional parameter. The name of the SKU.  ### 
+        'sku': "{{ item['sku'] | default('') }}" 
+         ###  Optional parameter. Static private IP address to use.  ### 
+        'private-ip-address': "{{ item['private-ip-address'] | default('') }}" 
+         ###  Optional parameter. Name or ID of a public IP address. Uses existing resource or creates new if specified, or none if omitted.  ### 
+        'public-ip-address': "{{ item['public-ip-address'] | default('') }}" 
+         ###  Optional parameter. The kind of IP allocation to use when creating a new public IP.  ### 
+        'public-ip-address-allocation': "{{ item['public-ip-address-allocation'] | default('') }}" 
+         ###  Optional parameter. Name or ID of the subnet. Will create resource if it does not exist. If name specified, also specify --vnet-name.  ### 
+        'subnet': "{{ item['subnet'] | default('') }}" 
+         ###  Optional parameter. The CIDR prefix to use when creating a new subnet.  ### 
+        'subnet-address-prefix': "{{ item['subnet-address-prefix'] | default('') }}" 
+         ###  Optional parameter. The CIDR prefix to use when creating a new VNet.  ### 
+        'vnet-address-prefix': "{{ item['vnet-address-prefix'] | default('') }}" 
+         ###  Optional parameter. The virtual network (VNet) name.  ### 
+        'vnet-name': "{{ item['vnet-name'] | default('') }}" 
+ - debug: msg="{{ az_network_application_gateway_create }}"          
+ - name: "az network application-gateway create: Create an application gateway." 
+   command: |                                      
+     az network application-gateway create                            
+                 --name {{ az_network_application_gateway_create.input['name'] }} 
+                 --resource-group {{ az_network_application_gateway_create.input['resource-group'] }} 
+                 {%if az_network_application_gateway_create.input['location'] %} --location az_network_application_gateway_create.input['location'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['no-wait'] %} --no-wait az_network_application_gateway_create.input['no-wait'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['rtags'] %} --tags az_network_application_gateway_create.input['rtags'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['validate'] %} --validate az_network_application_gateway_create.input['validate'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['capacity'] %} --capacity az_network_application_gateway_create.input['capacity'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['cert-file'] %} --cert-file az_network_application_gateway_create.input['cert-file'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['cert-password'] %} --cert-password az_network_application_gateway_create.input['cert-password'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['connection-draining-timeout'] %} --connection-draining-timeout az_network_application_gateway_create.input['connection-draining-timeout'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['frontend-port'] %} --frontend-port az_network_application_gateway_create.input['frontend-port'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['http-settings-cookie-based-affinity'] %} --http-settings-cookie-based-affinity az_network_application_gateway_create.input['http-settings-cookie-based-affinity'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['http-settings-port'] %} --http-settings-port az_network_application_gateway_create.input['http-settings-port'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['http-settings-protocol'] %} --http-settings-protocol az_network_application_gateway_create.input['http-settings-protocol'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['http2'] %} --http2 az_network_application_gateway_create.input['http2'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['routing-rule-type'] %} --routing-rule-type az_network_application_gateway_create.input['routing-rule-type'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['servers'] %} --servers az_network_application_gateway_create.input['servers'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['sku'] %} --sku az_network_application_gateway_create.input['sku'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['private-ip-address'] %} --private-ip-address az_network_application_gateway_create.input['private-ip-address'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['public-ip-address'] %} --public-ip-address az_network_application_gateway_create.input['public-ip-address'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['public-ip-address-allocation'] %} --public-ip-address-allocation az_network_application_gateway_create.input['public-ip-address-allocation'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['subnet'] %} --subnet az_network_application_gateway_create.input['subnet'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['subnet-address-prefix'] %} --subnet-address-prefix az_network_application_gateway_create.input['subnet-address-prefix'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['vnet-address-prefix'] %} --vnet-address-prefix az_network_application_gateway_create.input['vnet-address-prefix'] {%endif %} 
+                 {%if az_network_application_gateway_create.input['vnet-name'] %} --vnet-name az_network_application_gateway_create.input['vnet-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_application_gateway_create: "{{ az_network_application_gateway_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_application_gateway_create }}" 

@@ -1,0 +1,50 @@
+
+
+ - name: Set input params for az_network_public_ip_create
+   set_fact: 
+     az_network_public_ip_create:
+       input: 
+         ###  Required parameter. The name of the public IP address.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. IP address allocation method.  ### 
+        'allocation-method': "{{ item['allocation-method'] | default('') }}" 
+         ###  Optional parameter. Globally unique DNS entry.  ### 
+        'dns-name': "{{ item['dns-name'] | default('') }}" 
+         ###  Optional parameter. Idle timeout in minutes.  ### 
+        'idle-timeout': "{{ item['idle-timeout'] | default('') }}" 
+         ###  Optional parameter. Space separated list of IP tags in 'TYPE=VAL' format.  ### 
+        'ip-tags': "{{ item['ip-tags'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. Reverse FQDN (fully qualified domain name).  ### 
+        'reverse-fqdn': "{{ item['reverse-fqdn'] | default('') }}" 
+         ###  Optional parameter. Public IP SKU.  ### 
+        'sku': "{{ item['sku'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. IP address type.  ### 
+        'version': "{{ item['version'] | default('') }}" 
+         ###  Optional parameter. Availability zone into which to provision the resource.  ### 
+        'zone': "{{ item['zone'] | default('') }}" 
+ - debug: msg="{{ az_network_public_ip_create }}"          
+ - name: "az network public-ip create: Create a public IP address." 
+   command: |                                      
+     az network public-ip create                            
+                 --name {{ az_network_public_ip_create.input['name'] }} 
+                 --resource-group {{ az_network_public_ip_create.input['resource-group'] }} 
+                 {%if az_network_public_ip_create.input['allocation-method'] %} --allocation-method az_network_public_ip_create.input['allocation-method'] {%endif %} 
+                 {%if az_network_public_ip_create.input['dns-name'] %} --dns-name az_network_public_ip_create.input['dns-name'] {%endif %} 
+                 {%if az_network_public_ip_create.input['idle-timeout'] %} --idle-timeout az_network_public_ip_create.input['idle-timeout'] {%endif %} 
+                 {%if az_network_public_ip_create.input['ip-tags'] %} --ip-tags az_network_public_ip_create.input['ip-tags'] {%endif %} 
+                 {%if az_network_public_ip_create.input['location'] %} --location az_network_public_ip_create.input['location'] {%endif %} 
+                 {%if az_network_public_ip_create.input['reverse-fqdn'] %} --reverse-fqdn az_network_public_ip_create.input['reverse-fqdn'] {%endif %} 
+                 {%if az_network_public_ip_create.input['sku'] %} --sku az_network_public_ip_create.input['sku'] {%endif %} 
+                 {%if az_network_public_ip_create.input['rtags'] %} --tags az_network_public_ip_create.input['rtags'] {%endif %} 
+                 {%if az_network_public_ip_create.input['version'] %} --version az_network_public_ip_create.input['version'] {%endif %} 
+                 {%if az_network_public_ip_create.input['zone'] %} --zone az_network_public_ip_create.input['zone'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_public_ip_create: "{{ az_network_public_ip_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_public_ip_create }}" 

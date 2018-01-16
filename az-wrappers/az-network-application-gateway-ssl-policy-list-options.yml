@@ -1,0 +1,14 @@
+
+
+ - name: Set input params for az_network_application_gateway_ssl_policy_list_options
+   set_fact: 
+     az_network_application_gateway_ssl_policy_list_options:
+       input: 
+ - debug: msg="{{ az_network_application_gateway_ssl_policy_list_options }}"          
+ - name: "az network application-gateway ssl-policy list-options: Lists available Ssl options for configuring Ssl policy." 
+   command: |                                      
+     az network application-gateway ssl-policy list-options                            
+   register: output  
+ - set_fact: 
+    az_network_application_gateway_ssl_policy_list_options: "{{ az_network_application_gateway_ssl_policy_list_options|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_application_gateway_ssl_policy_list_options }}" 

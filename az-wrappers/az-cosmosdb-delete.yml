@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_cosmosdb_delete
+   set_fact: 
+     az_cosmosdb_delete:
+       input: 
+         ###  Required parameter. Name of the Cosmos DB database account.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_cosmosdb_delete }}"          
+ - name: "az cosmosdb delete: Deletes an Azure Cosmos DB database account." 
+   command: |                                      
+     az cosmosdb delete                            
+                 --name {{ az_cosmosdb_delete.input['name'] }} 
+                 --resource-group {{ az_cosmosdb_delete.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_cosmosdb_delete: "{{ az_cosmosdb_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cosmosdb_delete }}" 

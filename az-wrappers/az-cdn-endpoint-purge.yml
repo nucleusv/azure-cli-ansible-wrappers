@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_cdn_endpoint_purge
+   set_fact: 
+     az_cdn_endpoint_purge:
+       input: 
+         ###  Required parameter. The path to the content to be purged. Can describe a file path or a wild card directory.  ### 
+        'content-paths': "{{ item['content-paths'] | default('') }}" 
+         ###  Required parameter. Name of the CDN endpoint.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the CDN profile which is unique within the resource group.  ### 
+        'profile-name': "{{ item['profile-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_cdn_endpoint_purge }}"          
+ - name: "az cdn endpoint purge: Purge pre-loaded content for a CDN endpoint." 
+   command: |                                      
+     az cdn endpoint purge                            
+                 --content-paths {{ az_cdn_endpoint_purge.input['content-paths'] }} 
+                 --name {{ az_cdn_endpoint_purge.input['name'] }} 
+                 --profile-name {{ az_cdn_endpoint_purge.input['profile-name'] }} 
+                 --resource-group {{ az_cdn_endpoint_purge.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_cdn_endpoint_purge: "{{ az_cdn_endpoint_purge|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cdn_endpoint_purge }}" 

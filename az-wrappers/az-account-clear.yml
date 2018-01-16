@@ -1,0 +1,14 @@
+
+
+ - name: Set input params for az_account_clear
+   set_fact: 
+     az_account_clear:
+       input: 
+ - debug: msg="{{ az_account_clear }}"          
+ - name: "az account clear: Clear all subscriptions from the CLI's local cache." 
+   command: |                                      
+     az account clear                            
+   register: output  
+ - set_fact: 
+    az_account_clear: "{{ az_account_clear|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_account_clear }}" 

@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_role_definition_delete
+   set_fact: 
+     az_role_definition_delete:
+       input: 
+         ###  Required parameter. The role's name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Custom roles only(vs. build-in ones).  ### 
+        'custom-role-only': "{{ item['custom-role-only'] | default('') }}" 
+         ###  Optional parameter. Use it only if the role or assignment was added at the level of a resource group.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Scope at which the role assignment or definition applies to, e.g., /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333, /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup, or /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup/providers/Microsoft.Compute/virtualMachines/myVM.  ### 
+        'scope': "{{ item['scope'] | default('') }}" 
+ - debug: msg="{{ az_role_definition_delete }}"          
+ - name: "az role definition delete: Delete a role definition." 
+   command: |                                      
+     az role definition delete                            
+                 --name {{ az_role_definition_delete.input['name'] }} 
+                 {%if az_role_definition_delete.input['custom-role-only'] %} --custom-role-only az_role_definition_delete.input['custom-role-only'] {%endif %} 
+                 {%if az_role_definition_delete.input['resource-group'] %} --resource-group az_role_definition_delete.input['resource-group'] {%endif %} 
+                 {%if az_role_definition_delete.input['scope'] %} --scope az_role_definition_delete.input['scope'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_role_definition_delete: "{{ az_role_definition_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_role_definition_delete }}" 

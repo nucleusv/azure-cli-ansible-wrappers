@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_batchai_job_list_files
+   set_fact: 
+     az_batchai_job_list_files:
+       input: 
+         ###  Required parameter. Name of the job.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. The Id of the Job output directory (as specified by "id" element in outputDirectories collection in job create parameters). Use "stdouterr" to access job stdout and stderr files.  ### 
+        'output-directory-id': "{{ item['output-directory-id'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_batchai_job_list_files }}"          
+ - name: "az batchai job list-files: List job's output files in a directory with given id." 
+   command: |                                      
+     az batchai job list-files                            
+                 --name {{ az_batchai_job_list_files.input['name'] }} 
+                 --output-directory-id {{ az_batchai_job_list_files.input['output-directory-id'] }} 
+                 --resource-group {{ az_batchai_job_list_files.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_batchai_job_list_files: "{{ az_batchai_job_list_files|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batchai_job_list_files }}" 

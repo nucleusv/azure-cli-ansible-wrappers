@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_postgres_server_logs_list
+   set_fact: 
+     az_postgres_server_logs_list:
+       input: 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the server.  ### 
+        'server-name': "{{ item['server-name'] | default('') }}" 
+         ###  Optional parameter. Integer in hours to indicate file last modify time, default value is 72.  ### 
+        'file-last-written': "{{ item['file-last-written'] | default('') }}" 
+         ###  Optional parameter. The pattern that file name should match.  ### 
+        'filename-contains': "{{ item['filename-contains'] | default('') }}" 
+         ###  Optional parameter. The file size limitation to filter files.  ### 
+        'max-file-size': "{{ item['max-file-size'] | default('') }}" 
+ - debug: msg="{{ az_postgres_server_logs_list }}"          
+ - name: "az postgres server-logs list: List log files for a server." 
+   command: |                                      
+     az postgres server-logs list                            
+                 --resource-group {{ az_postgres_server_logs_list.input['resource-group'] }} 
+                 --server-name {{ az_postgres_server_logs_list.input['server-name'] }} 
+                 {%if az_postgres_server_logs_list.input['file-last-written'] %} --file-last-written az_postgres_server_logs_list.input['file-last-written'] {%endif %} 
+                 {%if az_postgres_server_logs_list.input['filename-contains'] %} --filename-contains az_postgres_server_logs_list.input['filename-contains'] {%endif %} 
+                 {%if az_postgres_server_logs_list.input['max-file-size'] %} --max-file-size az_postgres_server_logs_list.input['max-file-size'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_postgres_server_logs_list: "{{ az_postgres_server_logs_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_postgres_server_logs_list }}" 

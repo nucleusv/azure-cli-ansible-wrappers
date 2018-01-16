@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_cloud_unregister
+   set_fact: 
+     az_cloud_unregister:
+       input: 
+         ###  Required parameter. Name of a registered cloud.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+ - debug: msg="{{ az_cloud_unregister }}"          
+ - name: "az cloud unregister: Unregister a cloud." 
+   command: |                                      
+     az cloud unregister                            
+                 --name {{ az_cloud_unregister.input['name'] }} 
+   register: output  
+ - set_fact: 
+    az_cloud_unregister: "{{ az_cloud_unregister|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cloud_unregister }}" 

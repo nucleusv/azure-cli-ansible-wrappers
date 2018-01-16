@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_container_logs
+   set_fact: 
+     az_container_logs:
+       input: 
+         ###  Required parameter. The name of the container group.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The container name to tail the logs.  ### 
+        'container-name': "{{ item['container-name'] | default('') }}" 
+ - debug: msg="{{ az_container_logs }}"          
+ - name: "az container logs: Examine the logs for a container group." 
+   command: |                                      
+     az container logs                            
+                 --name {{ az_container_logs.input['name'] }} 
+                 --resource-group {{ az_container_logs.input['resource-group'] }} 
+                 {%if az_container_logs.input['container-name'] %} --container-name az_container_logs.input['container-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_container_logs: "{{ az_container_logs|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_container_logs }}" 

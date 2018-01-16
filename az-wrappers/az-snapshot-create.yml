@@ -1,0 +1,38 @@
+
+
+ - name: Set input params for az_snapshot_create
+   set_fact: 
+     az_snapshot_create:
+       input: 
+         ###  Required parameter. The name of the snapshot.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. Size in GB.  ### 
+        'size-gb': "{{ item['size-gb'] | default('') }}" 
+         ###  Optional parameter. Underlying storage SKU.  ### 
+        'sku': "{{ item['sku'] | default('') }}" 
+         ###  Optional parameter. Source to create the disk/snapshot from, including unmanaged blob uri, managed disk id or name, or snapshot id or name.  ### 
+        'source': "{{ item['source'] | default('') }}" 
+         ###  Optional parameter. Used when source blob is in a different subscription.  ### 
+        'source-storage-account-id': "{{ item['source-storage-account-id'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+ - debug: msg="{{ az_snapshot_create }}"          
+ - name: "az snapshot create: Create a snapshot." 
+   command: |                                      
+     az snapshot create                            
+                 --name {{ az_snapshot_create.input['name'] }} 
+                 --resource-group {{ az_snapshot_create.input['resource-group'] }} 
+                 {%if az_snapshot_create.input['location'] %} --location az_snapshot_create.input['location'] {%endif %} 
+                 {%if az_snapshot_create.input['size-gb'] %} --size-gb az_snapshot_create.input['size-gb'] {%endif %} 
+                 {%if az_snapshot_create.input['sku'] %} --sku az_snapshot_create.input['sku'] {%endif %} 
+                 {%if az_snapshot_create.input['source'] %} --source az_snapshot_create.input['source'] {%endif %} 
+                 {%if az_snapshot_create.input['source-storage-account-id'] %} --source-storage-account-id az_snapshot_create.input['source-storage-account-id'] {%endif %} 
+                 {%if az_snapshot_create.input['rtags'] %} --tags az_snapshot_create.input['rtags'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_snapshot_create: "{{ az_snapshot_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_snapshot_create }}" 

@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_sf_cluster_reliability_update
+   set_fact: 
+     az_sf_cluster_reliability_update:
+       input: 
+         ###  Required parameter. Specify the name of the cluster, if not given it will be same as resource group name.  ### 
+        'cluster-name': "{{ item['cluster-name'] | default('') }}" 
+         ###  Required parameter. Durability level.  ### 
+        'reliability-level': "{{ item['reliability-level'] | default('') }}" 
+         ###  Required parameter. The resource group name.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Add node count automatically when changing reliability.  ### 
+        'auto-add-node': "{{ item['auto-add-node'] | default('') }}" 
+ - debug: msg="{{ az_sf_cluster_reliability_update }}"          
+ - name: "az sf cluster reliability update: Update the reliability tier for the primary node in a cluster." 
+   command: |                                      
+     az sf cluster reliability update                            
+                 --cluster-name {{ az_sf_cluster_reliability_update.input['cluster-name'] }} 
+                 --reliability-level {{ az_sf_cluster_reliability_update.input['reliability-level'] }} 
+                 --resource-group {{ az_sf_cluster_reliability_update.input['resource-group'] }} 
+                 {%if az_sf_cluster_reliability_update.input['auto-add-node'] %} --auto-add-node az_sf_cluster_reliability_update.input['auto-add-node'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_sf_cluster_reliability_update: "{{ az_sf_cluster_reliability_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sf_cluster_reliability_update }}" 

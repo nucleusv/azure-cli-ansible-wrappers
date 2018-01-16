@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_mysql_server_logs_download
+   set_fact: 
+     az_mysql_server_logs_download:
+       input: 
+         ###  Required parameter. Space separated list of log filenames on the server to download.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the server.  ### 
+        'server-name': "{{ item['server-name'] | default('') }}" 
+ - debug: msg="{{ az_mysql_server_logs_download }}"          
+ - name: "az mysql server-logs download: Download log files." 
+   command: |                                      
+     az mysql server-logs download                            
+                 --name {{ az_mysql_server_logs_download.input['name'] }} 
+                 --resource-group {{ az_mysql_server_logs_download.input['resource-group'] }} 
+                 --server-name {{ az_mysql_server_logs_download.input['server-name'] }} 
+   register: output  
+ - set_fact: 
+    az_mysql_server_logs_download: "{{ az_mysql_server_logs_download|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_mysql_server_logs_download }}" 

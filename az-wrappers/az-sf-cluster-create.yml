@@ -1,0 +1,65 @@
+
+
+ - name: Set input params for az_sf_cluster_create
+   set_fact: 
+     az_sf_cluster_create:
+       input: 
+         ###  Required parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Required parameter. The resource group name.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The existing certificate file path for the primary cluster certificate.  ### 
+        'certificate-file': "{{ item['certificate-file'] | default('') }}" 
+         ###  Optional parameter. The folder of the new certificate file to be created.  ### 
+        'certificate-output-folder': "{{ item['certificate-output-folder'] | default('') }}" 
+         ###  Optional parameter. The password of the certificate file.  ### 
+        'certificate-password': "{{ item['certificate-password'] | default('') }}" 
+         ###  Optional parameter. The subject name of the certificate to be created.  ### 
+        'certificate-subject-name': "{{ item['certificate-subject-name'] | default('') }}" 
+         ###  Optional parameter. Specify the name of the cluster, if not given it will be same as resource group name.  ### 
+        'cluster-name': "{{ item['cluster-name'] | default('') }}" 
+         ###  Optional parameter. The number of nodes in the cluster. Default are 5 nodes.  ### 
+        'cluster-size': "{{ item['cluster-size'] | default('') }}" 
+         ###  Optional parameter. The Operating System of the VMs that make up the cluster.  ### 
+        'os': "{{ item['os'] | default('') }}" 
+         ###  Optional parameter. The path to the template parameter file.  ### 
+        'parameter-file': "{{ item['parameter-file'] | default('') }}" 
+         ###  Optional parameter. The existing Azure key vault secret URL.  ### 
+        'secret-identifier': "{{ item['secret-identifier'] | default('') }}" 
+         ###  Optional parameter. The path to the template file.  ### 
+        'template-file': "{{ item['template-file'] | default('') }}" 
+         ###  Optional parameter. Azure key vault name, it not given it will be the cluster resource group name.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+         ###  Optional parameter. Key vault resource group name,if not given it will be cluster resource group name.  ### 
+        'vault-resource-group': "{{ item['vault-resource-group'] | default('') }}" 
+         ###  Optional parameter. The password of the Vm.  ### 
+        'vm-password': "{{ item['vm-password'] | default('') }}" 
+         ###  Optional parameter. The Vm Sku.  ### 
+        'vm-sku': "{{ item['vm-sku'] | default('') }}" 
+         ###  Optional parameter. The user name for logging to Vm. Default will be adminuser.  ### 
+        'vm-user-name': "{{ item['vm-user-name'] | default('') }}" 
+ - debug: msg="{{ az_sf_cluster_create }}"          
+ - name: "az sf cluster create: Create a new Azure Service Fabric cluster." 
+   command: |                                      
+     az sf cluster create                            
+                 --location {{ az_sf_cluster_create.input['location'] }} 
+                 --resource-group {{ az_sf_cluster_create.input['resource-group'] }} 
+                 {%if az_sf_cluster_create.input['certificate-file'] %} --certificate-file az_sf_cluster_create.input['certificate-file'] {%endif %} 
+                 {%if az_sf_cluster_create.input['certificate-output-folder'] %} --certificate-output-folder az_sf_cluster_create.input['certificate-output-folder'] {%endif %} 
+                 {%if az_sf_cluster_create.input['certificate-password'] %} --certificate-password az_sf_cluster_create.input['certificate-password'] {%endif %} 
+                 {%if az_sf_cluster_create.input['certificate-subject-name'] %} --certificate-subject-name az_sf_cluster_create.input['certificate-subject-name'] {%endif %} 
+                 {%if az_sf_cluster_create.input['cluster-name'] %} --cluster-name az_sf_cluster_create.input['cluster-name'] {%endif %} 
+                 {%if az_sf_cluster_create.input['cluster-size'] %} --cluster-size az_sf_cluster_create.input['cluster-size'] {%endif %} 
+                 {%if az_sf_cluster_create.input['os'] %} --os az_sf_cluster_create.input['os'] {%endif %} 
+                 {%if az_sf_cluster_create.input['parameter-file'] %} --parameter-file az_sf_cluster_create.input['parameter-file'] {%endif %} 
+                 {%if az_sf_cluster_create.input['secret-identifier'] %} --secret-identifier az_sf_cluster_create.input['secret-identifier'] {%endif %} 
+                 {%if az_sf_cluster_create.input['template-file'] %} --template-file az_sf_cluster_create.input['template-file'] {%endif %} 
+                 {%if az_sf_cluster_create.input['vault-name'] %} --vault-name az_sf_cluster_create.input['vault-name'] {%endif %} 
+                 {%if az_sf_cluster_create.input['vault-resource-group'] %} --vault-resource-group az_sf_cluster_create.input['vault-resource-group'] {%endif %} 
+                 {%if az_sf_cluster_create.input['vm-password'] %} --vm-password az_sf_cluster_create.input['vm-password'] {%endif %} 
+                 {%if az_sf_cluster_create.input['vm-sku'] %} --vm-sku az_sf_cluster_create.input['vm-sku'] {%endif %} 
+                 {%if az_sf_cluster_create.input['vm-user-name'] %} --vm-user-name az_sf_cluster_create.input['vm-user-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_sf_cluster_create: "{{ az_sf_cluster_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sf_cluster_create }}" 

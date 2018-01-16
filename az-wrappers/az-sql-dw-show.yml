@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_sql_dw_show
+   set_fact: 
+     az_sql_dw_show:
+       input: 
+         ###  Required parameter. Name of the data warehouse.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the Azure SQL server.  ### 
+        'server': "{{ item['server'] | default('') }}" 
+ - debug: msg="{{ az_sql_dw_show }}"          
+ - name: "az sql dw show: Get the details for a data warehouse." 
+   command: |                                      
+     az sql dw show                            
+                 --name {{ az_sql_dw_show.input['name'] }} 
+                 --resource-group {{ az_sql_dw_show.input['resource-group'] }} 
+                 --server {{ az_sql_dw_show.input['server'] }} 
+   register: output  
+ - set_fact: 
+    az_sql_dw_show: "{{ az_sql_dw_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sql_dw_show }}" 

@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_vmss_nic_list_vm_nics
+   set_fact: 
+     az_vmss_nic_list_vm_nics:
+       input: 
+         ###  Required parameter. The virtual machine index.  ### 
+        'instance-id': "{{ item['instance-id'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Scale set name.  ### 
+        'vmss-name': "{{ item['vmss-name'] | default('') }}" 
+ - debug: msg="{{ az_vmss_nic_list_vm_nics }}"          
+ - name: "az vmss nic list-vm-nics: Gets information about all network interfaces in a virtual machine in a virtual machine scale set." 
+   command: |                                      
+     az vmss nic list-vm-nics                            
+                 --instance-id {{ az_vmss_nic_list_vm_nics.input['instance-id'] }} 
+                 --resource-group {{ az_vmss_nic_list_vm_nics.input['resource-group'] }} 
+                 --vmss-name {{ az_vmss_nic_list_vm_nics.input['vmss-name'] }} 
+   register: output  
+ - set_fact: 
+    az_vmss_nic_list_vm_nics: "{{ az_vmss_nic_list_vm_nics|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vmss_nic_list_vm_nics }}" 

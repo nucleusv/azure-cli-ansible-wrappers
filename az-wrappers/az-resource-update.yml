@@ -1,0 +1,47 @@
+
+
+ - name: Set input params for az_resource_update
+   set_fact: 
+     az_resource_update:
+       input: 
+         ###  Optional parameter. Use if the default command output doesn't capture all of the property data.  ### 
+        'include-response-body': "{{ item['include-response-body'] | default('') }}" 
+         ###  Optional parameter. The api version of the resource (omit for latest).  ### 
+        'api-version': "{{ item['api-version'] | default('') }}" 
+         ###  Optional parameter. One or more resource IDs (space delimited). If provided, no other "Resource Id" arguments should be specified.  ### 
+        'ids': "{{ item['ids'] | default('') }}" 
+         ###  Optional parameter. The resource name. (Ex: myC).  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Provider namespace (Ex: 'Microsoft.Provider').  ### 
+        'namespace': "{{ item['namespace'] | default('') }}" 
+         ###  Optional parameter. The parent path (Ex: 'resA/myA/resB/myB').  ### 
+        'parent': "{{ item['parent'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The resource type (Ex: 'resC'). Can also accept namespace/type format (Ex: 'Microsoft.Provider/resC').  ### 
+        'resource-type': "{{ item['resource-type'] | default('') }}" 
+         ###  Optional parameter. Add an object to a list of objects by specifying a path and key value pairs.  Example: --add property.listProperty <key=value, string or JSON string>.  ### 
+        'add': "{{ item['add'] | default('') }}" 
+         ###  Optional parameter. Remove a property or an element from a list.  Example: --remove property.list <indexToRemove> OR --remove propertyToRemove.  ### 
+        'remove': "{{ item['remove'] | default('') }}" 
+         ###  Optional parameter. Update an object by specifying a property path and value to set.  Example: --set property1.property2=<value>.  ### 
+        'set': "{{ item['set'] | default('') }}" 
+ - debug: msg="{{ az_resource_update }}"          
+ - name: "az resource update: Update a resource." 
+   command: |                                      
+     az resource update                            
+                 {%if az_resource_update.input['include-response-body'] %} --include-response-body az_resource_update.input['include-response-body'] {%endif %} 
+                 {%if az_resource_update.input['api-version'] %} --api-version az_resource_update.input['api-version'] {%endif %} 
+                 {%if az_resource_update.input['ids'] %} --ids az_resource_update.input['ids'] {%endif %} 
+                 {%if az_resource_update.input['name'] %} --name az_resource_update.input['name'] {%endif %} 
+                 {%if az_resource_update.input['namespace'] %} --namespace az_resource_update.input['namespace'] {%endif %} 
+                 {%if az_resource_update.input['parent'] %} --parent az_resource_update.input['parent'] {%endif %} 
+                 {%if az_resource_update.input['resource-group'] %} --resource-group az_resource_update.input['resource-group'] {%endif %} 
+                 {%if az_resource_update.input['resource-type'] %} --resource-type az_resource_update.input['resource-type'] {%endif %} 
+                 {%if az_resource_update.input['add'] %} --add az_resource_update.input['add'] {%endif %} 
+                 {%if az_resource_update.input['remove'] %} --remove az_resource_update.input['remove'] {%endif %} 
+                 {%if az_resource_update.input['set'] %} --set az_resource_update.input['set'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_resource_update: "{{ az_resource_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_resource_update }}" 

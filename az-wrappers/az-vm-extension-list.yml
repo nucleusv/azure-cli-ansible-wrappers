@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_vm_extension_list
+   set_fact: 
+     az_vm_extension_list:
+       input: 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The name of the Virtual Machine. You can configure the default using `az configure --defaults vm=&lt;name&gt;`.  ### 
+        'vm-name': "{{ item['vm-name'] | default('') }}" 
+ - debug: msg="{{ az_vm_extension_list }}"          
+ - name: "az vm extension list: List the extensions attached to a VM." 
+   command: |                                      
+     az vm extension list                            
+                 --resource-group {{ az_vm_extension_list.input['resource-group'] }} 
+                 --vm-name {{ az_vm_extension_list.input['vm-name'] }} 
+   register: output  
+ - set_fact: 
+    az_vm_extension_list: "{{ az_vm_extension_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_extension_list }}" 

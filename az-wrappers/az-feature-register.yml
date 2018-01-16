@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_feature_register
+   set_fact: 
+     az_feature_register:
+       input: 
+         ###  Required parameter. The feature name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. The resource namespace, aka 'provider'.  ### 
+        'namespace': "{{ item['namespace'] | default('') }}" 
+ - debug: msg="{{ az_feature_register }}"          
+ - name: "az feature register: " 
+   command: |                                      
+     az feature register                            
+                 --name {{ az_feature_register.input['name'] }} 
+                 --namespace {{ az_feature_register.input['namespace'] }} 
+   register: output  
+ - set_fact: 
+    az_feature_register: "{{ az_feature_register|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_feature_register }}" 

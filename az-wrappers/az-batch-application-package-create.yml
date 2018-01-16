@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_batch_application_package_create
+   set_fact: 
+     az_batch_application_package_create:
+       input: 
+         ###  Required parameter. The ID of the application.  ### 
+        'application-id': "{{ item['application-id'] | default('') }}" 
+         ###  Required parameter. Name of the Batch account.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. The path of the application package in zip format.  ### 
+        'package-file': "{{ item['package-file'] | default('') }}" 
+         ###  Required parameter. Name of the resource group.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The version of the application.  ### 
+        'version': "{{ item['version'] | default('') }}" 
+ - debug: msg="{{ az_batch_application_package_create }}"          
+ - name: "az batch application package create: Create a Batch application package record and activate it." 
+   command: |                                      
+     az batch application package create                            
+                 --application-id {{ az_batch_application_package_create.input['application-id'] }} 
+                 --name {{ az_batch_application_package_create.input['name'] }} 
+                 --package-file {{ az_batch_application_package_create.input['package-file'] }} 
+                 --resource-group {{ az_batch_application_package_create.input['resource-group'] }} 
+                 --version {{ az_batch_application_package_create.input['version'] }} 
+   register: output  
+ - set_fact: 
+    az_batch_application_package_create: "{{ az_batch_application_package_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_application_package_create }}" 

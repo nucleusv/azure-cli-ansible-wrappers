@@ -1,0 +1,164 @@
+
+
+ - name: Set input params for az_vm_create
+   set_fact: 
+     az_vm_create:
+       input: 
+         ###  Required parameter. Name of the virtual machine.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Attach existing data disks to the VM. Can use the name or ID of a managed disk or the URI to an unmanaged disk VHD.  ### 
+        'attach-data-disks': "{{ item['attach-data-disks'] | default('') }}" 
+         ###  Optional parameter. Attach an existing OS disk to the VM. Can use the name or ID of a managed disk or the URI to an unmanaged disk VHD.  ### 
+        'attach-os-disk': "{{ item['attach-os-disk'] | default('') }}" 
+         ###  Optional parameter. Name or ID of an existing availability set to add the VM to. None by default.  ### 
+        'availability-set': "{{ item['availability-set'] | default('') }}" 
+         ###  Optional parameter. Custom init script file or text (cloud-init, cloud-config, etc..).  ### 
+        'custom-data': "{{ item['custom-data'] | default('') }}" 
+         ###  Optional parameter. The name of the operating system image as a URN alias, URN, custom image name or ID, or VHD blob URI. This parameter is required unless using `--attach-os-disk.`.  ### 
+        'image': "{{ item['image'] | default('') }}" 
+         ###  Optional parameter. License type if the Windows image or disk used was licensed on-premises.  ### 
+        'license-type': "{{ item['license-type'] | default('') }}" 
+         ###  Optional parameter. Location in which to create VM and related resources. If default location is not configured, will default to the resource group's location.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+         ###  Optional parameter. One or many Key Vault secrets as JSON strings or files via `@&lt;file path&gt;` containing `[{ "sourceVault": { "id": "value" }, "vaultCertificates": [{ "certificateUrl": "value", "certificateStore": "cert store name (only on windows)"}] }]`.  ### 
+        'secrets': "{{ item['secrets'] | default('') }}" 
+         ###  Optional parameter. The VM size to be created. See <a href="https://azure.microsoft.com/en-us/pricing/details/virtual-machines/">https://azure.microsoft.com/en-us/pricing/details/virtual-machines/</a> for size info.  ### 
+        'size': "{{ item['size'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. Generate and validate the ARM template without creating any resources.  ### 
+        'validate': "{{ item['validate'] | default('') }}" 
+         ###  Optional parameter. Availability zone into which to provision the resource.  ### 
+        'zone': "{{ item['zone'] | default('') }}" 
+         ###  Optional parameter. Password for the VM if authentication type is 'Password'.  ### 
+        'admin-password': "{{ item['admin-password'] | default('') }}" 
+         ###  Optional parameter. Username for the VM.  ### 
+        'admin-username': "{{ item['admin-username'] | default('') }}" 
+         ###  Optional parameter. Type of authentication to use with the VM. Defaults to password for Windows and SSH public key for Linux.  ### 
+        'authentication-type': "{{ item['authentication-type'] | default('') }}" 
+         ###  Optional parameter. Generate SSH public and private key files if missing. The keys will be stored in the ~/.ssh directory.  ### 
+        'generate-ssh-keys': "{{ item['generate-ssh-keys'] | default('') }}" 
+         ###  Optional parameter. Destination file path on the VM for the SSH key.  ### 
+        'ssh-dest-key-path': "{{ item['ssh-dest-key-path'] | default('') }}" 
+         ###  Optional parameter. The SSH public key or public key file path.  ### 
+        'ssh-key-value': "{{ item['ssh-key-value'] | default('') }}" 
+         ###  Optional parameter. Accept system or user assigned identities with space separated. Use '[system]' to refer system assigned identity, or a resource id to refer user assigned identity. Check out help for more examples.  ### 
+        'assign-identity': "{{ item['assign-identity'] | default('') }}" 
+         ###  Optional parameter. Role name or id the system assigned identity will have.  ### 
+        'role': "{{ item['role'] | default('') }}" 
+         ###  Optional parameter. Scope that the system assigned identity can access.  ### 
+        'scope': "{{ item['scope'] | default('') }}" 
+         ###  Optional parameter. Plan name.  ### 
+        'plan-name': "{{ item['plan-name'] | default('') }}" 
+         ###  Optional parameter. Plan product.  ### 
+        'plan-product': "{{ item['plan-product'] | default('') }}" 
+         ###  Optional parameter. Plan promotion code.  ### 
+        'plan-promotion-code': "{{ item['plan-promotion-code'] | default('') }}" 
+         ###  Optional parameter. Plan publisher.  ### 
+        'plan-publisher': "{{ item['plan-publisher'] | default('') }}" 
+         ###  Optional parameter. Space separated list of existing application security groups to associate with the VM.  ### 
+        'asgs': "{{ item['asgs'] | default('') }}" 
+         ###  Optional parameter. Names or IDs of existing NICs to attach to the VM. The first NIC will be designated as primary. If omitted, a new NIC will be created. If an existing NIC is specified, do not specify subnet, VNet, public IP or NSG.  ### 
+        'nics': "{{ item['nics'] | default('') }}" 
+         ###  Optional parameter. The name to use when creating a new Network Security Group (default) or referencing an existing one. Can also reference an existing NSG by ID or specify "" for none.  ### 
+        'nsg': "{{ item['nsg'] | default('') }}" 
+         ###  Optional parameter. NSG rule to create when creating a new NSG. Defaults to open ports for allowing RDP on Windows and allowing SSH on Linux.  ### 
+        'nsg-rule': "{{ item['nsg-rule'] | default('') }}" 
+         ###  Optional parameter. Static private IP address (e.g. 10.0.0.5).  ### 
+        'private-ip-address': "{{ item['private-ip-address'] | default('') }}" 
+         ###  Optional parameter. Name of the public IP address when creating one (default) or referencing an existing one. Can also reference an existing public IP by ID or specify "" for None.  ### 
+        'public-ip-address': "{{ item['public-ip-address'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'public-ip-address-allocation': "{{ item['public-ip-address-allocation'] | default('') }}" 
+         ###  Optional parameter. Globally unique DNS name for a newly created public IP.  ### 
+        'public-ip-address-dns-name': "{{ item['public-ip-address-dns-name'] | default('') }}" 
+         ###  Optional parameter. The name of the subnet when creating a new VNet or referencing an existing one. Can also reference an existing subnet by ID. If omitted, an appropriate VNet and subnet will be selected automatically, or a new one will be created.  ### 
+        'subnet': "{{ item['subnet'] | default('') }}" 
+         ###  Optional parameter. The subnet IP address prefix to use when creating a new VNet in CIDR format.  ### 
+        'subnet-address-prefix': "{{ item['subnet-address-prefix'] | default('') }}" 
+         ###  Optional parameter. The IP address prefix to use when creating a new VNet in CIDR format.  ### 
+        'vnet-address-prefix': "{{ item['vnet-address-prefix'] | default('') }}" 
+         ###  Optional parameter. Name of the virtual network when creating a new one or referencing an existing one.  ### 
+        'vnet-name': "{{ item['vnet-name'] | default('') }}" 
+         ###  Optional parameter. Storage caching type for the VM data disk(s).  ### 
+        'data-disk-caching': "{{ item['data-disk-caching'] | default('') }}" 
+         ###  Optional parameter. Space separated empty managed data disk sizes in GB to create.  ### 
+        'data-disk-sizes-gb': "{{ item['data-disk-sizes-gb'] | default('') }}" 
+         ###  Optional parameter. Storage caching type for the VM OS disk.  ### 
+        'os-disk-caching': "{{ item['os-disk-caching'] | default('') }}" 
+         ###  Optional parameter. The name of the new VM OS disk.  ### 
+        'os-disk-name': "{{ item['os-disk-name'] | default('') }}" 
+         ###  Optional parameter. The size of the os disk in GB.  ### 
+        'os-disk-size-gb': "{{ item['os-disk-size-gb'] | default('') }}" 
+         ###  Optional parameter. Type of OS installed on a custom VHD. Do not use when specifying an URN or URN alias.  ### 
+        'os-type': "{{ item['os-type'] | default('') }}" 
+         ###  Optional parameter. Only applicable when used with `--use-unmanaged-disk`. The name to use when creating a new storage account or referencing an existing one. If omitted, an appropriate storage account in the same resource group and location will be used, or a new one will be created.  ### 
+        'storage-account': "{{ item['storage-account'] | default('') }}" 
+         ###  Optional parameter. Only applicable when used with `--use-unmanaged-disk`. Name of the storage container for the VM OS disk. Default: vhds.  ### 
+        'storage-container-name': "{{ item['storage-container-name'] | default('') }}" 
+         ###  Optional parameter. The SKU of the storage account with which to persist VM. By default, only Standard_LRS and Premium_LRS are allowed. With `--use-unmanaged-disk`, all are available.  ### 
+        'storage-sku': "{{ item['storage-sku'] | default('') }}" 
+         ###  Optional parameter. Do not use managed disk to persist VM.  ### 
+        'use-unmanaged-disk': "{{ item['use-unmanaged-disk'] | default('') }}" 
+ - debug: msg="{{ az_vm_create }}"          
+ - name: "az vm create: Create an Azure Virtual Machine." 
+   command: |                                      
+     az vm create                            
+                 --name {{ az_vm_create.input['name'] }} 
+                 --resource-group {{ az_vm_create.input['resource-group'] }} 
+                 {%if az_vm_create.input['attach-data-disks'] %} --attach-data-disks az_vm_create.input['attach-data-disks'] {%endif %} 
+                 {%if az_vm_create.input['attach-os-disk'] %} --attach-os-disk az_vm_create.input['attach-os-disk'] {%endif %} 
+                 {%if az_vm_create.input['availability-set'] %} --availability-set az_vm_create.input['availability-set'] {%endif %} 
+                 {%if az_vm_create.input['custom-data'] %} --custom-data az_vm_create.input['custom-data'] {%endif %} 
+                 {%if az_vm_create.input['image'] %} --image az_vm_create.input['image'] {%endif %} 
+                 {%if az_vm_create.input['license-type'] %} --license-type az_vm_create.input['license-type'] {%endif %} 
+                 {%if az_vm_create.input['location'] %} --location az_vm_create.input['location'] {%endif %} 
+                 {%if az_vm_create.input['no-wait'] %} --no-wait az_vm_create.input['no-wait'] {%endif %} 
+                 {%if az_vm_create.input['secrets'] %} --secrets az_vm_create.input['secrets'] {%endif %} 
+                 {%if az_vm_create.input['size'] %} --size az_vm_create.input['size'] {%endif %} 
+                 {%if az_vm_create.input['rtags'] %} --tags az_vm_create.input['rtags'] {%endif %} 
+                 {%if az_vm_create.input['validate'] %} --validate az_vm_create.input['validate'] {%endif %} 
+                 {%if az_vm_create.input['zone'] %} --zone az_vm_create.input['zone'] {%endif %} 
+                 {%if az_vm_create.input['admin-password'] %} --admin-password az_vm_create.input['admin-password'] {%endif %} 
+                 {%if az_vm_create.input['admin-username'] %} --admin-username az_vm_create.input['admin-username'] {%endif %} 
+                 {%if az_vm_create.input['authentication-type'] %} --authentication-type az_vm_create.input['authentication-type'] {%endif %} 
+                 {%if az_vm_create.input['generate-ssh-keys'] %} --generate-ssh-keys az_vm_create.input['generate-ssh-keys'] {%endif %} 
+                 {%if az_vm_create.input['ssh-dest-key-path'] %} --ssh-dest-key-path az_vm_create.input['ssh-dest-key-path'] {%endif %} 
+                 {%if az_vm_create.input['ssh-key-value'] %} --ssh-key-value az_vm_create.input['ssh-key-value'] {%endif %} 
+                 {%if az_vm_create.input['assign-identity'] %} --assign-identity az_vm_create.input['assign-identity'] {%endif %} 
+                 {%if az_vm_create.input['role'] %} --role az_vm_create.input['role'] {%endif %} 
+                 {%if az_vm_create.input['scope'] %} --scope az_vm_create.input['scope'] {%endif %} 
+                 {%if az_vm_create.input['plan-name'] %} --plan-name az_vm_create.input['plan-name'] {%endif %} 
+                 {%if az_vm_create.input['plan-product'] %} --plan-product az_vm_create.input['plan-product'] {%endif %} 
+                 {%if az_vm_create.input['plan-promotion-code'] %} --plan-promotion-code az_vm_create.input['plan-promotion-code'] {%endif %} 
+                 {%if az_vm_create.input['plan-publisher'] %} --plan-publisher az_vm_create.input['plan-publisher'] {%endif %} 
+                 {%if az_vm_create.input['asgs'] %} --asgs az_vm_create.input['asgs'] {%endif %} 
+                 {%if az_vm_create.input['nics'] %} --nics az_vm_create.input['nics'] {%endif %} 
+                 {%if az_vm_create.input['nsg'] %} --nsg az_vm_create.input['nsg'] {%endif %} 
+                 {%if az_vm_create.input['nsg-rule'] %} --nsg-rule az_vm_create.input['nsg-rule'] {%endif %} 
+                 {%if az_vm_create.input['private-ip-address'] %} --private-ip-address az_vm_create.input['private-ip-address'] {%endif %} 
+                 {%if az_vm_create.input['public-ip-address'] %} --public-ip-address az_vm_create.input['public-ip-address'] {%endif %} 
+                 {%if az_vm_create.input['public-ip-address-allocation'] %} --public-ip-address-allocation az_vm_create.input['public-ip-address-allocation'] {%endif %} 
+                 {%if az_vm_create.input['public-ip-address-dns-name'] %} --public-ip-address-dns-name az_vm_create.input['public-ip-address-dns-name'] {%endif %} 
+                 {%if az_vm_create.input['subnet'] %} --subnet az_vm_create.input['subnet'] {%endif %} 
+                 {%if az_vm_create.input['subnet-address-prefix'] %} --subnet-address-prefix az_vm_create.input['subnet-address-prefix'] {%endif %} 
+                 {%if az_vm_create.input['vnet-address-prefix'] %} --vnet-address-prefix az_vm_create.input['vnet-address-prefix'] {%endif %} 
+                 {%if az_vm_create.input['vnet-name'] %} --vnet-name az_vm_create.input['vnet-name'] {%endif %} 
+                 {%if az_vm_create.input['data-disk-caching'] %} --data-disk-caching az_vm_create.input['data-disk-caching'] {%endif %} 
+                 {%if az_vm_create.input['data-disk-sizes-gb'] %} --data-disk-sizes-gb az_vm_create.input['data-disk-sizes-gb'] {%endif %} 
+                 {%if az_vm_create.input['os-disk-caching'] %} --os-disk-caching az_vm_create.input['os-disk-caching'] {%endif %} 
+                 {%if az_vm_create.input['os-disk-name'] %} --os-disk-name az_vm_create.input['os-disk-name'] {%endif %} 
+                 {%if az_vm_create.input['os-disk-size-gb'] %} --os-disk-size-gb az_vm_create.input['os-disk-size-gb'] {%endif %} 
+                 {%if az_vm_create.input['os-type'] %} --os-type az_vm_create.input['os-type'] {%endif %} 
+                 {%if az_vm_create.input['storage-account'] %} --storage-account az_vm_create.input['storage-account'] {%endif %} 
+                 {%if az_vm_create.input['storage-container-name'] %} --storage-container-name az_vm_create.input['storage-container-name'] {%endif %} 
+                 {%if az_vm_create.input['storage-sku'] %} --storage-sku az_vm_create.input['storage-sku'] {%endif %} 
+                 {%if az_vm_create.input['use-unmanaged-disk'] %} --use-unmanaged-disk az_vm_create.input['use-unmanaged-disk'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_vm_create: "{{ az_vm_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_create }}" 

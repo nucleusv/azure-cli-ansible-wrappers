@@ -1,0 +1,74 @@
+
+
+ - name: Set input params for az_network_vnet_gateway_update
+   set_fact: 
+     az_network_vnet_gateway_update:
+       input: 
+         ###  Required parameter. Name of the VNet gateway.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The gateway type.  ### 
+        'gateway-type': "{{ item['gateway-type'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+         ###  Optional parameter. Specify a single public IP (name or ID) for an active-standby gateway. Specify two space-separated public IPs for an active-active gateway.  ### 
+        'public-ip-addresses': "{{ item['public-ip-addresses'] | default('') }}" 
+         ###  Optional parameter. VNet gateway SKU.  ### 
+        'sku': "{{ item['sku'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. Name or ID of a virtual network that contains a subnet named 'GatewaySubnet'.  ### 
+        'vnet': "{{ item['vnet'] | default('') }}" 
+         ###  Optional parameter. VPN routing type.  ### 
+        'vpn-type': "{{ item['vpn-type'] | default('') }}" 
+         ###  Optional parameter. Autonomous System Number to use for the BGP settings.  ### 
+        'asn': "{{ item['asn'] | default('') }}" 
+         ###  Optional parameter. IP address to use for BGP peering.  ### 
+        'bgp-peering-address': "{{ item['bgp-peering-address'] | default('') }}" 
+         ###  Optional parameter. Enable BGP (Border Gateway Protocol).  ### 
+        'enable-bgp': "{{ item['enable-bgp'] | default('') }}" 
+         ###  Optional parameter. Weight (0-100) added to routes learned through BGP peering.  ### 
+        'peer-weight': "{{ item['peer-weight'] | default('') }}" 
+         ###  Optional parameter. Space separated list of CIDR prefixes representing the address space for the P2S client.  ### 
+        'address-prefixes': "{{ item['address-prefixes'] | default('') }}" 
+         ###  Optional parameter. Protocols to use for connecting.  ### 
+        'client-protocol': "{{ item['client-protocol'] | default('') }}" 
+         ###  Optional parameter. Radius secret to use for authentication.  ### 
+        'radius-secret': "{{ item['radius-secret'] | default('') }}" 
+         ###  Optional parameter. Radius server address to connect to.  ### 
+        'radius-server': "{{ item['radius-server'] | default('') }}" 
+         ###  Optional parameter. Add an object to a list of objects by specifying a path and key value pairs.  Example: --add property.listProperty <key=value, string or JSON string>.  ### 
+        'add': "{{ item['add'] | default('') }}" 
+         ###  Optional parameter. Remove a property or an element from a list.  Example: --remove property.list <indexToRemove> OR --remove propertyToRemove.  ### 
+        'remove': "{{ item['remove'] | default('') }}" 
+         ###  Optional parameter. Update an object by specifying a property path and value to set.  Example: --set property1.property2=<value>.  ### 
+        'set': "{{ item['set'] | default('') }}" 
+ - debug: msg="{{ az_network_vnet_gateway_update }}"          
+ - name: "az network vnet-gateway update: Update a virtual network gateway." 
+   command: |                                      
+     az network vnet-gateway update                            
+                 --name {{ az_network_vnet_gateway_update.input['name'] }} 
+                 --resource-group {{ az_network_vnet_gateway_update.input['resource-group'] }} 
+                 {%if az_network_vnet_gateway_update.input['gateway-type'] %} --gateway-type az_network_vnet_gateway_update.input['gateway-type'] {%endif %} 
+                 {%if az_network_vnet_gateway_update.input['no-wait'] %} --no-wait az_network_vnet_gateway_update.input['no-wait'] {%endif %} 
+                 {%if az_network_vnet_gateway_update.input['public-ip-addresses'] %} --public-ip-addresses az_network_vnet_gateway_update.input['public-ip-addresses'] {%endif %} 
+                 {%if az_network_vnet_gateway_update.input['sku'] %} --sku az_network_vnet_gateway_update.input['sku'] {%endif %} 
+                 {%if az_network_vnet_gateway_update.input['rtags'] %} --tags az_network_vnet_gateway_update.input['rtags'] {%endif %} 
+                 {%if az_network_vnet_gateway_update.input['vnet'] %} --vnet az_network_vnet_gateway_update.input['vnet'] {%endif %} 
+                 {%if az_network_vnet_gateway_update.input['vpn-type'] %} --vpn-type az_network_vnet_gateway_update.input['vpn-type'] {%endif %} 
+                 {%if az_network_vnet_gateway_update.input['asn'] %} --asn az_network_vnet_gateway_update.input['asn'] {%endif %} 
+                 {%if az_network_vnet_gateway_update.input['bgp-peering-address'] %} --bgp-peering-address az_network_vnet_gateway_update.input['bgp-peering-address'] {%endif %} 
+                 {%if az_network_vnet_gateway_update.input['enable-bgp'] %} --enable-bgp az_network_vnet_gateway_update.input['enable-bgp'] {%endif %} 
+                 {%if az_network_vnet_gateway_update.input['peer-weight'] %} --peer-weight az_network_vnet_gateway_update.input['peer-weight'] {%endif %} 
+                 {%if az_network_vnet_gateway_update.input['address-prefixes'] %} --address-prefixes az_network_vnet_gateway_update.input['address-prefixes'] {%endif %} 
+                 {%if az_network_vnet_gateway_update.input['client-protocol'] %} --client-protocol az_network_vnet_gateway_update.input['client-protocol'] {%endif %} 
+                 {%if az_network_vnet_gateway_update.input['radius-secret'] %} --radius-secret az_network_vnet_gateway_update.input['radius-secret'] {%endif %} 
+                 {%if az_network_vnet_gateway_update.input['radius-server'] %} --radius-server az_network_vnet_gateway_update.input['radius-server'] {%endif %} 
+                 {%if az_network_vnet_gateway_update.input['add'] %} --add az_network_vnet_gateway_update.input['add'] {%endif %} 
+                 {%if az_network_vnet_gateway_update.input['remove'] %} --remove az_network_vnet_gateway_update.input['remove'] {%endif %} 
+                 {%if az_network_vnet_gateway_update.input['set'] %} --set az_network_vnet_gateway_update.input['set'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_vnet_gateway_update: "{{ az_network_vnet_gateway_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_vnet_gateway_update }}" 

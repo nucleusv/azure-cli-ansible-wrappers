@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_container_list
+   set_fact: 
+     az_container_list:
+       input: 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_container_list }}"          
+ - name: "az container list: List container groups." 
+   command: |                                      
+     az container list                            
+                 {%if az_container_list.input['resource-group'] %} --resource-group az_container_list.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_container_list: "{{ az_container_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_container_list }}" 

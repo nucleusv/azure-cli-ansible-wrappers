@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_vm_image_list_publishers
+   set_fact: 
+     az_vm_image_list_publishers:
+       input: 
+         ###  Required parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+ - debug: msg="{{ az_vm_image_list_publishers }}"          
+ - name: "az vm image list-publishers: List the VM image publishers available in the Azure Marketplace." 
+   command: |                                      
+     az vm image list-publishers                            
+                 --location {{ az_vm_image_list_publishers.input['location'] }} 
+   register: output  
+ - set_fact: 
+    az_vm_image_list_publishers: "{{ az_vm_image_list_publishers|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_image_list_publishers }}" 

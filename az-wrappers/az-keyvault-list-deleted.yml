@@ -1,0 +1,14 @@
+
+
+ - name: Set input params for az_keyvault_list_deleted
+   set_fact: 
+     az_keyvault_list_deleted:
+       input: 
+ - debug: msg="{{ az_keyvault_list_deleted }}"          
+ - name: "az keyvault list-deleted: Gets information about the deleted vaults in a subscription." 
+   command: |                                      
+     az keyvault list-deleted                            
+   register: output  
+ - set_fact: 
+    az_keyvault_list_deleted: "{{ az_keyvault_list_deleted|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_list_deleted }}" 

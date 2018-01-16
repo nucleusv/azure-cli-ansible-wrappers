@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_network_application_gateway_probe_list
+   set_fact: 
+     az_network_application_gateway_probe_list:
+       input: 
+         ###  Required parameter. The name of the application gateway.  ### 
+        'gateway-name': "{{ item['gateway-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_network_application_gateway_probe_list }}"          
+ - name: "az network application-gateway probe list: List probes." 
+   command: |                                      
+     az network application-gateway probe list                            
+                 --gateway-name {{ az_network_application_gateway_probe_list.input['gateway-name'] }} 
+                 --resource-group {{ az_network_application_gateway_probe_list.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_network_application_gateway_probe_list: "{{ az_network_application_gateway_probe_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_application_gateway_probe_list }}" 

@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_vm_list
+   set_fact: 
+     az_vm_list:
+       input: 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Show public ip address, FQDN, and power states. command will run slow.  ### 
+        'show-details': "{{ item['show-details'] | default('') }}" 
+ - debug: msg="{{ az_vm_list }}"          
+ - name: "az vm list: List details of Virtual Machines." 
+   command: |                                      
+     az vm list                            
+                 {%if az_vm_list.input['resource-group'] %} --resource-group az_vm_list.input['resource-group'] {%endif %} 
+                 {%if az_vm_list.input['show-details'] %} --show-details az_vm_list.input['show-details'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_vm_list: "{{ az_vm_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_list }}" 

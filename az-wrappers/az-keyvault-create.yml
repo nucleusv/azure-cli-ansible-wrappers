@@ -1,0 +1,44 @@
+
+
+ - name: Set input params for az_keyvault_create
+   set_fact: 
+     az_keyvault_create:
+       input: 
+         ###  Required parameter. Name of the key vault.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Enable vault deletion recovery for the vault, and all contained entities.  ### 
+        'enable-soft-delete': "{{ item['enable-soft-delete'] | default('') }}" 
+         ###  Optional parameter. Allow Virtual Machines to retrieve certificates stored as secrets from the vault.  ### 
+        'enabled-for-deployment': "{{ item['enabled-for-deployment'] | default('') }}" 
+         ###  Optional parameter. Allow Disk Encryption to retrieve secrets from the vault and unwrap keys.  ### 
+        'enabled-for-disk-encryption': "{{ item['enabled-for-disk-encryption'] | default('') }}" 
+         ###  Optional parameter. Allow Resource Manager to retrieve secrets from the vault.  ### 
+        'enabled-for-template-deployment': "{{ item['enabled-for-template-deployment'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. Don't add permissions for the current user/service principal in the new vault.  ### 
+        'no-self-perms': "{{ item['no-self-perms'] | default('') }}" 
+         ###  Optional parameter. SKU details.  ### 
+        'sku': "{{ item['sku'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_create }}"          
+ - name: "az keyvault create: Create a key vault." 
+   command: |                                      
+     az keyvault create                            
+                 --name {{ az_keyvault_create.input['name'] }} 
+                 --resource-group {{ az_keyvault_create.input['resource-group'] }} 
+                 {%if az_keyvault_create.input['enable-soft-delete'] %} --enable-soft-delete az_keyvault_create.input['enable-soft-delete'] {%endif %} 
+                 {%if az_keyvault_create.input['enabled-for-deployment'] %} --enabled-for-deployment az_keyvault_create.input['enabled-for-deployment'] {%endif %} 
+                 {%if az_keyvault_create.input['enabled-for-disk-encryption'] %} --enabled-for-disk-encryption az_keyvault_create.input['enabled-for-disk-encryption'] {%endif %} 
+                 {%if az_keyvault_create.input['enabled-for-template-deployment'] %} --enabled-for-template-deployment az_keyvault_create.input['enabled-for-template-deployment'] {%endif %} 
+                 {%if az_keyvault_create.input['location'] %} --location az_keyvault_create.input['location'] {%endif %} 
+                 {%if az_keyvault_create.input['no-self-perms'] %} --no-self-perms az_keyvault_create.input['no-self-perms'] {%endif %} 
+                 {%if az_keyvault_create.input['sku'] %} --sku az_keyvault_create.input['sku'] {%endif %} 
+                 {%if az_keyvault_create.input['rtags'] %} --tags az_keyvault_create.input['rtags'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_keyvault_create: "{{ az_keyvault_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_create }}" 

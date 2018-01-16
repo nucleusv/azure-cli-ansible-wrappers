@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_webapp_delete
+   set_fact: 
+     az_webapp_delete:
+       input: 
+         ###  Required parameter. Name of the web. You can configure the default using 'az configure --defaults web=<name>'.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Keep DNS registration.  ### 
+        'keep-dns-registration': "{{ item['keep-dns-registration'] | default('') }}" 
+         ###  Optional parameter. Keep empty app service plan.  ### 
+        'keep-empty-plan': "{{ item['keep-empty-plan'] | default('') }}" 
+         ###  Optional parameter. Keep app metrics.  ### 
+        'keep-metrics': "{{ item['keep-metrics'] | default('') }}" 
+         ###  Optional parameter. The name of the slot. Default to the productions slot if not specified.  ### 
+        'slot': "{{ item['slot'] | default('') }}" 
+ - debug: msg="{{ az_webapp_delete }}"          
+ - name: "az webapp delete: Delete a web app." 
+   command: |                                      
+     az webapp delete                            
+                 --name {{ az_webapp_delete.input['name'] }} 
+                 --resource-group {{ az_webapp_delete.input['resource-group'] }} 
+                 {%if az_webapp_delete.input['keep-dns-registration'] %} --keep-dns-registration az_webapp_delete.input['keep-dns-registration'] {%endif %} 
+                 {%if az_webapp_delete.input['keep-empty-plan'] %} --keep-empty-plan az_webapp_delete.input['keep-empty-plan'] {%endif %} 
+                 {%if az_webapp_delete.input['keep-metrics'] %} --keep-metrics az_webapp_delete.input['keep-metrics'] {%endif %} 
+                 {%if az_webapp_delete.input['slot'] %} --slot az_webapp_delete.input['slot'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_webapp_delete: "{{ az_webapp_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_webapp_delete }}" 

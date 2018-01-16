@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_network_dns_zone_create
+   set_fact: 
+     az_network_dns_zone_create:
+       input: 
+         ###  Required parameter. The name of the zone.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Only create a DNS zone if one doesn't exist that matches the given name.  ### 
+        'if-none-match': "{{ item['if-none-match'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+ - debug: msg="{{ az_network_dns_zone_create }}"          
+ - name: "az network dns zone create: Create a DNS zone." 
+   command: |                                      
+     az network dns zone create                            
+                 --name {{ az_network_dns_zone_create.input['name'] }} 
+                 --resource-group {{ az_network_dns_zone_create.input['resource-group'] }} 
+                 {%if az_network_dns_zone_create.input['if-none-match'] %} --if-none-match az_network_dns_zone_create.input['if-none-match'] {%endif %} 
+                 {%if az_network_dns_zone_create.input['rtags'] %} --tags az_network_dns_zone_create.input['rtags'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_dns_zone_create: "{{ az_network_dns_zone_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_dns_zone_create }}" 

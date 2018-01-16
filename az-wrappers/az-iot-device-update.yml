@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_iot_device_update
+   set_fact: 
+     az_iot_device_update:
+       input: 
+         ###  Required parameter. Device Id.  ### 
+        'device-id': "{{ item['device-id'] | default('') }}" 
+         ###  Required parameter. IoT Hub name.  ### 
+        'hub-name': "{{ item['hub-name'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Add an object to a list of objects by specifying a path and key value pairs.  Example: --add property.listProperty <key=value, string or JSON string>.  ### 
+        'add': "{{ item['add'] | default('') }}" 
+         ###  Optional parameter. Remove a property or an element from a list.  Example: --remove property.list <indexToRemove> OR --remove propertyToRemove.  ### 
+        'remove': "{{ item['remove'] | default('') }}" 
+         ###  Optional parameter. Update an object by specifying a property path and value to set.  Example: --set property1.property2=<value>.  ### 
+        'set': "{{ item['set'] | default('') }}" 
+ - debug: msg="{{ az_iot_device_update }}"          
+ - name: "az iot device update: Update the metadata of a device in an IoT hub." 
+   command: |                                      
+     az iot device update                            
+                 --device-id {{ az_iot_device_update.input['device-id'] }} 
+                 --hub-name {{ az_iot_device_update.input['hub-name'] }} 
+                 {%if az_iot_device_update.input['resource-group'] %} --resource-group az_iot_device_update.input['resource-group'] {%endif %} 
+                 {%if az_iot_device_update.input['add'] %} --add az_iot_device_update.input['add'] {%endif %} 
+                 {%if az_iot_device_update.input['remove'] %} --remove az_iot_device_update.input['remove'] {%endif %} 
+                 {%if az_iot_device_update.input['set'] %} --set az_iot_device_update.input['set'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_device_update: "{{ az_iot_device_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_device_update }}" 

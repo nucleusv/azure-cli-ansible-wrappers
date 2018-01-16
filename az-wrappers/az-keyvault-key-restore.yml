@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_keyvault_key_restore
+   set_fact: 
+     az_keyvault_key_restore:
+       input: 
+         ###  Required parameter. Local key backup from which to restore key.  ### 
+        'file': "{{ item['file'] | default('') }}" 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_key_restore }}"          
+ - name: "az keyvault key restore: Restores a backed up key to a vault." 
+   command: |                                      
+     az keyvault key restore                            
+                 --file {{ az_keyvault_key_restore.input['file'] }} 
+                 --vault-name {{ az_keyvault_key_restore.input['vault-name'] }} 
+   register: output  
+ - set_fact: 
+    az_keyvault_key_restore: "{{ az_keyvault_key_restore|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_key_restore }}" 

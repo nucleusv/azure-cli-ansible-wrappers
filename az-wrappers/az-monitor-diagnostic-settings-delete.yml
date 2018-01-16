@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_monitor_diagnostic_settings_delete
+   set_fact: 
+     az_monitor_diagnostic_settings_delete:
+       input: 
+         ###  Required parameter. The name of the diagnostic setting.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name or ID of the target resource.  ### 
+        'resource': "{{ item['resource'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Target resource provider namespace.  ### 
+        'resource-namespace': "{{ item['resource-namespace'] | default('') }}" 
+         ###  Optional parameter. Target resource parent path, if applicable.  ### 
+        'resource-parent': "{{ item['resource-parent'] | default('') }}" 
+         ###  Optional parameter. Target resource type. Can also accept namespace/type format (Ex: 'Microsoft.Compute/virtualMachines)').  ### 
+        'resource-type': "{{ item['resource-type'] | default('') }}" 
+ - debug: msg="{{ az_monitor_diagnostic_settings_delete }}"          
+ - name: "az monitor diagnostic-settings delete: Deletes existing diagnostic settings for the specified resource." 
+   command: |                                      
+     az monitor diagnostic-settings delete                            
+                 --name {{ az_monitor_diagnostic_settings_delete.input['name'] }} 
+                 --resource {{ az_monitor_diagnostic_settings_delete.input['resource'] }} 
+                 {%if az_monitor_diagnostic_settings_delete.input['resource-group'] %} --resource-group az_monitor_diagnostic_settings_delete.input['resource-group'] {%endif %} 
+                 {%if az_monitor_diagnostic_settings_delete.input['resource-namespace'] %} --resource-namespace az_monitor_diagnostic_settings_delete.input['resource-namespace'] {%endif %} 
+                 {%if az_monitor_diagnostic_settings_delete.input['resource-parent'] %} --resource-parent az_monitor_diagnostic_settings_delete.input['resource-parent'] {%endif %} 
+                 {%if az_monitor_diagnostic_settings_delete.input['resource-type'] %} --resource-type az_monitor_diagnostic_settings_delete.input['resource-type'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_monitor_diagnostic_settings_delete: "{{ az_monitor_diagnostic_settings_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_monitor_diagnostic_settings_delete }}" 

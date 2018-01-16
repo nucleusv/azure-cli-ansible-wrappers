@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_iot_dps_delete
+   set_fact: 
+     az_iot_dps_delete:
+       input: 
+         ###  Required parameter. IoT Provisioning Service name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_iot_dps_delete }}"          
+ - name: "az iot dps delete: Delete an Azure IoT Hub device provisioning service." 
+   command: |                                      
+     az iot dps delete                            
+                 --name {{ az_iot_dps_delete.input['name'] }} 
+                 --resource-group {{ az_iot_dps_delete.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_iot_dps_delete: "{{ az_iot_dps_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_dps_delete }}" 

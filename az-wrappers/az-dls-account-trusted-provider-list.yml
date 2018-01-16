@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_dls_account_trusted_provider_list
+   set_fact: 
+     az_dls_account_trusted_provider_list:
+       input: 
+         ###  Required parameter. Name of the Data Lake Store account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Optional parameter. If not specified, will attempt to discover the resource group for the specified Data Lake Store account.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_dls_account_trusted_provider_list }}"          
+ - name: "az dls account trusted-provider list: Lists the Data Lake Store trusted identity providers within the specified Data Lake Store account." 
+   command: |                                      
+     az dls account trusted-provider list                            
+                 --account {{ az_dls_account_trusted_provider_list.input['account'] }} 
+                 {%if az_dls_account_trusted_provider_list.input['resource-group'] %} --resource-group az_dls_account_trusted_provider_list.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dls_account_trusted_provider_list: "{{ az_dls_account_trusted_provider_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dls_account_trusted_provider_list }}" 

@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_keyvault_delete
+   set_fact: 
+     az_keyvault_delete:
+       input: 
+         ###  Required parameter. Name of the key vault.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Proceed only if Key Vault belongs to the specified resource group.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_delete }}"          
+ - name: "az keyvault delete: Delete a key vault." 
+   command: |                                      
+     az keyvault delete                            
+                 --name {{ az_keyvault_delete.input['name'] }} 
+                 {%if az_keyvault_delete.input['resource-group'] %} --resource-group az_keyvault_delete.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_keyvault_delete: "{{ az_keyvault_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_delete }}" 

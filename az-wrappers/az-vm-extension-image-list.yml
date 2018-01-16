@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_vm_extension_image_list
+   set_fact: 
+     az_vm_extension_image_list:
+       input: 
+         ###  Optional parameter. Show the latest version only.  ### 
+        'latest': "{{ item['latest'] | default('') }}" 
+         ###  Optional parameter. Image location.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. Image name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Image publisher name.  ### 
+        'publisher': "{{ item['publisher'] | default('') }}" 
+         ###  Optional parameter. Extension version.  ### 
+        'version': "{{ item['version'] | default('') }}" 
+ - debug: msg="{{ az_vm_extension_image_list }}"          
+ - name: "az vm extension image list: List the information on available extensions." 
+   command: |                                      
+     az vm extension image list                            
+                 {%if az_vm_extension_image_list.input['latest'] %} --latest az_vm_extension_image_list.input['latest'] {%endif %} 
+                 {%if az_vm_extension_image_list.input['location'] %} --location az_vm_extension_image_list.input['location'] {%endif %} 
+                 {%if az_vm_extension_image_list.input['name'] %} --name az_vm_extension_image_list.input['name'] {%endif %} 
+                 {%if az_vm_extension_image_list.input['publisher'] %} --publisher az_vm_extension_image_list.input['publisher'] {%endif %} 
+                 {%if az_vm_extension_image_list.input['version'] %} --version az_vm_extension_image_list.input['version'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_vm_extension_image_list: "{{ az_vm_extension_image_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_extension_image_list }}" 

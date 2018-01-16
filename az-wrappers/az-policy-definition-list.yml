@@ -1,0 +1,14 @@
+
+
+ - name: Set input params for az_policy_definition_list
+   set_fact: 
+     az_policy_definition_list:
+       input: 
+ - debug: msg="{{ az_policy_definition_list }}"          
+ - name: "az policy definition list: List policy definitions." 
+   command: |                                      
+     az policy definition list                            
+   register: output  
+ - set_fact: 
+    az_policy_definition_list: "{{ az_policy_definition_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_policy_definition_list }}" 

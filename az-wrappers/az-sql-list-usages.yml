@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_sql_list_usages
+   set_fact: 
+     az_sql_list_usages:
+       input: 
+         ###  Required parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+ - debug: msg="{{ az_sql_list_usages }}"          
+ - name: "az sql list-usages: Gets all subscription usage metrics in a given location." 
+   command: |                                      
+     az sql list-usages                            
+                 --location {{ az_sql_list_usages.input['location'] }} 
+   register: output  
+ - set_fact: 
+    az_sql_list_usages: "{{ az_sql_list_usages|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sql_list_usages }}" 

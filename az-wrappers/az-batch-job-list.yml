@@ -1,0 +1,35 @@
+
+
+ - name: Set input params for az_batch_job_list
+   set_fact: 
+     az_batch_job_list:
+       input: 
+         ###  Optional parameter. The ID of the job schedule from which you want to get a list of jobs. If omitted, lists all jobs in the account.  ### 
+        'job-schedule-id': "{{ item['job-schedule-id'] | default('') }}" 
+         ###  Optional parameter. Batch service endpoint. Alternatively, set by environment variable: AZURE_BATCH_ENDPOINT.  ### 
+        'account-endpoint': "{{ item['account-endpoint'] | default('') }}" 
+         ###  Optional parameter. The Batch account key. Alternatively, set by environment variable: AZURE_BATCH_ACCESS_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. The Batch account name. Alternatively, set by environment variable: AZURE_BATCH_ACCOUNT.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+         ###  Optional parameter. An OData $expand clause.  ### 
+        'expand': "{{ item['expand'] | default('') }}" 
+         ###  Optional parameter. An OData $filter clause.  ### 
+        'filter': "{{ item['filter'] | default('') }}" 
+         ###  Optional parameter. An OData $select clause.  ### 
+        'select': "{{ item['select'] | default('') }}" 
+ - debug: msg="{{ az_batch_job_list }}"          
+ - name: "az batch job list: List all of the jobs or job schedule in a Batch account." 
+   command: |                                      
+     az batch job list                            
+                 {%if az_batch_job_list.input['job-schedule-id'] %} --job-schedule-id az_batch_job_list.input['job-schedule-id'] {%endif %} 
+                 {%if az_batch_job_list.input['account-endpoint'] %} --account-endpoint az_batch_job_list.input['account-endpoint'] {%endif %} 
+                 {%if az_batch_job_list.input['account-key'] %} --account-key az_batch_job_list.input['account-key'] {%endif %} 
+                 {%if az_batch_job_list.input['account-name'] %} --account-name az_batch_job_list.input['account-name'] {%endif %} 
+                 {%if az_batch_job_list.input['expand'] %} --expand az_batch_job_list.input['expand'] {%endif %} 
+                 {%if az_batch_job_list.input['filter'] %} --filter az_batch_job_list.input['filter'] {%endif %} 
+                 {%if az_batch_job_list.input['select'] %} --select az_batch_job_list.input['select'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_job_list: "{{ az_batch_job_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_job_list }}" 

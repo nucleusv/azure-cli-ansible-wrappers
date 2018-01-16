@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_vm_image_list
+   set_fact: 
+     az_vm_image_list:
+       input: 
+         ###  Optional parameter. Retrieve image list from live Azure service rather using an offline image list.  ### 
+        'all': "{{ item['all'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. Image offer name, partial name is accepted.  ### 
+        'offer': "{{ item['offer'] | default('') }}" 
+         ###  Optional parameter. Image publisher name, partial name is accepted.  ### 
+        'publisher': "{{ item['publisher'] | default('') }}" 
+         ###  Optional parameter. Image sku name, partial name is accepted.  ### 
+        'sku': "{{ item['sku'] | default('') }}" 
+ - debug: msg="{{ az_vm_image_list }}"          
+ - name: "az vm image list: List the VM/VMSS images available in the Azure Marketplace." 
+   command: |                                      
+     az vm image list                            
+                 {%if az_vm_image_list.input['all'] %} --all az_vm_image_list.input['all'] {%endif %} 
+                 {%if az_vm_image_list.input['location'] %} --location az_vm_image_list.input['location'] {%endif %} 
+                 {%if az_vm_image_list.input['offer'] %} --offer az_vm_image_list.input['offer'] {%endif %} 
+                 {%if az_vm_image_list.input['publisher'] %} --publisher az_vm_image_list.input['publisher'] {%endif %} 
+                 {%if az_vm_image_list.input['sku'] %} --sku az_vm_image_list.input['sku'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_vm_image_list: "{{ az_vm_image_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_image_list }}" 

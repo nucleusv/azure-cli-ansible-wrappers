@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_lab_get
+   set_fact: 
+     az_lab_get:
+       input: 
+         ###  Required parameter. The name of the lab.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Specify the $expand query. Example: 'properties($select=defaultStorageAccount)'.  ### 
+        'expand': "{{ item['expand'] | default('') }}" 
+ - debug: msg="{{ az_lab_get }}"          
+ - name: "az lab get: Get lab." 
+   command: |                                      
+     az lab get                            
+                 --name {{ az_lab_get.input['name'] }} 
+                 --resource-group {{ az_lab_get.input['resource-group'] }} 
+                 {%if az_lab_get.input['expand'] %} --expand az_lab_get.input['expand'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_lab_get: "{{ az_lab_get|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_lab_get }}" 

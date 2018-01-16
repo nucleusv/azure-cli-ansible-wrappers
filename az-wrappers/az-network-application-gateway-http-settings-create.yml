@@ -1,0 +1,59 @@
+
+
+ - name: Set input params for az_network_application_gateway_http_settings_create
+   set_fact: 
+     az_network_application_gateway_http_settings_create:
+       input: 
+         ###  Required parameter. The name of the application gateway.  ### 
+        'gateway-name': "{{ item['gateway-name'] | default('') }}" 
+         ###  Required parameter. The name of the backed HTTP settings.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. The port number.  ### 
+        'port': "{{ item['port'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Name used for the affinity cookie.  ### 
+        'affinity-cookie-name': "{{ item['affinity-cookie-name'] | default('') }}" 
+         ###  Optional parameter. The time in seconds after a backend server is removed during which on open connection remains active. Range: 0 (disabled) to 3600.  ### 
+        'connection-draining-timeout': "{{ item['connection-draining-timeout'] | default('') }}" 
+         ###  Optional parameter. Enable or disable cookie-based affinity.  ### 
+        'cookie-based-affinity': "{{ item['cookie-based-affinity'] | default('') }}" 
+         ###  Optional parameter. Whether the probe is enabled.  ### 
+        'enable-probe': "{{ item['enable-probe'] | default('') }}" 
+         ###  Optional parameter. Host header sent to the backend servers.  ### 
+        'host-name': "{{ item['host-name'] | default('') }}" 
+         ###  Optional parameter. Use host name of the backend server as the host header.  ### 
+        'host-name-from-backend-pool': "{{ item['host-name-from-backend-pool'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+         ###  Optional parameter. Path that will prefix all HTTP requests.  ### 
+        'path': "{{ item['path'] | default('') }}" 
+         ###  Optional parameter. Name or ID of the probe to associate with the HTTP settings.  ### 
+        'probe': "{{ item['probe'] | default('') }}" 
+         ###  Optional parameter. The HTTP settings protocol.  ### 
+        'protocol': "{{ item['protocol'] | default('') }}" 
+         ###  Optional parameter. Request timeout in seconds.  ### 
+        'timeout': "{{ item['timeout'] | default('') }}" 
+ - debug: msg="{{ az_network_application_gateway_http_settings_create }}"          
+ - name: "az network application-gateway http-settings create: Create HTTP settings." 
+   command: |                                      
+     az network application-gateway http-settings create                            
+                 --gateway-name {{ az_network_application_gateway_http_settings_create.input['gateway-name'] }} 
+                 --name {{ az_network_application_gateway_http_settings_create.input['name'] }} 
+                 --port {{ az_network_application_gateway_http_settings_create.input['port'] }} 
+                 --resource-group {{ az_network_application_gateway_http_settings_create.input['resource-group'] }} 
+                 {%if az_network_application_gateway_http_settings_create.input['affinity-cookie-name'] %} --affinity-cookie-name az_network_application_gateway_http_settings_create.input['affinity-cookie-name'] {%endif %} 
+                 {%if az_network_application_gateway_http_settings_create.input['connection-draining-timeout'] %} --connection-draining-timeout az_network_application_gateway_http_settings_create.input['connection-draining-timeout'] {%endif %} 
+                 {%if az_network_application_gateway_http_settings_create.input['cookie-based-affinity'] %} --cookie-based-affinity az_network_application_gateway_http_settings_create.input['cookie-based-affinity'] {%endif %} 
+                 {%if az_network_application_gateway_http_settings_create.input['enable-probe'] %} --enable-probe az_network_application_gateway_http_settings_create.input['enable-probe'] {%endif %} 
+                 {%if az_network_application_gateway_http_settings_create.input['host-name'] %} --host-name az_network_application_gateway_http_settings_create.input['host-name'] {%endif %} 
+                 {%if az_network_application_gateway_http_settings_create.input['host-name-from-backend-pool'] %} --host-name-from-backend-pool az_network_application_gateway_http_settings_create.input['host-name-from-backend-pool'] {%endif %} 
+                 {%if az_network_application_gateway_http_settings_create.input['no-wait'] %} --no-wait az_network_application_gateway_http_settings_create.input['no-wait'] {%endif %} 
+                 {%if az_network_application_gateway_http_settings_create.input['path'] %} --path az_network_application_gateway_http_settings_create.input['path'] {%endif %} 
+                 {%if az_network_application_gateway_http_settings_create.input['probe'] %} --probe az_network_application_gateway_http_settings_create.input['probe'] {%endif %} 
+                 {%if az_network_application_gateway_http_settings_create.input['protocol'] %} --protocol az_network_application_gateway_http_settings_create.input['protocol'] {%endif %} 
+                 {%if az_network_application_gateway_http_settings_create.input['timeout'] %} --timeout az_network_application_gateway_http_settings_create.input['timeout'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_application_gateway_http_settings_create: "{{ az_network_application_gateway_http_settings_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_application_gateway_http_settings_create }}" 

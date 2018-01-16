@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_iot_dps_certificate_create
+   set_fact: 
+     az_iot_dps_certificate_create:
+       input: 
+         ###  Required parameter. A friendly name for the certificate.  ### 
+        'certificate-name': "{{ item['certificate-name'] | default('') }}" 
+         ###  Required parameter. IoT Provisioning Service name.  ### 
+        'dps-name': "{{ item['dps-name'] | default('') }}" 
+         ###  Required parameter. The path to the file containing the certificate.  ### 
+        'path': "{{ item['path'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_iot_dps_certificate_create }}"          
+ - name: "az iot dps certificate create: Create/upload an Azure IoT Hub Device Provisioning Service certificate." 
+   command: |                                      
+     az iot dps certificate create                            
+                 --certificate-name {{ az_iot_dps_certificate_create.input['certificate-name'] }} 
+                 --dps-name {{ az_iot_dps_certificate_create.input['dps-name'] }} 
+                 --path {{ az_iot_dps_certificate_create.input['path'] }} 
+                 --resource-group {{ az_iot_dps_certificate_create.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_iot_dps_certificate_create: "{{ az_iot_dps_certificate_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_dps_certificate_create }}" 

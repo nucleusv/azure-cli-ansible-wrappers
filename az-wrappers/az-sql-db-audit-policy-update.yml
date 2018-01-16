@@ -1,0 +1,50 @@
+
+
+ - name: Set input params for az_sql_db_audit_policy_update
+   set_fact: 
+     az_sql_db_audit_policy_update:
+       input: 
+         ###  Required parameter. Name of the Azure SQL Database.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the Azure SQL server.  ### 
+        'server': "{{ item['server'] | default('') }}" 
+         ###  Optional parameter. List of actions and action groups to audit.  ### 
+        'actions': "{{ item['actions'] | default('') }}" 
+         ###  Optional parameter. The number of days to retain audit logs.  ### 
+        'retention-days': "{{ item['retention-days'] | default('') }}" 
+         ###  Optional parameter. Auditing policy state.  ### 
+        'state': "{{ item['state'] | default('') }}" 
+         ###  Optional parameter. Name of the storage account.  ### 
+        'storage-account': "{{ item['storage-account'] | default('') }}" 
+         ###  Optional parameter. The storage account endpoint.  ### 
+        'storage-endpoint': "{{ item['storage-endpoint'] | default('') }}" 
+         ###  Optional parameter. Access key for the storage account.  ### 
+        'storage-key': "{{ item['storage-key'] | default('') }}" 
+         ###  Optional parameter. Add an object to a list of objects by specifying a path and key value pairs.  Example: --add property.listProperty <key=value, string or JSON string>.  ### 
+        'add': "{{ item['add'] | default('') }}" 
+         ###  Optional parameter. Remove a property or an element from a list.  Example: --remove property.list <indexToRemove> OR --remove propertyToRemove.  ### 
+        'remove': "{{ item['remove'] | default('') }}" 
+         ###  Optional parameter. Update an object by specifying a property path and value to set.  Example: --set property1.property2=<value>.  ### 
+        'set': "{{ item['set'] | default('') }}" 
+ - debug: msg="{{ az_sql_db_audit_policy_update }}"          
+ - name: "az sql db audit-policy update: Update a database's auditing policy." 
+   command: |                                      
+     az sql db audit-policy update                            
+                 --name {{ az_sql_db_audit_policy_update.input['name'] }} 
+                 --resource-group {{ az_sql_db_audit_policy_update.input['resource-group'] }} 
+                 --server {{ az_sql_db_audit_policy_update.input['server'] }} 
+                 {%if az_sql_db_audit_policy_update.input['actions'] %} --actions az_sql_db_audit_policy_update.input['actions'] {%endif %} 
+                 {%if az_sql_db_audit_policy_update.input['retention-days'] %} --retention-days az_sql_db_audit_policy_update.input['retention-days'] {%endif %} 
+                 {%if az_sql_db_audit_policy_update.input['state'] %} --state az_sql_db_audit_policy_update.input['state'] {%endif %} 
+                 {%if az_sql_db_audit_policy_update.input['storage-account'] %} --storage-account az_sql_db_audit_policy_update.input['storage-account'] {%endif %} 
+                 {%if az_sql_db_audit_policy_update.input['storage-endpoint'] %} --storage-endpoint az_sql_db_audit_policy_update.input['storage-endpoint'] {%endif %} 
+                 {%if az_sql_db_audit_policy_update.input['storage-key'] %} --storage-key az_sql_db_audit_policy_update.input['storage-key'] {%endif %} 
+                 {%if az_sql_db_audit_policy_update.input['add'] %} --add az_sql_db_audit_policy_update.input['add'] {%endif %} 
+                 {%if az_sql_db_audit_policy_update.input['remove'] %} --remove az_sql_db_audit_policy_update.input['remove'] {%endif %} 
+                 {%if az_sql_db_audit_policy_update.input['set'] %} --set az_sql_db_audit_policy_update.input['set'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_sql_db_audit_policy_update: "{{ az_sql_db_audit_policy_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sql_db_audit_policy_update }}" 

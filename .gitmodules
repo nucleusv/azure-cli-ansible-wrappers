@@ -1,0 +1,3 @@
+[submodule "azure-docs-cli-python"]
+	path = azure-docs-cli-python
+	url = https://github.com/Azure/azure-docs-cli-python.git

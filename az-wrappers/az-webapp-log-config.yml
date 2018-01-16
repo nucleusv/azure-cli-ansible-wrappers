@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_webapp_log_config
+   set_fact: 
+     az_webapp_log_config:
+       input: 
+         ###  Required parameter. Name of the web. You can configure the default using 'az configure --defaults web=<name>'.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Configure application logging to file system.  ### 
+        'application-logging': "{{ item['application-logging'] | default('') }}" 
+         ###  Optional parameter. Configure detailed error messages.  ### 
+        'detailed-error-messages': "{{ item['detailed-error-messages'] | default('') }}" 
+         ###  Optional parameter. Configure gathering STDOUT and STDERR output from container.  ### 
+        'docker-container-logging': "{{ item['docker-container-logging'] | default('') }}" 
+         ###  Optional parameter. Configure failed request tracing.  ### 
+        'failed-request-tracing': "{{ item['failed-request-tracing'] | default('') }}" 
+         ###  Optional parameter. Logging level.  ### 
+        'level': "{{ item['level'] | default('') }}" 
+         ###  Optional parameter. The name of the slot. Default to the productions slot if not specified.  ### 
+        'slot': "{{ item['slot'] | default('') }}" 
+         ###  Optional parameter. Configure Web server logging.  ### 
+        'web-server-logging': "{{ item['web-server-logging'] | default('') }}" 
+ - debug: msg="{{ az_webapp_log_config }}"          
+ - name: "az webapp log config: Configure logging for a web app." 
+   command: |                                      
+     az webapp log config                            
+                 --name {{ az_webapp_log_config.input['name'] }} 
+                 --resource-group {{ az_webapp_log_config.input['resource-group'] }} 
+                 {%if az_webapp_log_config.input['application-logging'] %} --application-logging az_webapp_log_config.input['application-logging'] {%endif %} 
+                 {%if az_webapp_log_config.input['detailed-error-messages'] %} --detailed-error-messages az_webapp_log_config.input['detailed-error-messages'] {%endif %} 
+                 {%if az_webapp_log_config.input['docker-container-logging'] %} --docker-container-logging az_webapp_log_config.input['docker-container-logging'] {%endif %} 
+                 {%if az_webapp_log_config.input['failed-request-tracing'] %} --failed-request-tracing az_webapp_log_config.input['failed-request-tracing'] {%endif %} 
+                 {%if az_webapp_log_config.input['level'] %} --level az_webapp_log_config.input['level'] {%endif %} 
+                 {%if az_webapp_log_config.input['slot'] %} --slot az_webapp_log_config.input['slot'] {%endif %} 
+                 {%if az_webapp_log_config.input['web-server-logging'] %} --web-server-logging az_webapp_log_config.input['web-server-logging'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_webapp_log_config: "{{ az_webapp_log_config|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_webapp_log_config }}" 

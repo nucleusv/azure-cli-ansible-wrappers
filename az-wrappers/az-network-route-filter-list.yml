@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_network_route_filter_list
+   set_fact: 
+     az_network_route_filter_list:
+       input: 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_network_route_filter_list }}"          
+ - name: "az network route-filter list: List route filters." 
+   command: |                                      
+     az network route-filter list                            
+                 {%if az_network_route_filter_list.input['resource-group'] %} --resource-group az_network_route_filter_list.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_route_filter_list: "{{ az_network_route_filter_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_route_filter_list }}" 

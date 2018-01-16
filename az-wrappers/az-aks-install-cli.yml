@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_aks_install_cli
+   set_fact: 
+     az_aks_install_cli:
+       input: 
+         ###  Optional parameter.   ### 
+        'client-version': "{{ item['client-version'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'install-location': "{{ item['install-location'] | default('') }}" 
+ - debug: msg="{{ az_aks_install_cli }}"          
+ - name: "az aks install-cli: Download and install kubectl, the Kubernetes command-line tool." 
+   command: |                                      
+     az aks install-cli                            
+                 {%if az_aks_install_cli.input['client-version'] %} --client-version az_aks_install_cli.input['client-version'] {%endif %} 
+                 {%if az_aks_install_cli.input['install-location'] %} --install-location az_aks_install_cli.input['install-location'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_aks_install_cli: "{{ az_aks_install_cli|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_aks_install_cli }}" 

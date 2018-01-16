@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_vmss_list_instance_public_ips
+   set_fact: 
+     az_vmss_list_instance_public_ips:
+       input: 
+         ###  Required parameter. Scale set name. You can configure the default using `az configure --defaults vmss=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_vmss_list_instance_public_ips }}"          
+ - name: "az vmss list-instance-public-ips: List public IP addresses of VM instances within a set." 
+   command: |                                      
+     az vmss list-instance-public-ips                            
+                 --name {{ az_vmss_list_instance_public_ips.input['name'] }} 
+                 --resource-group {{ az_vmss_list_instance_public_ips.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_vmss_list_instance_public_ips: "{{ az_vmss_list_instance_public_ips|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vmss_list_instance_public_ips }}" 

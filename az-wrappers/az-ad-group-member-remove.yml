@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_ad_group_member_remove
+   set_fact: 
+     az_ad_group_member_remove:
+       input: 
+         ###  Required parameter. Group's object id or display name(prefix also works if there is a unique match).  ### 
+        'group': "{{ item['group'] | default('') }}" 
+         ###  Required parameter. The object ID of the contact, group, user, or service principal.  ### 
+        'member-id': "{{ item['member-id'] | default('') }}" 
+ - debug: msg="{{ az_ad_group_member_remove }}"          
+ - name: "az ad group member remove: Remove a member from a group." 
+   command: |                                      
+     az ad group member remove                            
+                 --group {{ az_ad_group_member_remove.input['group'] }} 
+                 --member-id {{ az_ad_group_member_remove.input['member-id'] }} 
+   register: output  
+ - set_fact: 
+    az_ad_group_member_remove: "{{ az_ad_group_member_remove|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_ad_group_member_remove }}" 

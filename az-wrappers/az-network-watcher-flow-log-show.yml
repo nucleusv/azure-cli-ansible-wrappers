@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_network_watcher_flow_log_show
+   set_fact: 
+     az_network_watcher_flow_log_show:
+       input: 
+         ###  Required parameter.   ### 
+        'nsg': "{{ item['nsg'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_network_watcher_flow_log_show }}"          
+ - name: "az network watcher flow-log show: Get the flow log configuration for a network security group." 
+   command: |                                      
+     az network watcher flow-log show                            
+                 --nsg {{ az_network_watcher_flow_log_show.input['nsg'] }} 
+                 {%if az_network_watcher_flow_log_show.input['resource-group'] %} --resource-group az_network_watcher_flow_log_show.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_watcher_flow_log_show: "{{ az_network_watcher_flow_log_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_watcher_flow_log_show }}" 

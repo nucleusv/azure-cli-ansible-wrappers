@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_batch_pool_usage_metrics_list
+   set_fact: 
+     az_batch_pool_usage_metrics_list:
+       input: 
+         ###  Optional parameter. Batch service endpoint. Alternatively, set by environment variable: AZURE_BATCH_ENDPOINT.  ### 
+        'account-endpoint': "{{ item['account-endpoint'] | default('') }}" 
+         ###  Optional parameter. Batch account key. Alternatively, set by environment variable: AZURE_BATCH_ACCESS_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Batch account name. Alternatively, set by environment variable: AZURE_BATCH_ACCOUNT.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+         ###  Optional parameter. The latest time from which to include metrics. This must be at least two hours before the current time. If not specified this defaults to the end time of the last aggregation interval currently available.  ### 
+        'end-time': "{{ item['end-time'] | default('') }}" 
+         ###  Optional parameter. An OData $filter clause. If this is not specified the response includes all pools that existed in the account in the time range of the returned aggregation intervals.  ### 
+        'filter': "{{ item['filter'] | default('') }}" 
+         ###  Optional parameter. The earliest time from which to include metrics. This must be at least two and a half hours before the current time. If not specified this defaults to the start time of the last aggregation interval currently available.  ### 
+        'start-time': "{{ item['start-time'] | default('') }}" 
+ - debug: msg="{{ az_batch_pool_usage_metrics_list }}"          
+ - name: "az batch pool usage-metrics list: Lists the usage metrics, aggregated by pool across individual time intervals, for the specified account." 
+   command: |                                      
+     az batch pool usage-metrics list                            
+                 {%if az_batch_pool_usage_metrics_list.input['account-endpoint'] %} --account-endpoint az_batch_pool_usage_metrics_list.input['account-endpoint'] {%endif %} 
+                 {%if az_batch_pool_usage_metrics_list.input['account-key'] %} --account-key az_batch_pool_usage_metrics_list.input['account-key'] {%endif %} 
+                 {%if az_batch_pool_usage_metrics_list.input['account-name'] %} --account-name az_batch_pool_usage_metrics_list.input['account-name'] {%endif %} 
+                 {%if az_batch_pool_usage_metrics_list.input['end-time'] %} --end-time az_batch_pool_usage_metrics_list.input['end-time'] {%endif %} 
+                 {%if az_batch_pool_usage_metrics_list.input['filter'] %} --filter az_batch_pool_usage_metrics_list.input['filter'] {%endif %} 
+                 {%if az_batch_pool_usage_metrics_list.input['start-time'] %} --start-time az_batch_pool_usage_metrics_list.input['start-time'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_pool_usage_metrics_list: "{{ az_batch_pool_usage_metrics_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_pool_usage_metrics_list }}" 

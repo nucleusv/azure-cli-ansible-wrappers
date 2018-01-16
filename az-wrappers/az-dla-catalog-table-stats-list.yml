@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_dla_catalog_table_stats_list
+   set_fact: 
+     az_dla_catalog_table_stats_list:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The name of the database.  ### 
+        'database-name': "{{ item['database-name'] | default('') }}" 
+         ###  Optional parameter. The schema associated with the tables to list.  ### 
+        'schema-name': "{{ item['schema-name'] | default('') }}" 
+         ###  Optional parameter. The table to list statistics for. `--schema-name` must also be specified.  ### 
+        'table-name': "{{ item['table-name'] | default('') }}" 
+ - debug: msg="{{ az_dla_catalog_table_stats_list }}"          
+ - name: "az dla catalog table-stats list: List table statistics in a database, table, or schema." 
+   command: |                                      
+     az dla catalog table-stats list                            
+                 --account {{ az_dla_catalog_table_stats_list.input['account'] }} 
+                 --database-name {{ az_dla_catalog_table_stats_list.input['database-name'] }} 
+                 {%if az_dla_catalog_table_stats_list.input['schema-name'] %} --schema-name az_dla_catalog_table_stats_list.input['schema-name'] {%endif %} 
+                 {%if az_dla_catalog_table_stats_list.input['table-name'] %} --table-name az_dla_catalog_table_stats_list.input['table-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dla_catalog_table_stats_list: "{{ az_dla_catalog_table_stats_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_catalog_table_stats_list }}" 

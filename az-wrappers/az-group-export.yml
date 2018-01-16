@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_group_export
+   set_fact: 
+     az_group_export:
+       input: 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Export template with comments.  ### 
+        'include-comments': "{{ item['include-comments'] | default('') }}" 
+         ###  Optional parameter. Export template parameter with default value.  ### 
+        'include-parameter-default-value': "{{ item['include-parameter-default-value'] | default('') }}" 
+ - debug: msg="{{ az_group_export }}"          
+ - name: "az group export: Captures a resource group as a template." 
+   command: |                                      
+     az group export                            
+                 --name {{ az_group_export.input['name'] }} 
+                 {%if az_group_export.input['include-comments'] %} --include-comments az_group_export.input['include-comments'] {%endif %} 
+                 {%if az_group_export.input['include-parameter-default-value'] %} --include-parameter-default-value az_group_export.input['include-parameter-default-value'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_group_export: "{{ az_group_export|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_group_export }}" 

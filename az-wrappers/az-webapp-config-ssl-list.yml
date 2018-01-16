@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_webapp_config_ssl_list
+   set_fact: 
+     az_webapp_config_ssl_list:
+       input: 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_webapp_config_ssl_list }}"          
+ - name: "az webapp config ssl list: List SSL certificates for a web app." 
+   command: |                                      
+     az webapp config ssl list                            
+                 --resource-group {{ az_webapp_config_ssl_list.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_webapp_config_ssl_list: "{{ az_webapp_config_ssl_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_webapp_config_ssl_list }}" 

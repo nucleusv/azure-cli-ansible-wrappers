@@ -1,0 +1,107 @@
+
+
+ - name: Set input params for az_acs_create
+   set_fact: 
+     az_acs_create:
+       input: 
+         ###  Required parameter. Name of the container service. You can configure the default using `az configure --defaults acs=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The adminstration password for Windows nodes. Only available if --windows=true.  ### 
+        'admin-password': "{{ item['admin-password'] | default('') }}" 
+         ###  Optional parameter. User name for the Linux Virtual Machines.  ### 
+        'admin-username': "{{ item['admin-username'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'agent-count': "{{ item['agent-count'] | default('') }}" 
+         ###  Optional parameter. Feature in preview, only in canadacentral, canadaeast, centralindia, koreasouth, koreacentral, southindia, uksouth, ukwest, westcentralus, westindia, westus2. Set the default disk size for agent pools vms. Unit in GB. Default: corresponding vmsize disk size.  ### 
+        'agent-osdisk-size': "{{ item['agent-osdisk-size'] | default('') }}" 
+         ###  Optional parameter. Feature in preview, only in canadacentral, canadaeast, centralindia, koreasouth, koreacentral, southindia, uksouth, ukwest, westcentralus, westindia, westus2. Set the default ports exposed on the agent pools. Only usable for non-Kubernetes. Default: 8080,4000,80.  ### 
+        'agent-ports': "{{ item['agent-ports'] | default('') }}" 
+         ###  Optional parameter. Feature in preview, only in canadacentral, canadaeast, centralindia, koreasouth, koreacentral, southindia, uksouth, ukwest, westcentralus, westindia, westus2. The file or dictionary representation of the agent profiles. Note it will override any agent settings once set.  ### 
+        'agent-profiles': "{{ item['agent-profiles'] | default('') }}" 
+         ###  Optional parameter. Feature in preview, only in canadacentral, canadaeast, centralindia, koreasouth, koreacentral, southindia, uksouth, ukwest, westcentralus, westindia, westus2. Set default storage profile for agent pools. Default: varies based on Orchestrator.  ### 
+        'agent-storage-profile': "{{ item['agent-storage-profile'] | default('') }}" 
+         ###  Optional parameter. Set the default size for agent pools vms.  ### 
+        'agent-vm-size': "{{ item['agent-vm-size'] | default('') }}" 
+         ###  Optional parameter. Feature in preview, only in canadacentral, canadaeast, centralindia, koreasouth, koreacentral, southindia, uksouth, ukwest, westcentralus, westindia, westus2. Set the default custom vnet subnet id for agent pools. Note agent need to used the same vnet if master set. Default: "".  ### 
+        'agent-vnet-subnet-id': "{{ item['agent-vnet-subnet-id'] | default('') }}" 
+         ###  Optional parameter. Feature in preview, only in canadacentral, canadaeast, centralindia, koreasouth, koreacentral, southindia, uksouth, ukwest, westcentralus, westindia, westus2. Use API version of ACS to perform az acs operations. Available options: 2017-01-31, 2017-07-01. Default: the latest version for the location.  ### 
+        'api-version': "{{ item['api-version'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'client-secret': "{{ item['client-secret'] | default('') }}" 
+         ###  Optional parameter. Sets the Domain name prefix for the cluster. The concatenation of the domain name and the regionalized DNS zone make up the fully qualified domain name associated with the public IP address.  ### 
+        'dns-prefix': "{{ item['dns-prefix'] | default('') }}" 
+         ###  Optional parameter. Generate SSH public and private key files if missing.  ### 
+        'generate-ssh-keys': "{{ item['generate-ssh-keys'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. The number of masters for the cluster.  ### 
+        'master-count': "{{ item['master-count'] | default('') }}" 
+         ###  Optional parameter. Feature in preview, only in canadacentral, canadaeast, centralindia, koreasouth, koreacentral, southindia, uksouth, ukwest, westcentralus, westindia, westus2. The first consecutive ip used to specify static ip block.  ### 
+        'master-first-consecutive-static-ip': "{{ item['master-first-consecutive-static-ip'] | default('') }}" 
+         ###  Optional parameter. Feature in preview, only in canadacentral, canadaeast, centralindia, koreasouth, koreacentral, southindia, uksouth, ukwest, westcentralus, westindia, westus2. The disk size for master pool vms. Unit in GB. Default: corresponding vmsize disk size.  ### 
+        'master-osdisk-size': "{{ item['master-osdisk-size'] | default('') }}" 
+         ###  Optional parameter. Feature in preview, only in canadacentral, canadaeast, centralindia, koreasouth, koreacentral, southindia, uksouth, ukwest, westcentralus, westindia, westus2. The file or dictionary representation of the master profile. Note it will override any master settings once set.  ### 
+        'master-profile': "{{ item['master-profile'] | default('') }}" 
+         ###  Optional parameter. Feature in preview, only in canadacentral, canadaeast, centralindia, koreasouth, koreacentral, southindia, uksouth, ukwest, westcentralus, westindia, westus2. Default: varies based on Orchestrator.  ### 
+        'master-storage-profile': "{{ item['master-storage-profile'] | default('') }}" 
+         ###  Optional parameter. Feature in preview, only in canadacentral, canadaeast, centralindia, koreasouth, koreacentral, southindia, uksouth, ukwest, westcentralus, westindia, westus2.  ### 
+        'master-vm-size': "{{ item['master-vm-size'] | default('') }}" 
+         ###  Optional parameter. Feature in preview, only in canadacentral, canadaeast, centralindia, koreasouth, koreacentral, southindia, uksouth, ukwest, westcentralus, westindia, westus2. The custom vnet subnet id. Note agent need to used the same vnet if master set. Default: "".  ### 
+        'master-vnet-subnet-id': "{{ item['master-vnet-subnet-id'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+         ###  Optional parameter. The type of orchestrator used to manage the applications on the cluster.  ### 
+        'orchestrator-type': "{{ item['orchestrator-type'] | default('') }}" 
+         ###  Optional parameter. Feature in preview, only in canadacentral, canadaeast, centralindia, koreasouth, koreacentral, southindia, uksouth, ukwest, westcentralus, westindia, westus2. Use Orchestrator Version to specify the semantic version for your choice of orchestrator.  ### 
+        'orchestrator-version': "{{ item['orchestrator-version'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'service-principal': "{{ item['service-principal'] | default('') }}" 
+         ###  Optional parameter. Configure all linux machines with the SSH RSA public key string.  Your key should include three parts, for example 'ssh-rsa AAAAB...snip...UcyupgH azureuser@linuxvm.  ### 
+        'ssh-key-value': "{{ item['ssh-key-value'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. Generate and validate the ARM template without creating any resources.  ### 
+        'validate': "{{ item['validate'] | default('') }}" 
+         ###  Optional parameter. If true, set the default osType of agent pools to be Windows.  ### 
+        'windows': "{{ item['windows'] | default('') }}" 
+ - debug: msg="{{ az_acs_create }}"          
+ - name: "az acs create: Create a container service." 
+   command: |                                      
+     az acs create                            
+                 --name {{ az_acs_create.input['name'] }} 
+                 --resource-group {{ az_acs_create.input['resource-group'] }} 
+                 {%if az_acs_create.input['admin-password'] %} --admin-password az_acs_create.input['admin-password'] {%endif %} 
+                 {%if az_acs_create.input['admin-username'] %} --admin-username az_acs_create.input['admin-username'] {%endif %} 
+                 {%if az_acs_create.input['agent-count'] %} --agent-count az_acs_create.input['agent-count'] {%endif %} 
+                 {%if az_acs_create.input['agent-osdisk-size'] %} --agent-osdisk-size az_acs_create.input['agent-osdisk-size'] {%endif %} 
+                 {%if az_acs_create.input['agent-ports'] %} --agent-ports az_acs_create.input['agent-ports'] {%endif %} 
+                 {%if az_acs_create.input['agent-profiles'] %} --agent-profiles az_acs_create.input['agent-profiles'] {%endif %} 
+                 {%if az_acs_create.input['agent-storage-profile'] %} --agent-storage-profile az_acs_create.input['agent-storage-profile'] {%endif %} 
+                 {%if az_acs_create.input['agent-vm-size'] %} --agent-vm-size az_acs_create.input['agent-vm-size'] {%endif %} 
+                 {%if az_acs_create.input['agent-vnet-subnet-id'] %} --agent-vnet-subnet-id az_acs_create.input['agent-vnet-subnet-id'] {%endif %} 
+                 {%if az_acs_create.input['api-version'] %} --api-version az_acs_create.input['api-version'] {%endif %} 
+                 {%if az_acs_create.input['client-secret'] %} --client-secret az_acs_create.input['client-secret'] {%endif %} 
+                 {%if az_acs_create.input['dns-prefix'] %} --dns-prefix az_acs_create.input['dns-prefix'] {%endif %} 
+                 {%if az_acs_create.input['generate-ssh-keys'] %} --generate-ssh-keys az_acs_create.input['generate-ssh-keys'] {%endif %} 
+                 {%if az_acs_create.input['location'] %} --location az_acs_create.input['location'] {%endif %} 
+                 {%if az_acs_create.input['master-count'] %} --master-count az_acs_create.input['master-count'] {%endif %} 
+                 {%if az_acs_create.input['master-first-consecutive-static-ip'] %} --master-first-consecutive-static-ip az_acs_create.input['master-first-consecutive-static-ip'] {%endif %} 
+                 {%if az_acs_create.input['master-osdisk-size'] %} --master-osdisk-size az_acs_create.input['master-osdisk-size'] {%endif %} 
+                 {%if az_acs_create.input['master-profile'] %} --master-profile az_acs_create.input['master-profile'] {%endif %} 
+                 {%if az_acs_create.input['master-storage-profile'] %} --master-storage-profile az_acs_create.input['master-storage-profile'] {%endif %} 
+                 {%if az_acs_create.input['master-vm-size'] %} --master-vm-size az_acs_create.input['master-vm-size'] {%endif %} 
+                 {%if az_acs_create.input['master-vnet-subnet-id'] %} --master-vnet-subnet-id az_acs_create.input['master-vnet-subnet-id'] {%endif %} 
+                 {%if az_acs_create.input['no-wait'] %} --no-wait az_acs_create.input['no-wait'] {%endif %} 
+                 {%if az_acs_create.input['orchestrator-type'] %} --orchestrator-type az_acs_create.input['orchestrator-type'] {%endif %} 
+                 {%if az_acs_create.input['orchestrator-version'] %} --orchestrator-version az_acs_create.input['orchestrator-version'] {%endif %} 
+                 {%if az_acs_create.input['service-principal'] %} --service-principal az_acs_create.input['service-principal'] {%endif %} 
+                 {%if az_acs_create.input['ssh-key-value'] %} --ssh-key-value az_acs_create.input['ssh-key-value'] {%endif %} 
+                 {%if az_acs_create.input['rtags'] %} --tags az_acs_create.input['rtags'] {%endif %} 
+                 {%if az_acs_create.input['validate'] %} --validate az_acs_create.input['validate'] {%endif %} 
+                 {%if az_acs_create.input['windows'] %} --windows az_acs_create.input['windows'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_acs_create: "{{ az_acs_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_acs_create }}" 

@@ -1,0 +1,47 @@
+
+
+ - name: Set input params for az_monitor_activity_log_list
+   set_fact: 
+     az_monitor_activity_log_list:
+       input: 
+         ###  Optional parameter. The OData filter for the list activity logs. If this argument is provided OData Filter Arguments will be ignored.  ### 
+        'filters': "{{ item['filters'] | default('') }}" 
+         ###  Optional parameter. The maximum number of records to be returned by the command.  ### 
+        'max-events': "{{ item['max-events'] | default('') }}" 
+         ###  Optional parameter. The list of event names.  ### 
+        'select': "{{ item['select'] | default('') }}" 
+         ###  Optional parameter. The caller to look for when querying.  ### 
+        'caller': "{{ item['caller'] | default('') }}" 
+         ###  Optional parameter. The correlation id of the query.  ### 
+        'correlation-id': "{{ item['correlation-id'] | default('') }}" 
+         ###  Optional parameter. The end time of the query. In ISO format with explicit indication of timezone: 1970-01-01T00:00:00Z, 1970-01-01T00:00:00-0500. Defaults to current time.  ### 
+        'end-time': "{{ item['end-time'] | default('') }}" 
+         ###  Optional parameter. The resource group.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The identifier of the resource.  ### 
+        'resource-id': "{{ item['resource-id'] | default('') }}" 
+         ###  Optional parameter. The resource provider.  ### 
+        'resource-provider': "{{ item['resource-provider'] | default('') }}" 
+         ###  Optional parameter. The start time of the query. In ISO format with explicit indication of timezone: 1970-01-01T00:00:00Z, 1970-01-01T00:00:00-0500. Defaults to 1 Hour prior to the current time.  ### 
+        'start-time': "{{ item['start-time'] | default('') }}" 
+         ###  Optional parameter. The status value to query (ex: Failed).  ### 
+        'status': "{{ item['status'] | default('') }}" 
+ - debug: msg="{{ az_monitor_activity_log_list }}"          
+ - name: "az monitor activity-log list: Provides the list of activity log." 
+   command: |                                      
+     az monitor activity-log list                            
+                 {%if az_monitor_activity_log_list.input['filters'] %} --filters az_monitor_activity_log_list.input['filters'] {%endif %} 
+                 {%if az_monitor_activity_log_list.input['max-events'] %} --max-events az_monitor_activity_log_list.input['max-events'] {%endif %} 
+                 {%if az_monitor_activity_log_list.input['select'] %} --select az_monitor_activity_log_list.input['select'] {%endif %} 
+                 {%if az_monitor_activity_log_list.input['caller'] %} --caller az_monitor_activity_log_list.input['caller'] {%endif %} 
+                 {%if az_monitor_activity_log_list.input['correlation-id'] %} --correlation-id az_monitor_activity_log_list.input['correlation-id'] {%endif %} 
+                 {%if az_monitor_activity_log_list.input['end-time'] %} --end-time az_monitor_activity_log_list.input['end-time'] {%endif %} 
+                 {%if az_monitor_activity_log_list.input['resource-group'] %} --resource-group az_monitor_activity_log_list.input['resource-group'] {%endif %} 
+                 {%if az_monitor_activity_log_list.input['resource-id'] %} --resource-id az_monitor_activity_log_list.input['resource-id'] {%endif %} 
+                 {%if az_monitor_activity_log_list.input['resource-provider'] %} --resource-provider az_monitor_activity_log_list.input['resource-provider'] {%endif %} 
+                 {%if az_monitor_activity_log_list.input['start-time'] %} --start-time az_monitor_activity_log_list.input['start-time'] {%endif %} 
+                 {%if az_monitor_activity_log_list.input['status'] %} --status az_monitor_activity_log_list.input['status'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_monitor_activity_log_list: "{{ az_monitor_activity_log_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_monitor_activity_log_list }}" 

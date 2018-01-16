@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_vm_diagnostics_set
+   set_fact: 
+     az_vm_diagnostics_set:
+       input: 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Json string or a file path, which defines data to be collected.  ### 
+        'settings': "{{ item['settings'] | default('') }}" 
+         ###  Required parameter. The name of the Virtual Machine. You can configure the default using `az configure --defaults vm=&lt;name&gt;`.  ### 
+        'vm-name': "{{ item['vm-name'] | default('') }}" 
+         ###  Optional parameter. By doing this, extension system will not pick the highest minor version for the specified version number, and will not auto update to the latest build/revision number on any scale set updates in future.  ### 
+        'no-auto-upgrade': "{{ item['no-auto-upgrade'] | default('') }}" 
+         ###  Optional parameter. Json string or a file path containing private configurations such as storage account keys, etc.  ### 
+        'protected-settings': "{{ item['protected-settings'] | default('') }}" 
+         ###  Optional parameter. Version of the diagnostics extension. Will use the latest if not specfied.  ### 
+        'version': "{{ item['version'] | default('') }}" 
+ - debug: msg="{{ az_vm_diagnostics_set }}"          
+ - name: "az vm diagnostics set: Configure the Azure VM diagnostics extension." 
+   command: |                                      
+     az vm diagnostics set                            
+                 --resource-group {{ az_vm_diagnostics_set.input['resource-group'] }} 
+                 --settings {{ az_vm_diagnostics_set.input['settings'] }} 
+                 --vm-name {{ az_vm_diagnostics_set.input['vm-name'] }} 
+                 {%if az_vm_diagnostics_set.input['no-auto-upgrade'] %} --no-auto-upgrade az_vm_diagnostics_set.input['no-auto-upgrade'] {%endif %} 
+                 {%if az_vm_diagnostics_set.input['protected-settings'] %} --protected-settings az_vm_diagnostics_set.input['protected-settings'] {%endif %} 
+                 {%if az_vm_diagnostics_set.input['version'] %} --version az_vm_diagnostics_set.input['version'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_vm_diagnostics_set: "{{ az_vm_diagnostics_set|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_diagnostics_set }}" 

@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_appservice_list_locations
+   set_fact: 
+     az_appservice_list_locations:
+       input: 
+         ###  Required parameter. The pricing tiers, e.g., F1(Free), D1(Shared), B1(Basic Small), B2(Basic Medium), B3(Basic Large), S1(Standard Small), P1(Premium Small), P1V2(Premium V2 Small) etc.  ### 
+        'sku': "{{ item['sku'] | default('') }}" 
+         ###  Optional parameter. Get regions which support hosting webapps on Linux workers.  ### 
+        'linux-workers-enabled': "{{ item['linux-workers-enabled'] | default('') }}" 
+ - debug: msg="{{ az_appservice_list_locations }}"          
+ - name: "az appservice list-locations: " 
+   command: |                                      
+     az appservice list-locations                            
+                 --sku {{ az_appservice_list_locations.input['sku'] }} 
+                 {%if az_appservice_list_locations.input['linux-workers-enabled'] %} --linux-workers-enabled az_appservice_list_locations.input['linux-workers-enabled'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_appservice_list_locations: "{{ az_appservice_list_locations|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_appservice_list_locations }}" 

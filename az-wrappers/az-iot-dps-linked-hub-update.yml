@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_iot_dps_linked_hub_update
+   set_fact: 
+     az_iot_dps_linked_hub_update:
+       input: 
+         ###  Required parameter. IoT Provisioning Service name.  ### 
+        'dps-name': "{{ item['dps-name'] | default('') }}" 
+         ###  Required parameter. Host name of linked IoT Hub.  ### 
+        'linked-hub': "{{ item['linked-hub'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Allocation weight of the IoT hub.  ### 
+        'allocation-weight': "{{ item['allocation-weight'] | default('') }}" 
+         ###  Optional parameter. A boolean indicating whether to apply allocation policy to the Iot hub.  ### 
+        'apply-allocation-policy': "{{ item['apply-allocation-policy'] | default('') }}" 
+ - debug: msg="{{ az_iot_dps_linked_hub_update }}"          
+ - name: "az iot dps linked-hub update: Update a linked IoT hub in an Azure IoT Hub device provisioning service." 
+   command: |                                      
+     az iot dps linked-hub update                            
+                 --dps-name {{ az_iot_dps_linked_hub_update.input['dps-name'] }} 
+                 --linked-hub {{ az_iot_dps_linked_hub_update.input['linked-hub'] }} 
+                 --resource-group {{ az_iot_dps_linked_hub_update.input['resource-group'] }} 
+                 {%if az_iot_dps_linked_hub_update.input['allocation-weight'] %} --allocation-weight az_iot_dps_linked_hub_update.input['allocation-weight'] {%endif %} 
+                 {%if az_iot_dps_linked_hub_update.input['apply-allocation-policy'] %} --apply-allocation-policy az_iot_dps_linked_hub_update.input['apply-allocation-policy'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_dps_linked_hub_update: "{{ az_iot_dps_linked_hub_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_dps_linked_hub_update }}" 

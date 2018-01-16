@@ -1,0 +1,59 @@
+
+
+ - name: Set input params for az_batch_job_create
+   set_fact: 
+     az_batch_job_create:
+       input: 
+         ###  Optional parameter. A file containing the job specification in JSON format. If this parameter is specified, all 'Job Arguments' are ignored.  ### 
+        'json-file': "{{ item['json-file'] | default('') }}" 
+         ###  Optional parameter. Batch service endpoint. Alternatively, set by environment variable: AZURE_BATCH_ENDPOINT.  ### 
+        'account-endpoint': "{{ item['account-endpoint'] | default('') }}" 
+         ###  Optional parameter. Batch account key. Alternatively, set by environment variable: AZURE_BATCH_ACCESS_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Batch account name. Alternatively, set by environment variable: AZURE_BATCH_ACCOUNT.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+         ###  Optional parameter. A string that uniquely identifies the job within the account. The ID can contain any combination of alphanumeric characters including hyphens and underscores, and cannot contain more than 64 characters. The ID is case-preserving and case-insensitive (that is, you may not have two IDs within an account that differ only by case).  ### 
+        'id': "{{ item['id'] | default('') }}" 
+         ###  Optional parameter. A list of name-value pairs associated with the job as metadata. The Batch service does not assign any meaning to metadata; it is solely for the use of user code. Space separated values in 'key=value' format.  ### 
+        'metadata': "{{ item['metadata'] | default('') }}" 
+         ###  Optional parameter. The priority of the job. Priority values can range from -1000 to 1000, with -1000 being the lowest priority and 1000 being the highest priority. The default value is 0.  ### 
+        'priority': "{{ item['priority'] | default('') }}" 
+         ###  Optional parameter. Whether tasks in the job can define dependencies on each other. The default is false. True if flag present.  ### 
+        'uses-task-dependencies': "{{ item['uses-task-dependencies'] | default('') }}" 
+         ###  Optional parameter. The maximum number of times each task may be retried. The Batch service retries a task if its exit code is nonzero. Note that this value specifically controls the number of retries. The Batch service will try each task once, and may then retry up to this limit. For example, if the maximum retry count is 3, Batch tries a task up to 4 times (one initial try and 3 retries). If the maximum retry count is 0, the Batch service does not retry tasks. If the maximum retry count is -1, the Batch service retries tasks without limit. The default value is 0 (no retries).  ### 
+        'job-max-task-retry-count': "{{ item['job-max-task-retry-count'] | default('') }}" 
+         ###  Optional parameter. The maximum elapsed time that the job may run, measured from the time the job is created. If the job does not complete within the time limit, the Batch service terminates it and any tasks that are still running. In this case, the termination reason will be MaxWallClockTimeExpiry. If this property is not specified, there is no time limit on how long the job may run. Expected format is an ISO-8601 duration.  ### 
+        'job-max-wall-clock-time': "{{ item['job-max-wall-clock-time'] | default('') }}" 
+         ###  Optional parameter. The command line of the Job Manager task. The command line does not run under a shell, and therefore cannot take advantage of shell features such as environment variable expansion. If you want to take advantage of such features, you should invoke the shell in the command line, for example using "cmd /c MyCommand" in Windows or "/bin/sh -c MyCommand" in Linux.  ### 
+        'job-manager-task-command-line': "{{ item['job-manager-task-command-line'] | default('') }}" 
+         ###  Optional parameter. A list of environment variable settings for the Job Manager task. Space separated values in 'key=value' format.  ### 
+        'job-manager-task-environment-settings': "{{ item['job-manager-task-environment-settings'] | default('') }}" 
+         ###  Optional parameter. A string that uniquely identifies the Job Manager task within the job. The ID can contain any combination of alphanumeric characters including hyphens and underscores and cannot contain more than 64 characters.  ### 
+        'job-manager-task-id': "{{ item['job-manager-task-id'] | default('') }}" 
+         ###  Optional parameter. A list of files that the Batch service will download to the compute node before running the command line. Files listed under this element are located in the task's working directory. Space separated resource references in filename=blobsource format.  ### 
+        'job-manager-task-resource-files': "{{ item['job-manager-task-resource-files'] | default('') }}" 
+         ###  Optional parameter. The id of an existing pool. All the tasks of the job will run on the specified pool.  ### 
+        'pool-id': "{{ item['pool-id'] | default('') }}" 
+ - debug: msg="{{ az_batch_job_create }}"          
+ - name: "az batch job create: Add a job to a Batch account." 
+   command: |                                      
+     az batch job create                            
+                 {%if az_batch_job_create.input['json-file'] %} --json-file az_batch_job_create.input['json-file'] {%endif %} 
+                 {%if az_batch_job_create.input['account-endpoint'] %} --account-endpoint az_batch_job_create.input['account-endpoint'] {%endif %} 
+                 {%if az_batch_job_create.input['account-key'] %} --account-key az_batch_job_create.input['account-key'] {%endif %} 
+                 {%if az_batch_job_create.input['account-name'] %} --account-name az_batch_job_create.input['account-name'] {%endif %} 
+                 {%if az_batch_job_create.input['id'] %} --id az_batch_job_create.input['id'] {%endif %} 
+                 {%if az_batch_job_create.input['metadata'] %} --metadata az_batch_job_create.input['metadata'] {%endif %} 
+                 {%if az_batch_job_create.input['priority'] %} --priority az_batch_job_create.input['priority'] {%endif %} 
+                 {%if az_batch_job_create.input['uses-task-dependencies'] %} --uses-task-dependencies az_batch_job_create.input['uses-task-dependencies'] {%endif %} 
+                 {%if az_batch_job_create.input['job-max-task-retry-count'] %} --job-max-task-retry-count az_batch_job_create.input['job-max-task-retry-count'] {%endif %} 
+                 {%if az_batch_job_create.input['job-max-wall-clock-time'] %} --job-max-wall-clock-time az_batch_job_create.input['job-max-wall-clock-time'] {%endif %} 
+                 {%if az_batch_job_create.input['job-manager-task-command-line'] %} --job-manager-task-command-line az_batch_job_create.input['job-manager-task-command-line'] {%endif %} 
+                 {%if az_batch_job_create.input['job-manager-task-environment-settings'] %} --job-manager-task-environment-settings az_batch_job_create.input['job-manager-task-environment-settings'] {%endif %} 
+                 {%if az_batch_job_create.input['job-manager-task-id'] %} --job-manager-task-id az_batch_job_create.input['job-manager-task-id'] {%endif %} 
+                 {%if az_batch_job_create.input['job-manager-task-resource-files'] %} --job-manager-task-resource-files az_batch_job_create.input['job-manager-task-resource-files'] {%endif %} 
+                 {%if az_batch_job_create.input['pool-id'] %} --pool-id az_batch_job_create.input['pool-id'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_job_create: "{{ az_batch_job_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_job_create }}" 

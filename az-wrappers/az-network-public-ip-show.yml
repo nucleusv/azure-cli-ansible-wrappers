@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_network_public_ip_show
+   set_fact: 
+     az_network_public_ip_show:
+       input: 
+         ###  Required parameter. The name of the public IP address.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Expands referenced resources.  ### 
+        'expand': "{{ item['expand'] | default('') }}" 
+ - debug: msg="{{ az_network_public_ip_show }}"          
+ - name: "az network public-ip show: Get the details of a public IP address." 
+   command: |                                      
+     az network public-ip show                            
+                 --name {{ az_network_public_ip_show.input['name'] }} 
+                 --resource-group {{ az_network_public_ip_show.input['resource-group'] }} 
+                 {%if az_network_public_ip_show.input['expand'] %} --expand az_network_public_ip_show.input['expand'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_public_ip_show: "{{ az_network_public_ip_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_public_ip_show }}" 

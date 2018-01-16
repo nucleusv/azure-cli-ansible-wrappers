@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_dls_account_trusted_provider_create
+   set_fact: 
+     az_dls_account_trusted_provider_create:
+       input: 
+         ###  Required parameter. Name of the Data Lake Store account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The URL of this trusted identity provider.  ### 
+        'id-provider': "{{ item['id-provider'] | default('') }}" 
+         ###  Required parameter. The name of the trusted identity provider. This is used for differentiation of providers in the account.  ### 
+        'trusted-id-provider-name': "{{ item['trusted-id-provider-name'] | default('') }}" 
+         ###  Optional parameter. Resource name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. If not specified, will attempt to discover the resource group for the specified Data Lake Store account.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_dls_account_trusted_provider_create }}"          
+ - name: "az dls account trusted-provider create: Creates or updates the specified trusted identity provider." 
+   command: |                                      
+     az dls account trusted-provider create                            
+                 --account {{ az_dls_account_trusted_provider_create.input['account'] }} 
+                 --id-provider {{ az_dls_account_trusted_provider_create.input['id-provider'] }} 
+                 --trusted-id-provider-name {{ az_dls_account_trusted_provider_create.input['trusted-id-provider-name'] }} 
+                 {%if az_dls_account_trusted_provider_create.input['name'] %} --name az_dls_account_trusted_provider_create.input['name'] {%endif %} 
+                 {%if az_dls_account_trusted_provider_create.input['resource-group'] %} --resource-group az_dls_account_trusted_provider_create.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dls_account_trusted_provider_create: "{{ az_dls_account_trusted_provider_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dls_account_trusted_provider_create }}" 

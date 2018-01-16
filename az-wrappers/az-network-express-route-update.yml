@@ -1,0 +1,50 @@
+
+
+ - name: Set input params for az_network_express_route_update
+   set_fact: 
+     az_network_express_route_update:
+       input: 
+         ###  Required parameter. ExpressRoute circuit name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Bandwidth in Mbps of the circuit.  ### 
+        'bandwidth': "{{ item['bandwidth'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+         ###  Optional parameter. Name of the peering location.  ### 
+        'peering-location': "{{ item['peering-location'] | default('') }}" 
+         ###  Optional parameter. Name of the ExpressRoute Service Provider.  ### 
+        'provider': "{{ item['provider'] | default('') }}" 
+         ###  Optional parameter. Chosen SKU family of ExpressRoute circuit.  ### 
+        'sku-family': "{{ item['sku-family'] | default('') }}" 
+         ###  Optional parameter. SKU Tier of ExpressRoute circuit.  ### 
+        'sku-tier': "{{ item['sku-tier'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. Add an object to a list of objects by specifying a path and key value pairs.  Example: --add property.listProperty <key=value, string or JSON string>.  ### 
+        'add': "{{ item['add'] | default('') }}" 
+         ###  Optional parameter. Remove a property or an element from a list.  Example: --remove property.list <indexToRemove> OR --remove propertyToRemove.  ### 
+        'remove': "{{ item['remove'] | default('') }}" 
+         ###  Optional parameter. Update an object by specifying a property path and value to set.  Example: --set property1.property2=<value>.  ### 
+        'set': "{{ item['set'] | default('') }}" 
+ - debug: msg="{{ az_network_express_route_update }}"          
+ - name: "az network express-route update: Update settings of an ExpressRoute circuit." 
+   command: |                                      
+     az network express-route update                            
+                 --name {{ az_network_express_route_update.input['name'] }} 
+                 --resource-group {{ az_network_express_route_update.input['resource-group'] }} 
+                 {%if az_network_express_route_update.input['bandwidth'] %} --bandwidth az_network_express_route_update.input['bandwidth'] {%endif %} 
+                 {%if az_network_express_route_update.input['no-wait'] %} --no-wait az_network_express_route_update.input['no-wait'] {%endif %} 
+                 {%if az_network_express_route_update.input['peering-location'] %} --peering-location az_network_express_route_update.input['peering-location'] {%endif %} 
+                 {%if az_network_express_route_update.input['provider'] %} --provider az_network_express_route_update.input['provider'] {%endif %} 
+                 {%if az_network_express_route_update.input['sku-family'] %} --sku-family az_network_express_route_update.input['sku-family'] {%endif %} 
+                 {%if az_network_express_route_update.input['sku-tier'] %} --sku-tier az_network_express_route_update.input['sku-tier'] {%endif %} 
+                 {%if az_network_express_route_update.input['rtags'] %} --tags az_network_express_route_update.input['rtags'] {%endif %} 
+                 {%if az_network_express_route_update.input['add'] %} --add az_network_express_route_update.input['add'] {%endif %} 
+                 {%if az_network_express_route_update.input['remove'] %} --remove az_network_express_route_update.input['remove'] {%endif %} 
+                 {%if az_network_express_route_update.input['set'] %} --set az_network_express_route_update.input['set'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_express_route_update: "{{ az_network_express_route_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_express_route_update }}" 

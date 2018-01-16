@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_iot_hub_show_quota_metrics
+   set_fact: 
+     az_iot_hub_show_quota_metrics:
+       input: 
+         ###  Required parameter. IoT Hub name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_iot_hub_show_quota_metrics }}"          
+ - name: "az iot hub show-quota-metrics: Get the quota metrics for an IoT hub." 
+   command: |                                      
+     az iot hub show-quota-metrics                            
+                 --name {{ az_iot_hub_show_quota_metrics.input['name'] }} 
+                 {%if az_iot_hub_show_quota_metrics.input['resource-group'] %} --resource-group az_iot_hub_show_quota_metrics.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_hub_show_quota_metrics: "{{ az_iot_hub_show_quota_metrics|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_hub_show_quota_metrics }}" 

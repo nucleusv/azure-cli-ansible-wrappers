@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_ad_group_get_member_groups
+   set_fact: 
+     az_ad_group_get_member_groups:
+       input: 
+         ###  Required parameter. Group's object id or display name(prefix also works if there is a unique match).  ### 
+        'group': "{{ item['group'] | default('') }}" 
+         ###  Optional parameter. If true, only membership in security-enabled groups should be checked. Otherwise, membership in all groups should be checked.  ### 
+        'security-enabled-only': "{{ item['security-enabled-only'] | default('') }}" 
+ - debug: msg="{{ az_ad_group_get_member_groups }}"          
+ - name: "az ad group get-member-groups: Gets a collection of object IDs of groups of which the specified group is a member." 
+   command: |                                      
+     az ad group get-member-groups                            
+                 --group {{ az_ad_group_get_member_groups.input['group'] }} 
+                 {%if az_ad_group_get_member_groups.input['security-enabled-only'] %} --security-enabled-only az_ad_group_get_member_groups.input['security-enabled-only'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_ad_group_get_member_groups: "{{ az_ad_group_get_member_groups|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_ad_group_get_member_groups }}" 

@@ -1,0 +1,47 @@
+
+
+ - name: Set input params for az_network_vpn_connection_ipsec_policy_add
+   set_fact: 
+     az_network_vpn_connection_ipsec_policy_add:
+       input: 
+         ###  Required parameter. Connection name.  ### 
+        'connection-name': "{{ item['connection-name'] | default('') }}" 
+         ###  Required parameter. The DH Groups used in IKE Phase 1 for initial SA.  ### 
+        'dh-group': "{{ item['dh-group'] | default('') }}" 
+         ###  Required parameter. The IKE encryption algorithm (IKE phase 2).  ### 
+        'ike-encryption': "{{ item['ike-encryption'] | default('') }}" 
+         ###  Required parameter. The IKE integrity algorithm (IKE phase 2).  ### 
+        'ike-integrity': "{{ item['ike-integrity'] | default('') }}" 
+         ###  Required parameter. The IPSec encryption algorithm (IKE phase 1).  ### 
+        'ipsec-encryption': "{{ item['ipsec-encryption'] | default('') }}" 
+         ###  Required parameter. The IPSec integrity algorithm (IKE phase 1).  ### 
+        'ipsec-integrity': "{{ item['ipsec-integrity'] | default('') }}" 
+         ###  Required parameter. The DH Groups used in IKE Phase 2 for new child SA.  ### 
+        'pfs-group': "{{ item['pfs-group'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The IPSec Security Association (also called Quick Mode or Phase 2 SA) lifetime in seconds for a site to site VPN tunnel.  ### 
+        'sa-lifetime': "{{ item['sa-lifetime'] | default('') }}" 
+         ###  Required parameter. The IPSec Security Association (also called Quick Mode or Phase 2 SA) payload size in KB for a site to site VPN tunnel.  ### 
+        'sa-max-size': "{{ item['sa-max-size'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+ - debug: msg="{{ az_network_vpn_connection_ipsec_policy_add }}"          
+ - name: "az network vpn-connection ipsec-policy add: Add a VPN connection IPSec policy." 
+   command: |                                      
+     az network vpn-connection ipsec-policy add                            
+                 --connection-name {{ az_network_vpn_connection_ipsec_policy_add.input['connection-name'] }} 
+                 --dh-group {{ az_network_vpn_connection_ipsec_policy_add.input['dh-group'] }} 
+                 --ike-encryption {{ az_network_vpn_connection_ipsec_policy_add.input['ike-encryption'] }} 
+                 --ike-integrity {{ az_network_vpn_connection_ipsec_policy_add.input['ike-integrity'] }} 
+                 --ipsec-encryption {{ az_network_vpn_connection_ipsec_policy_add.input['ipsec-encryption'] }} 
+                 --ipsec-integrity {{ az_network_vpn_connection_ipsec_policy_add.input['ipsec-integrity'] }} 
+                 --pfs-group {{ az_network_vpn_connection_ipsec_policy_add.input['pfs-group'] }} 
+                 --resource-group {{ az_network_vpn_connection_ipsec_policy_add.input['resource-group'] }} 
+                 --sa-lifetime {{ az_network_vpn_connection_ipsec_policy_add.input['sa-lifetime'] }} 
+                 --sa-max-size {{ az_network_vpn_connection_ipsec_policy_add.input['sa-max-size'] }} 
+                 {%if az_network_vpn_connection_ipsec_policy_add.input['no-wait'] %} --no-wait az_network_vpn_connection_ipsec_policy_add.input['no-wait'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_vpn_connection_ipsec_policy_add: "{{ az_network_vpn_connection_ipsec_policy_add|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_vpn_connection_ipsec_policy_add }}" 

@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_functionapp_create
+   set_fact: 
+     az_functionapp_create:
+       input: 
+         ###  Required parameter. Name of the function app.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Provide a string value of a Storage Account in the provided Resource Group. Or Resource ID of a Storage Account in a different Resource Group.  ### 
+        'storage-account': "{{ item['storage-account'] | default('') }}" 
+         ###  Optional parameter. Geographic location where Function App will be hosted. Use 'functionapp list-consumption-locations' to view available locations.  ### 
+        'consumption-plan-location': "{{ item['consumption-plan-location'] | default('') }}" 
+         ###  Optional parameter. Linux only. Container image name from Docker Hub, e.g. publisher/image-name:tag.  ### 
+        'deployment-container-image-name': "{{ item['deployment-container-image-name'] | default('') }}" 
+         ###  Optional parameter. Enable local git.  ### 
+        'deployment-local-git': "{{ item['deployment-local-git'] | default('') }}" 
+         ###  Optional parameter. The branch to deploy.  ### 
+        'deployment-source-branch': "{{ item['deployment-source-branch'] | default('') }}" 
+         ###  Optional parameter. Git repository URL to link with manual integration.  ### 
+        'deployment-source-url': "{{ item['deployment-source-url'] | default('') }}" 
+         ###  Optional parameter. Name or resource id of the function app service plan. Use 'appservice plan create' to get one.  ### 
+        'plan': "{{ item['plan'] | default('') }}" 
+ - debug: msg="{{ az_functionapp_create }}"          
+ - name: "az functionapp create: Create a function app." 
+   command: |                                      
+     az functionapp create                            
+                 --name {{ az_functionapp_create.input['name'] }} 
+                 --resource-group {{ az_functionapp_create.input['resource-group'] }} 
+                 --storage-account {{ az_functionapp_create.input['storage-account'] }} 
+                 {%if az_functionapp_create.input['consumption-plan-location'] %} --consumption-plan-location az_functionapp_create.input['consumption-plan-location'] {%endif %} 
+                 {%if az_functionapp_create.input['deployment-container-image-name'] %} --deployment-container-image-name az_functionapp_create.input['deployment-container-image-name'] {%endif %} 
+                 {%if az_functionapp_create.input['deployment-local-git'] %} --deployment-local-git az_functionapp_create.input['deployment-local-git'] {%endif %} 
+                 {%if az_functionapp_create.input['deployment-source-branch'] %} --deployment-source-branch az_functionapp_create.input['deployment-source-branch'] {%endif %} 
+                 {%if az_functionapp_create.input['deployment-source-url'] %} --deployment-source-url az_functionapp_create.input['deployment-source-url'] {%endif %} 
+                 {%if az_functionapp_create.input['plan'] %} --plan az_functionapp_create.input['plan'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_functionapp_create: "{{ az_functionapp_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_functionapp_create }}" 

@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_sf_cluster_show
+   set_fact: 
+     az_sf_cluster_show:
+       input: 
+         ###  Required parameter. Specify the name of the cluster, if not given it will be same as resource group name.  ### 
+        'cluster-name': "{{ item['cluster-name'] | default('') }}" 
+         ###  Required parameter. The resource group name.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_sf_cluster_show }}"          
+ - name: "az sf cluster show: Get cluster resource." 
+   command: |                                      
+     az sf cluster show                            
+                 --cluster-name {{ az_sf_cluster_show.input['cluster-name'] }} 
+                 --resource-group {{ az_sf_cluster_show.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_sf_cluster_show: "{{ az_sf_cluster_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sf_cluster_show }}" 

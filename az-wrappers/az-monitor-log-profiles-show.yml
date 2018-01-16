@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_monitor_log_profiles_show
+   set_fact: 
+     az_monitor_log_profiles_show:
+       input: 
+         ###  Required parameter. The name of the log profile.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+ - debug: msg="{{ az_monitor_log_profiles_show }}"          
+ - name: "az monitor log-profiles show: Gets the log profile." 
+   command: |                                      
+     az monitor log-profiles show                            
+                 --name {{ az_monitor_log_profiles_show.input['name'] }} 
+   register: output  
+ - set_fact: 
+    az_monitor_log_profiles_show: "{{ az_monitor_log_profiles_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_monitor_log_profiles_show }}" 

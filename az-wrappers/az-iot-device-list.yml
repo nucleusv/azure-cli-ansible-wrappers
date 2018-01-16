@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_iot_device_list
+   set_fact: 
+     az_iot_device_list:
+       input: 
+         ###  Required parameter. IoT Hub name.  ### 
+        'hub-name': "{{ item['hub-name'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Maximum number of device identities to return.  ### 
+        'top': "{{ item['top'] | default('') }}" 
+ - debug: msg="{{ az_iot_device_list }}"          
+ - name: "az iot device list: List devices in an IoT hub." 
+   command: |                                      
+     az iot device list                            
+                 --hub-name {{ az_iot_device_list.input['hub-name'] }} 
+                 {%if az_iot_device_list.input['resource-group'] %} --resource-group az_iot_device_list.input['resource-group'] {%endif %} 
+                 {%if az_iot_device_list.input['top'] %} --top az_iot_device_list.input['top'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_device_list: "{{ az_iot_device_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_device_list }}" 

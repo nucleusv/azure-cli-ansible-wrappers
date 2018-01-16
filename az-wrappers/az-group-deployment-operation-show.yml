@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_group_deployment_operation_show
+   set_fact: 
+     az_group_deployment_operation_show:
+       input: 
+         ###  Required parameter. The deployment name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. A list of operation ids to show.  ### 
+        'operation-ids': "{{ item['operation-ids'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_group_deployment_operation_show }}"          
+ - name: "az group deployment operation show: Get a deployment's operation." 
+   command: |                                      
+     az group deployment operation show                            
+                 --name {{ az_group_deployment_operation_show.input['name'] }} 
+                 --operation-ids {{ az_group_deployment_operation_show.input['operation-ids'] }} 
+                 --resource-group {{ az_group_deployment_operation_show.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_group_deployment_operation_show: "{{ az_group_deployment_operation_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_group_deployment_operation_show }}" 

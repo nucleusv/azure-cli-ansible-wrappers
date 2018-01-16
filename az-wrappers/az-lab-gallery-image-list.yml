@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_lab_gallery_image_list
+   set_fact: 
+     az_lab_gallery_image_list:
+       input: 
+         ###  Required parameter. The name of the lab.  ### 
+        'lab-name': "{{ item['lab-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Specify the $expand query. Example: 'properties($select=author)'.  ### 
+        'expand': "{{ item['expand'] | default('') }}" 
+         ###  Optional parameter. The filter to apply to the operation.  ### 
+        'filter': "{{ item['filter'] | default('') }}" 
+         ###  Optional parameter. The ordering expression for the results, using OData notation.  ### 
+        'orderby': "{{ item['orderby'] | default('') }}" 
+         ###  Optional parameter. The maximum number of resources to return from the operation.  ### 
+        'top': "{{ item['top'] | default('') }}" 
+ - debug: msg="{{ az_lab_gallery_image_list }}"          
+ - name: "az lab gallery-image list: List gallery images in a given lab." 
+   command: |                                      
+     az lab gallery-image list                            
+                 --lab-name {{ az_lab_gallery_image_list.input['lab-name'] }} 
+                 --resource-group {{ az_lab_gallery_image_list.input['resource-group'] }} 
+                 {%if az_lab_gallery_image_list.input['expand'] %} --expand az_lab_gallery_image_list.input['expand'] {%endif %} 
+                 {%if az_lab_gallery_image_list.input['filter'] %} --filter az_lab_gallery_image_list.input['filter'] {%endif %} 
+                 {%if az_lab_gallery_image_list.input['orderby'] %} --orderby az_lab_gallery_image_list.input['orderby'] {%endif %} 
+                 {%if az_lab_gallery_image_list.input['top'] %} --top az_lab_gallery_image_list.input['top'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_lab_gallery_image_list: "{{ az_lab_gallery_image_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_lab_gallery_image_list }}" 

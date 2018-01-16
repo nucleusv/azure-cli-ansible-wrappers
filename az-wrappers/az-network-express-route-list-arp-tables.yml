@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_network_express_route_list_arp_tables
+   set_fact: 
+     az_network_express_route_list_arp_tables:
+       input: 
+         ###  Required parameter. ExpressRoute circuit name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. The path of the device.  ### 
+        'path': "{{ item['path'] | default('') }}" 
+         ###  Required parameter. The name of the peering.  ### 
+        'peering-name': "{{ item['peering-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_network_express_route_list_arp_tables }}"          
+ - name: "az network express-route list-arp-tables: List the currently advertised address resolution protocol (ARP) table of an ExpressRoute circuit." 
+   command: |                                      
+     az network express-route list-arp-tables                            
+                 --name {{ az_network_express_route_list_arp_tables.input['name'] }} 
+                 --path {{ az_network_express_route_list_arp_tables.input['path'] }} 
+                 --peering-name {{ az_network_express_route_list_arp_tables.input['peering-name'] }} 
+                 --resource-group {{ az_network_express_route_list_arp_tables.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_network_express_route_list_arp_tables: "{{ az_network_express_route_list_arp_tables|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_express_route_list_arp_tables }}" 

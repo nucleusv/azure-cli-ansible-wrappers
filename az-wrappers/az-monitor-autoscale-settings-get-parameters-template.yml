@@ -1,0 +1,14 @@
+
+
+ - name: Set input params for az_monitor_autoscale_settings_get_parameters_template
+   set_fact: 
+     az_monitor_autoscale_settings_get_parameters_template:
+       input: 
+ - debug: msg="{{ az_monitor_autoscale_settings_get_parameters_template }}"          
+ - name: "az monitor autoscale-settings get-parameters-template: Scaffold fully formed autoscale-settings' parameters as json template." 
+   command: |                                      
+     az monitor autoscale-settings get-parameters-template                            
+   register: output  
+ - set_fact: 
+    az_monitor_autoscale_settings_get_parameters_template: "{{ az_monitor_autoscale_settings_get_parameters_template|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_monitor_autoscale_settings_get_parameters_template }}" 

@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_vm_show
+   set_fact: 
+     az_vm_show:
+       input: 
+         ###  Required parameter. The name of the Virtual Machine. You can configure the default using `az configure --defaults vm=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Show public ip address, FQDN, and power states. command will run slow.  ### 
+        'show-details': "{{ item['show-details'] | default('') }}" 
+ - debug: msg="{{ az_vm_show }}"          
+ - name: "az vm show: Get the details of a VM." 
+   command: |                                      
+     az vm show                            
+                 --name {{ az_vm_show.input['name'] }} 
+                 --resource-group {{ az_vm_show.input['resource-group'] }} 
+                 {%if az_vm_show.input['show-details'] %} --show-details az_vm_show.input['show-details'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_vm_show: "{{ az_vm_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_show }}" 

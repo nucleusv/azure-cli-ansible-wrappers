@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_provider_register
+   set_fact: 
+     az_provider_register:
+       input: 
+         ###  Required parameter. The resource namespace, aka 'provider'.  ### 
+        'namespace': "{{ item['namespace'] | default('') }}" 
+         ###  Optional parameter. Wait for the registration to finish.  ### 
+        'wait': "{{ item['wait'] | default('') }}" 
+ - debug: msg="{{ az_provider_register }}"          
+ - name: "az provider register: Register a provider." 
+   command: |                                      
+     az provider register                            
+                 --namespace {{ az_provider_register.input['namespace'] }} 
+                 {%if az_provider_register.input['wait'] %} --wait az_provider_register.input['wait'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_provider_register: "{{ az_provider_register|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_provider_register }}" 

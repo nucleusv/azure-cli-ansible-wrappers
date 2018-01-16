@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_lab_environment_show
+   set_fact: 
+     az_lab_environment_show:
+       input: 
+         ###  Required parameter. The name of the lab.  ### 
+        'lab-name': "{{ item['lab-name'] | default('') }}" 
+         ###  Required parameter. The name of the environment.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Specify the $expand query. Example: 'properties($select=deploymentProperties)'.  ### 
+        'expand': "{{ item['expand'] | default('') }}" 
+ - debug: msg="{{ az_lab_environment_show }}"          
+ - name: "az lab environment show: Get the details for an environment of a lab." 
+   command: |                                      
+     az lab environment show                            
+                 --lab-name {{ az_lab_environment_show.input['lab-name'] }} 
+                 --name {{ az_lab_environment_show.input['name'] }} 
+                 --resource-group {{ az_lab_environment_show.input['resource-group'] }} 
+                 {%if az_lab_environment_show.input['expand'] %} --expand az_lab_environment_show.input['expand'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_lab_environment_show: "{{ az_lab_environment_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_lab_environment_show }}" 

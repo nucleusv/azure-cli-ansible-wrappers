@@ -1,0 +1,53 @@
+
+
+ - name: Set input params for az_storage_account_create
+   set_fact: 
+     az_storage_account_create:
+       input: 
+         ###  Required parameter. The storage account name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The access tier used for billing StandardBlob accounts. Cannot be set for StandardLRS, StandardGRS, StandardRAGRS, or PremiumLRS account types. It is required for StandardBlob accounts during creation.  ### 
+        'access-tier': "{{ item['access-tier'] | default('') }}" 
+         ###  Optional parameter. Generate and assign a new Storage Account Identity for this storage account for use with key management services like Azure KeyVault.  ### 
+        'assign-identity': "{{ item['assign-identity'] | default('') }}" 
+         ###  Optional parameter. User domain assigned to the storage account. Name is the CNAME source.  ### 
+        'custom-domain': "{{ item['custom-domain'] | default('') }}" 
+         ###  Optional parameter. Specifies which service(s) to encrypt.  ### 
+        'encryption-services': "{{ item['encryption-services'] | default('') }}" 
+         ###  Optional parameter. Allows https traffic only to storage service.  ### 
+        'https-only': "{{ item['https-only'] | default('') }}" 
+         ###  Optional parameter. Indicates the type of storage account.  ### 
+        'kind': "{{ item['kind'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. The storage account SKU.  ### 
+        'sku': "{{ item['sku'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. Bypass traffic for space-separated uses.  ### 
+        'bypass': "{{ item['bypass'] | default('') }}" 
+         ###  Optional parameter. Default action to apply when no rule matches.  ### 
+        'default-action': "{{ item['default-action'] | default('') }}" 
+ - debug: msg="{{ az_storage_account_create }}"          
+ - name: "az storage account create: Create a storage account." 
+   command: |                                      
+     az storage account create                            
+                 --name {{ az_storage_account_create.input['name'] }} 
+                 --resource-group {{ az_storage_account_create.input['resource-group'] }} 
+                 {%if az_storage_account_create.input['access-tier'] %} --access-tier az_storage_account_create.input['access-tier'] {%endif %} 
+                 {%if az_storage_account_create.input['assign-identity'] %} --assign-identity az_storage_account_create.input['assign-identity'] {%endif %} 
+                 {%if az_storage_account_create.input['custom-domain'] %} --custom-domain az_storage_account_create.input['custom-domain'] {%endif %} 
+                 {%if az_storage_account_create.input['encryption-services'] %} --encryption-services az_storage_account_create.input['encryption-services'] {%endif %} 
+                 {%if az_storage_account_create.input['https-only'] %} --https-only az_storage_account_create.input['https-only'] {%endif %} 
+                 {%if az_storage_account_create.input['kind'] %} --kind az_storage_account_create.input['kind'] {%endif %} 
+                 {%if az_storage_account_create.input['location'] %} --location az_storage_account_create.input['location'] {%endif %} 
+                 {%if az_storage_account_create.input['sku'] %} --sku az_storage_account_create.input['sku'] {%endif %} 
+                 {%if az_storage_account_create.input['rtags'] %} --tags az_storage_account_create.input['rtags'] {%endif %} 
+                 {%if az_storage_account_create.input['bypass'] %} --bypass az_storage_account_create.input['bypass'] {%endif %} 
+                 {%if az_storage_account_create.input['default-action'] %} --default-action az_storage_account_create.input['default-action'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_storage_account_create: "{{ az_storage_account_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_storage_account_create }}" 

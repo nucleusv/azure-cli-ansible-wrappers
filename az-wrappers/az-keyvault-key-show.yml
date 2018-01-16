@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_keyvault_key_show
+   set_fact: 
+     az_keyvault_key_show:
+       input: 
+         ###  Required parameter. Name of the key.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+         ###  Optional parameter. The key version. If omitted, uses the latest version.  ### 
+        'version': "{{ item['version'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_key_show }}"          
+ - name: "az keyvault key show: Gets the public part of a stored key." 
+   command: |                                      
+     az keyvault key show                            
+                 --name {{ az_keyvault_key_show.input['name'] }} 
+                 --vault-name {{ az_keyvault_key_show.input['vault-name'] }} 
+                 {%if az_keyvault_key_show.input['version'] %} --version az_keyvault_key_show.input['version'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_keyvault_key_show: "{{ az_keyvault_key_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_key_show }}" 

@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_network_application_gateway_frontend_port_delete
+   set_fact: 
+     az_network_application_gateway_frontend_port_delete:
+       input: 
+         ###  Required parameter. The name of the application gateway.  ### 
+        'gateway-name': "{{ item['gateway-name'] | default('') }}" 
+         ###  Required parameter. The name of the frontend port.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+ - debug: msg="{{ az_network_application_gateway_frontend_port_delete }}"          
+ - name: "az network application-gateway frontend-port delete: Delete a frontend port." 
+   command: |                                      
+     az network application-gateway frontend-port delete                            
+                 --gateway-name {{ az_network_application_gateway_frontend_port_delete.input['gateway-name'] }} 
+                 --name {{ az_network_application_gateway_frontend_port_delete.input['name'] }} 
+                 --resource-group {{ az_network_application_gateway_frontend_port_delete.input['resource-group'] }} 
+                 {%if az_network_application_gateway_frontend_port_delete.input['no-wait'] %} --no-wait az_network_application_gateway_frontend_port_delete.input['no-wait'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_application_gateway_frontend_port_delete: "{{ az_network_application_gateway_frontend_port_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_application_gateway_frontend_port_delete }}" 

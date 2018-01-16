@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_account_set
+   set_fact: 
+     az_account_set:
+       input: 
+         ###  Required parameter. Name or ID of subscription.  ### 
+        'subscription': "{{ item['subscription'] | default('') }}" 
+ - debug: msg="{{ az_account_set }}"          
+ - name: "az account set: Set a subscription to be the current active subscription." 
+   command: |                                      
+     az account set                            
+                 --subscription {{ az_account_set.input['subscription'] }} 
+   register: output  
+ - set_fact: 
+    az_account_set: "{{ az_account_set|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_account_set }}" 

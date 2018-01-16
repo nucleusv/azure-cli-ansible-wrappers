@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_cloud_list_profiles
+   set_fact: 
+     az_cloud_list_profiles:
+       input: 
+         ###  Optional parameter. Name of a registered cloud.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Show all available profiles supported in the CLI.  ### 
+        'show-all': "{{ item['show-all'] | default('') }}" 
+ - debug: msg="{{ az_cloud_list_profiles }}"          
+ - name: "az cloud list-profiles: List the supported profiles for a cloud." 
+   command: |                                      
+     az cloud list-profiles                            
+                 {%if az_cloud_list_profiles.input['name'] %} --name az_cloud_list_profiles.input['name'] {%endif %} 
+                 {%if az_cloud_list_profiles.input['show-all'] %} --show-all az_cloud_list_profiles.input['show-all'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_cloud_list_profiles: "{{ az_cloud_list_profiles|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cloud_list_profiles }}" 

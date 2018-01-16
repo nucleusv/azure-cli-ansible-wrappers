@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_batch_node_remote_login_settings_show
+   set_fact: 
+     az_batch_node_remote_login_settings_show:
+       input: 
+         ###  Required parameter. The ID of the compute node for which to obtain the remote login settings.  ### 
+        'node-id': "{{ item['node-id'] | default('') }}" 
+         ###  Required parameter. The ID of the pool that contains the compute node.  ### 
+        'pool-id': "{{ item['pool-id'] | default('') }}" 
+         ###  Optional parameter. Batch service endpoint. Alternatively, set by environment variable: AZURE_BATCH_ENDPOINT.  ### 
+        'account-endpoint': "{{ item['account-endpoint'] | default('') }}" 
+         ###  Optional parameter. Batch account key. Alternatively, set by environment variable: AZURE_BATCH_ACCESS_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Batch account name. Alternatively, set by environment variable: AZURE_BATCH_ACCOUNT.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+ - debug: msg="{{ az_batch_node_remote_login_settings_show }}"          
+ - name: "az batch node remote-login-settings show: Gets the settings required for remote login to a compute node." 
+   command: |                                      
+     az batch node remote-login-settings show                            
+                 --node-id {{ az_batch_node_remote_login_settings_show.input['node-id'] }} 
+                 --pool-id {{ az_batch_node_remote_login_settings_show.input['pool-id'] }} 
+                 {%if az_batch_node_remote_login_settings_show.input['account-endpoint'] %} --account-endpoint az_batch_node_remote_login_settings_show.input['account-endpoint'] {%endif %} 
+                 {%if az_batch_node_remote_login_settings_show.input['account-key'] %} --account-key az_batch_node_remote_login_settings_show.input['account-key'] {%endif %} 
+                 {%if az_batch_node_remote_login_settings_show.input['account-name'] %} --account-name az_batch_node_remote_login_settings_show.input['account-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_node_remote_login_settings_show: "{{ az_batch_node_remote_login_settings_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_node_remote_login_settings_show }}" 

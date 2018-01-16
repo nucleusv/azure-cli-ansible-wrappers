@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_vm_run_command_show
+   set_fact: 
+     az_vm_run_command_show:
+       input: 
+         ###  Required parameter. The run command ID.  ### 
+        'command-id': "{{ item['command-id'] | default('') }}" 
+         ###  Required parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+ - debug: msg="{{ az_vm_run_command_show }}"          
+ - name: "az vm run-command show: Gets specific run command for a subscription in a location." 
+   command: |                                      
+     az vm run-command show                            
+                 --command-id {{ az_vm_run_command_show.input['command-id'] }} 
+                 --location {{ az_vm_run_command_show.input['location'] }} 
+   register: output  
+ - set_fact: 
+    az_vm_run_command_show: "{{ az_vm_run_command_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_run_command_show }}" 

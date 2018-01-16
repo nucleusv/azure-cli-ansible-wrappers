@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_webapp_traffic_routing_show
+   set_fact: 
+     az_webapp_traffic_routing_show:
+       input: 
+         ###  Required parameter. Name of the web. You can configure the default using 'az configure --defaults web=<name>'.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_webapp_traffic_routing_show }}"          
+ - name: "az webapp traffic-routing show: Display the current distribution of traffic across slots." 
+   command: |                                      
+     az webapp traffic-routing show                            
+                 --name {{ az_webapp_traffic_routing_show.input['name'] }} 
+                 --resource-group {{ az_webapp_traffic_routing_show.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_webapp_traffic_routing_show: "{{ az_webapp_traffic_routing_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_webapp_traffic_routing_show }}" 

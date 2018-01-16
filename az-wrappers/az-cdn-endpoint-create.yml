@@ -1,0 +1,53 @@
+
+
+ - name: Set input params for az_cdn_endpoint_create
+   set_fact: 
+     az_cdn_endpoint_create:
+       input: 
+         ###  Required parameter. Name of the CDN endpoint.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Endpoint origin specified by the following space delimited 3 tuple: `www.example.com http_port https_port`. The HTTP and HTTPsports are optional and will default to 80 and 443 respectively.  ### 
+        'origin': "{{ item['origin'] | default('') }}" 
+         ###  Required parameter.   ### 
+        'profile-name': "{{ item['profile-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. List of content types on which compression applies. The value should be a valid MIME type.  ### 
+        'content-types-to-compress': "{{ item['content-types-to-compress'] | default('') }}" 
+         ###  Optional parameter. If compression is enabled, content will be served as compressed if user requests for a compressed version. Content won't be compressed on CDN when requested content is smaller than 1 byte or larger than 1 MB.  ### 
+        'enable-compression': "{{ item['enable-compression'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. Indicates whether HTTP traffic is not allowed on the endpoint. Default is to allow HTTP traffic.  ### 
+        'no-http': "{{ item['no-http'] | default('') }}" 
+         ###  Optional parameter. Indicates whether HTTPS traffic is not allowed on the endpoint. Default is to allow HTTPS traffic.  ### 
+        'no-https': "{{ item['no-https'] | default('') }}" 
+         ###  Optional parameter. The host header CDN sends along with content requests to origin. The default value is the host name of the origin.  ### 
+        'origin-host-header': "{{ item['origin-host-header'] | default('') }}" 
+         ###  Optional parameter. The path used when CDN sends request to origin.  ### 
+        'origin-path': "{{ item['origin-path'] | default('') }}" 
+         ###  Optional parameter. Defines the query string caching behavior.  ### 
+        'query-string-caching': "{{ item['query-string-caching'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+ - debug: msg="{{ az_cdn_endpoint_create }}"          
+ - name: "az cdn endpoint create: Create a named endpoint to connect to a CDN." 
+   command: |                                      
+     az cdn endpoint create                            
+                 --name {{ az_cdn_endpoint_create.input['name'] }} 
+                 --origin {{ az_cdn_endpoint_create.input['origin'] }} 
+                 --profile-name {{ az_cdn_endpoint_create.input['profile-name'] }} 
+                 --resource-group {{ az_cdn_endpoint_create.input['resource-group'] }} 
+                 {%if az_cdn_endpoint_create.input['content-types-to-compress'] %} --content-types-to-compress az_cdn_endpoint_create.input['content-types-to-compress'] {%endif %} 
+                 {%if az_cdn_endpoint_create.input['enable-compression'] %} --enable-compression az_cdn_endpoint_create.input['enable-compression'] {%endif %} 
+                 {%if az_cdn_endpoint_create.input['location'] %} --location az_cdn_endpoint_create.input['location'] {%endif %} 
+                 {%if az_cdn_endpoint_create.input['no-http'] %} --no-http az_cdn_endpoint_create.input['no-http'] {%endif %} 
+                 {%if az_cdn_endpoint_create.input['no-https'] %} --no-https az_cdn_endpoint_create.input['no-https'] {%endif %} 
+                 {%if az_cdn_endpoint_create.input['origin-host-header'] %} --origin-host-header az_cdn_endpoint_create.input['origin-host-header'] {%endif %} 
+                 {%if az_cdn_endpoint_create.input['origin-path'] %} --origin-path az_cdn_endpoint_create.input['origin-path'] {%endif %} 
+                 {%if az_cdn_endpoint_create.input['query-string-caching'] %} --query-string-caching az_cdn_endpoint_create.input['query-string-caching'] {%endif %} 
+                 {%if az_cdn_endpoint_create.input['rtags'] %} --tags az_cdn_endpoint_create.input['rtags'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_cdn_endpoint_create: "{{ az_cdn_endpoint_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cdn_endpoint_create }}" 

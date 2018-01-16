@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_webapp_config_hostname_add
+   set_fact: 
+     az_webapp_config_hostname_add:
+       input: 
+         ###  Required parameter. Hostname assigned to the site, such as custom domains.  ### 
+        'hostname': "{{ item['hostname'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Webapp name. You can configure the default using 'az configure --defaults web=<name>'.  ### 
+        'webapp-name': "{{ item['webapp-name'] | default('') }}" 
+         ###  Optional parameter. The name of the slot. Default to the productions slot if not specified.  ### 
+        'slot': "{{ item['slot'] | default('') }}" 
+ - debug: msg="{{ az_webapp_config_hostname_add }}"          
+ - name: "az webapp config hostname add: Bind a hostname to a web app." 
+   command: |                                      
+     az webapp config hostname add                            
+                 --hostname {{ az_webapp_config_hostname_add.input['hostname'] }} 
+                 --resource-group {{ az_webapp_config_hostname_add.input['resource-group'] }} 
+                 --webapp-name {{ az_webapp_config_hostname_add.input['webapp-name'] }} 
+                 {%if az_webapp_config_hostname_add.input['slot'] %} --slot az_webapp_config_hostname_add.input['slot'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_webapp_config_hostname_add: "{{ az_webapp_config_hostname_add|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_webapp_config_hostname_add }}" 

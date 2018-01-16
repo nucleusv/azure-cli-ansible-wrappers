@@ -1,0 +1,50 @@
+
+
+ - name: Set input params for az_network_express_route_peering_create
+   set_fact: 
+     az_network_express_route_peering_create:
+       input: 
+         ###  Required parameter. ExpressRoute circuit name.  ### 
+        'circuit-name': "{{ item['circuit-name'] | default('') }}" 
+         ###  Required parameter. Autonomous system number of the customer/connectivity provider.  ### 
+        'peer-asn': "{{ item['peer-asn'] | default('') }}" 
+         ###  Required parameter. BGP peering type for the circuit.  ### 
+        'peering-type': "{{ item['peering-type'] | default('') }}" 
+         ###  Required parameter. /30 subnet used to configure IP addresses for primary interface.  ### 
+        'primary-peer-subnet': "{{ item['primary-peer-subnet'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. /30 subnet used to configure IP addresses for secondary interface.  ### 
+        'secondary-peer-subnet': "{{ item['secondary-peer-subnet'] | default('') }}" 
+         ###  Required parameter. Identifier used to identify the customer.  ### 
+        'vlan-id': "{{ item['vlan-id'] | default('') }}" 
+         ###  Optional parameter. Key for generating an MD5 for the BGP session.  ### 
+        'shared-key': "{{ item['shared-key'] | default('') }}" 
+         ###  Optional parameter. Space separated list of prefixes to be advertised through the BGP peering.  ### 
+        'advertised-public-prefixes': "{{ item['advertised-public-prefixes'] | default('') }}" 
+         ###  Optional parameter. Autonomous system number of the customer.  ### 
+        'customer-asn': "{{ item['customer-asn'] | default('') }}" 
+         ###  Optional parameter. Name or ID of a route filter to apply to the peering settings.  ### 
+        'route-filter': "{{ item['route-filter'] | default('') }}" 
+         ###  Optional parameter. Internet Routing Registry / Regional Internet Registry.  ### 
+        'routing-registry-name': "{{ item['routing-registry-name'] | default('') }}" 
+ - debug: msg="{{ az_network_express_route_peering_create }}"          
+ - name: "az network express-route peering create: Create peering settings." 
+   command: |                                      
+     az network express-route peering create                            
+                 --circuit-name {{ az_network_express_route_peering_create.input['circuit-name'] }} 
+                 --peer-asn {{ az_network_express_route_peering_create.input['peer-asn'] }} 
+                 --peering-type {{ az_network_express_route_peering_create.input['peering-type'] }} 
+                 --primary-peer-subnet {{ az_network_express_route_peering_create.input['primary-peer-subnet'] }} 
+                 --resource-group {{ az_network_express_route_peering_create.input['resource-group'] }} 
+                 --secondary-peer-subnet {{ az_network_express_route_peering_create.input['secondary-peer-subnet'] }} 
+                 --vlan-id {{ az_network_express_route_peering_create.input['vlan-id'] }} 
+                 {%if az_network_express_route_peering_create.input['shared-key'] %} --shared-key az_network_express_route_peering_create.input['shared-key'] {%endif %} 
+                 {%if az_network_express_route_peering_create.input['advertised-public-prefixes'] %} --advertised-public-prefixes az_network_express_route_peering_create.input['advertised-public-prefixes'] {%endif %} 
+                 {%if az_network_express_route_peering_create.input['customer-asn'] %} --customer-asn az_network_express_route_peering_create.input['customer-asn'] {%endif %} 
+                 {%if az_network_express_route_peering_create.input['route-filter'] %} --route-filter az_network_express_route_peering_create.input['route-filter'] {%endif %} 
+                 {%if az_network_express_route_peering_create.input['routing-registry-name'] %} --routing-registry-name az_network_express_route_peering_create.input['routing-registry-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_express_route_peering_create: "{{ az_network_express_route_peering_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_express_route_peering_create }}" 

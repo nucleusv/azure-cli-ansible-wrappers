@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_webapp_deployment_container_config
+   set_fact: 
+     az_webapp_deployment_container_config:
+       input: 
+         ###  Required parameter. Enable/disable continuous deployment.  ### 
+        'enable-cd': "{{ item['enable-cd'] | default('') }}" 
+         ###  Required parameter. Name of the web. You can configure the default using 'az configure --defaults web=<name>'.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The name of the slot. Default to the productions slot if not specified.  ### 
+        'slot': "{{ item['slot'] | default('') }}" 
+ - debug: msg="{{ az_webapp_deployment_container_config }}"          
+ - name: "az webapp deployment container config: Configure continuous deployment via containers." 
+   command: |                                      
+     az webapp deployment container config                            
+                 --enable-cd {{ az_webapp_deployment_container_config.input['enable-cd'] }} 
+                 --name {{ az_webapp_deployment_container_config.input['name'] }} 
+                 --resource-group {{ az_webapp_deployment_container_config.input['resource-group'] }} 
+                 {%if az_webapp_deployment_container_config.input['slot'] %} --slot az_webapp_deployment_container_config.input['slot'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_webapp_deployment_container_config: "{{ az_webapp_deployment_container_config|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_webapp_deployment_container_config }}" 

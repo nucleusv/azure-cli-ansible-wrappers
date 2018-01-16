@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_eventgrid_topic_key_list
+   set_fact: 
+     az_eventgrid_topic_key_list:
+       input: 
+         ###  Required parameter. Name of the topic.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_eventgrid_topic_key_list }}"          
+ - name: "az eventgrid topic key list: List shared access keys of a topic." 
+   command: |                                      
+     az eventgrid topic key list                            
+                 --name {{ az_eventgrid_topic_key_list.input['name'] }} 
+                 --resource-group {{ az_eventgrid_topic_key_list.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_eventgrid_topic_key_list: "{{ az_eventgrid_topic_key_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_eventgrid_topic_key_list }}" 

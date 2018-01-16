@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_sf_cluster_node_type_add
+   set_fact: 
+     az_sf_cluster_node_type_add:
+       input: 
+         ###  Required parameter.   ### 
+        'capacity': "{{ item['capacity'] | default('') }}" 
+         ###  Required parameter. Specify the name of the cluster, if not given it will be same as resource group name.  ### 
+        'cluster-name': "{{ item['cluster-name'] | default('') }}" 
+         ###  Required parameter. The Node type name.  ### 
+        'node-type': "{{ item['node-type'] | default('') }}" 
+         ###  Required parameter. The resource group name.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The password of the Vm.  ### 
+        'vm-password': "{{ item['vm-password'] | default('') }}" 
+         ###  Required parameter. The user name for logging to Vm. Default will be adminuser.  ### 
+        'vm-user-name': "{{ item['vm-user-name'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'durability-level': "{{ item['durability-level'] | default('') }}" 
+         ###  Optional parameter. The Vm Sku.  ### 
+        'vm-sku': "{{ item['vm-sku'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'vm-tier': "{{ item['vm-tier'] | default('') }}" 
+ - debug: msg="{{ az_sf_cluster_node_type_add }}"          
+ - name: "az sf cluster node-type add: Add a new node type to a cluster." 
+   command: |                                      
+     az sf cluster node-type add                            
+                 --capacity {{ az_sf_cluster_node_type_add.input['capacity'] }} 
+                 --cluster-name {{ az_sf_cluster_node_type_add.input['cluster-name'] }} 
+                 --node-type {{ az_sf_cluster_node_type_add.input['node-type'] }} 
+                 --resource-group {{ az_sf_cluster_node_type_add.input['resource-group'] }} 
+                 --vm-password {{ az_sf_cluster_node_type_add.input['vm-password'] }} 
+                 --vm-user-name {{ az_sf_cluster_node_type_add.input['vm-user-name'] }} 
+                 {%if az_sf_cluster_node_type_add.input['durability-level'] %} --durability-level az_sf_cluster_node_type_add.input['durability-level'] {%endif %} 
+                 {%if az_sf_cluster_node_type_add.input['vm-sku'] %} --vm-sku az_sf_cluster_node_type_add.input['vm-sku'] {%endif %} 
+                 {%if az_sf_cluster_node_type_add.input['vm-tier'] %} --vm-tier az_sf_cluster_node_type_add.input['vm-tier'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_sf_cluster_node_type_add: "{{ az_sf_cluster_node_type_add|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sf_cluster_node_type_add }}" 

@@ -1,0 +1,38 @@
+
+
+ - name: Set input params for az_iot_device_create
+   set_fact: 
+     az_iot_device_create:
+       input: 
+         ###  Required parameter. Device Id.  ### 
+        'device-id': "{{ item['device-id'] | default('') }}" 
+         ###  Required parameter. IoT Hub name.  ### 
+        'hub-name': "{{ item['hub-name'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Output directory for generated self-signed X.509 certificate. Default is current working directory.  ### 
+        'output-dir': "{{ item['output-dir'] | default('') }}" 
+         ###  Optional parameter. Primary X.509 certificate thumbprint to authenticate device.  ### 
+        'primary-thumbprint': "{{ item['primary-thumbprint'] | default('') }}" 
+         ###  Optional parameter. Secondary X.509 certificate thumbprint to authenticate device.  ### 
+        'secondary-thumbprint': "{{ item['secondary-thumbprint'] | default('') }}" 
+         ###  Optional parameter. Number of days the generated self-signed X.509 certificate should be valid for. Default validity is 365 days.  ### 
+        'valid-days': "{{ item['valid-days'] | default('') }}" 
+         ###  Optional parameter. Use X.509 certificate for device authentication.  ### 
+        'x509': "{{ item['x509'] | default('') }}" 
+ - debug: msg="{{ az_iot_device_create }}"          
+ - name: "az iot device create: Register a device for an IoT hub." 
+   command: |                                      
+     az iot device create                            
+                 --device-id {{ az_iot_device_create.input['device-id'] }} 
+                 --hub-name {{ az_iot_device_create.input['hub-name'] }} 
+                 {%if az_iot_device_create.input['resource-group'] %} --resource-group az_iot_device_create.input['resource-group'] {%endif %} 
+                 {%if az_iot_device_create.input['output-dir'] %} --output-dir az_iot_device_create.input['output-dir'] {%endif %} 
+                 {%if az_iot_device_create.input['primary-thumbprint'] %} --primary-thumbprint az_iot_device_create.input['primary-thumbprint'] {%endif %} 
+                 {%if az_iot_device_create.input['secondary-thumbprint'] %} --secondary-thumbprint az_iot_device_create.input['secondary-thumbprint'] {%endif %} 
+                 {%if az_iot_device_create.input['valid-days'] %} --valid-days az_iot_device_create.input['valid-days'] {%endif %} 
+                 {%if az_iot_device_create.input['x509'] %} --x509 az_iot_device_create.input['x509'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_device_create: "{{ az_iot_device_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_device_create }}" 

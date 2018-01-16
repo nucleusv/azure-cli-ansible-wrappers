@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_find
+   set_fact: 
+     az_find:
+       input: 
+         ###  Required parameter. Query text to find.  ### 
+        'search-query': "{{ item['search-query'] | default('') }}" 
+         ###  Optional parameter. Clear the current index and reindex the command modules.  ### 
+        'reindex': "{{ item['reindex'] | default('') }}" 
+ - debug: msg="{{ az_find }}"          
+ - name: "az find: Find Azure CLI commands." 
+   command: |                                      
+     az find                            
+                 --search-query {{ az_find.input['search-query'] }} 
+                 {%if az_find.input['reindex'] %} --reindex az_find.input['reindex'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_find: "{{ az_find|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_find }}" 

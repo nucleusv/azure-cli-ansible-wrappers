@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_vmss_diagnostics_get_default_config
+   set_fact: 
+     az_vmss_diagnostics_get_default_config:
+       input: 
+         ###  Optional parameter.   ### 
+        'is-windows-os': "{{ item['is-windows-os'] | default('') }}" 
+ - debug: msg="{{ az_vmss_diagnostics_get_default_config }}"          
+ - name: "az vmss diagnostics get-default-config: Show the default config file which defines data to be collected." 
+   command: |                                      
+     az vmss diagnostics get-default-config                            
+                 {%if az_vmss_diagnostics_get_default_config.input['is-windows-os'] %} --is-windows-os az_vmss_diagnostics_get_default_config.input['is-windows-os'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_vmss_diagnostics_get_default_config: "{{ az_vmss_diagnostics_get_default_config|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vmss_diagnostics_get_default_config }}" 

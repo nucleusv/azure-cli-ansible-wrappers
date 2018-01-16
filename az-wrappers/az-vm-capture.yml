@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_vm_capture
+   set_fact: 
+     az_vm_capture:
+       input: 
+         ###  Required parameter. The name of the Virtual Machine. You can configure the default using `az configure --defaults vm=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The VHD name prefix specify for the VM disks.  ### 
+        'vhd-name-prefix': "{{ item['vhd-name-prefix'] | default('') }}" 
+         ###  Optional parameter. Overwrite the existing disk file.  ### 
+        'overwrite': "{{ item['overwrite'] | default('') }}" 
+         ###  Optional parameter. The storage account container name in which to save the disks.  ### 
+        'storage-container': "{{ item['storage-container'] | default('') }}" 
+ - debug: msg="{{ az_vm_capture }}"          
+ - name: "az vm capture: Capture information for a stopped VM." 
+   command: |                                      
+     az vm capture                            
+                 --name {{ az_vm_capture.input['name'] }} 
+                 --resource-group {{ az_vm_capture.input['resource-group'] }} 
+                 --vhd-name-prefix {{ az_vm_capture.input['vhd-name-prefix'] }} 
+                 {%if az_vm_capture.input['overwrite'] %} --overwrite az_vm_capture.input['overwrite'] {%endif %} 
+                 {%if az_vm_capture.input['storage-container'] %} --storage-container az_vm_capture.input['storage-container'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_vm_capture: "{{ az_vm_capture|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_capture }}" 

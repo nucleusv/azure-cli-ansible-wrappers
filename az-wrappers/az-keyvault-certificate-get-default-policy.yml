@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_keyvault_certificate_get_default_policy
+   set_fact: 
+     az_keyvault_certificate_get_default_policy:
+       input: 
+         ###  Optional parameter. Create a fully formed policy structure with default values.  ### 
+        'scaffold': "{{ item['scaffold'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_certificate_get_default_policy }}"          
+ - name: "az keyvault certificate get-default-policy: Get the default policy for self-signed certificates." 
+   command: |                                      
+     az keyvault certificate get-default-policy                            
+                 {%if az_keyvault_certificate_get_default_policy.input['scaffold'] %} --scaffold az_keyvault_certificate_get_default_policy.input['scaffold'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_keyvault_certificate_get_default_policy: "{{ az_keyvault_certificate_get_default_policy|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_certificate_get_default_policy }}" 

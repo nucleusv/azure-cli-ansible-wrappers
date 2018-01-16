@@ -1,0 +1,35 @@
+
+
+ - name: Set input params for az_group_deployment_create
+   set_fact: 
+     az_group_deployment_create:
+       input: 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Incremental (only add resources to resource group) or Complete (remove extra resources from resource group).  ### 
+        'mode': "{{ item['mode'] | default('') }}" 
+         ###  Optional parameter. The deployment name. Default to template file base name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+         ###  Optional parameter. Supply deployment parameter values.  ### 
+        'parameters': "{{ item['parameters'] | default('') }}" 
+         ###  Optional parameter. A template file path in the file system.  ### 
+        'template-file': "{{ item['template-file'] | default('') }}" 
+         ###  Optional parameter. A uri to a remote template file.  ### 
+        'template-uri': "{{ item['template-uri'] | default('') }}" 
+ - debug: msg="{{ az_group_deployment_create }}"          
+ - name: "az group deployment create: Start a deployment." 
+   command: |                                      
+     az group deployment create                            
+                 --resource-group {{ az_group_deployment_create.input['resource-group'] }} 
+                 {%if az_group_deployment_create.input['mode'] %} --mode az_group_deployment_create.input['mode'] {%endif %} 
+                 {%if az_group_deployment_create.input['name'] %} --name az_group_deployment_create.input['name'] {%endif %} 
+                 {%if az_group_deployment_create.input['no-wait'] %} --no-wait az_group_deployment_create.input['no-wait'] {%endif %} 
+                 {%if az_group_deployment_create.input['parameters'] %} --parameters az_group_deployment_create.input['parameters'] {%endif %} 
+                 {%if az_group_deployment_create.input['template-file'] %} --template-file az_group_deployment_create.input['template-file'] {%endif %} 
+                 {%if az_group_deployment_create.input['template-uri'] %} --template-uri az_group_deployment_create.input['template-uri'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_group_deployment_create: "{{ az_group_deployment_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_group_deployment_create }}" 

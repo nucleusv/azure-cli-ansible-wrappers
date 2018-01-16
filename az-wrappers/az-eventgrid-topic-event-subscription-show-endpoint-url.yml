@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_eventgrid_topic_event_subscription_show_endpoint_url
+   set_fact: 
+     az_eventgrid_topic_event_subscription_show_endpoint_url:
+       input: 
+         ###  Required parameter. Name of the event subscription.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the topic.  ### 
+        'topic-name': "{{ item['topic-name'] | default('') }}" 
+ - debug: msg="{{ az_eventgrid_topic_event_subscription_show_endpoint_url }}"          
+ - name: "az eventgrid topic event-subscription show-endpoint-url: Get the full endpoint URL of an event subscription for a topic." 
+   command: |                                      
+     az eventgrid topic event-subscription show-endpoint-url                            
+                 --name {{ az_eventgrid_topic_event_subscription_show_endpoint_url.input['name'] }} 
+                 --resource-group {{ az_eventgrid_topic_event_subscription_show_endpoint_url.input['resource-group'] }} 
+                 --topic-name {{ az_eventgrid_topic_event_subscription_show_endpoint_url.input['topic-name'] }} 
+   register: output  
+ - set_fact: 
+    az_eventgrid_topic_event_subscription_show_endpoint_url: "{{ az_eventgrid_topic_event_subscription_show_endpoint_url|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_eventgrid_topic_event_subscription_show_endpoint_url }}" 

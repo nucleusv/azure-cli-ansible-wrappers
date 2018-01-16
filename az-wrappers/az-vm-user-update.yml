@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_vm_user_update
+   set_fact: 
+     az_vm_user_update:
+       input: 
+         ###  Required parameter. The name of the Virtual Machine. You can configure the default using `az configure --defaults vm=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The user name.  ### 
+        'username': "{{ item['username'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+         ###  Optional parameter. The user password.  ### 
+        'password': "{{ item['password'] | default('') }}" 
+         ###  Optional parameter. SSH public key file value or public key file path.  ### 
+        'ssh-key-value': "{{ item['ssh-key-value'] | default('') }}" 
+ - debug: msg="{{ az_vm_user_update }}"          
+ - name: "az vm user update: Update a user account." 
+   command: |                                      
+     az vm user update                            
+                 --name {{ az_vm_user_update.input['name'] }} 
+                 --resource-group {{ az_vm_user_update.input['resource-group'] }} 
+                 --username {{ az_vm_user_update.input['username'] }} 
+                 {%if az_vm_user_update.input['no-wait'] %} --no-wait az_vm_user_update.input['no-wait'] {%endif %} 
+                 {%if az_vm_user_update.input['password'] %} --password az_vm_user_update.input['password'] {%endif %} 
+                 {%if az_vm_user_update.input['ssh-key-value'] %} --ssh-key-value az_vm_user_update.input['ssh-key-value'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_vm_user_update: "{{ az_vm_user_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_user_update }}" 

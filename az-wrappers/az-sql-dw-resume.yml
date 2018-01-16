@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_sql_dw_resume
+   set_fact: 
+     az_sql_dw_resume:
+       input: 
+         ###  Required parameter. Name of the data warehouse.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the Azure SQL server.  ### 
+        'server': "{{ item['server'] | default('') }}" 
+ - debug: msg="{{ az_sql_dw_resume }}"          
+ - name: "az sql dw resume: Resumes a data warehouse." 
+   command: |                                      
+     az sql dw resume                            
+                 --name {{ az_sql_dw_resume.input['name'] }} 
+                 --resource-group {{ az_sql_dw_resume.input['resource-group'] }} 
+                 --server {{ az_sql_dw_resume.input['server'] }} 
+   register: output  
+ - set_fact: 
+    az_sql_dw_resume: "{{ az_sql_dw_resume|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sql_dw_resume }}" 

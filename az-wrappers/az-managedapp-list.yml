@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_managedapp_list
+   set_fact: 
+     az_managedapp_list:
+       input: 
+         ###  Optional parameter. The resource group of the managed application.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_managedapp_list }}"          
+ - name: "az managedapp list: List managed applications." 
+   command: |                                      
+     az managedapp list                            
+                 {%if az_managedapp_list.input['resource-group'] %} --resource-group az_managedapp_list.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_managedapp_list: "{{ az_managedapp_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_managedapp_list }}" 

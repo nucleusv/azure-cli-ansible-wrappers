@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_lab_formula_export_artifacts
+   set_fact: 
+     az_lab_formula_export_artifacts:
+       input: 
+         ###  Required parameter. Name of the lab.  ### 
+        'lab-name': "{{ item['lab-name'] | default('') }}" 
+         ###  Required parameter. Name of the formula.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_lab_formula_export_artifacts }}"          
+ - name: "az lab formula export-artifacts: Export artifacts from a formula." 
+   command: |                                      
+     az lab formula export-artifacts                            
+                 --lab-name {{ az_lab_formula_export_artifacts.input['lab-name'] }} 
+                 --name {{ az_lab_formula_export_artifacts.input['name'] }} 
+                 --resource-group {{ az_lab_formula_export_artifacts.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_lab_formula_export_artifacts: "{{ az_lab_formula_export_artifacts|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_lab_formula_export_artifacts }}" 

@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_backup_item_set_policy
+   set_fact: 
+     az_backup_item_set_policy:
+       input: 
+         ###  Required parameter. Name of the container.  ### 
+        'container-name': "{{ item['container-name'] | default('') }}" 
+         ###  Required parameter. Name of the backed up item. You can use the backup item list command to get the name of a backed up item.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the Backup policy. You can use the backup policy list command to get the name of a backup policy.  ### 
+        'policy-name': "{{ item['policy-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the Recovery services vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+ - debug: msg="{{ az_backup_item_set_policy }}"          
+ - name: "az backup item set-policy: Update the policy associated with this item." 
+   command: |                                      
+     az backup item set-policy                            
+                 --container-name {{ az_backup_item_set_policy.input['container-name'] }} 
+                 --name {{ az_backup_item_set_policy.input['name'] }} 
+                 --policy-name {{ az_backup_item_set_policy.input['policy-name'] }} 
+                 --resource-group {{ az_backup_item_set_policy.input['resource-group'] }} 
+                 --vault-name {{ az_backup_item_set_policy.input['vault-name'] }} 
+   register: output  
+ - set_fact: 
+    az_backup_item_set_policy: "{{ az_backup_item_set_policy|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_backup_item_set_policy }}" 

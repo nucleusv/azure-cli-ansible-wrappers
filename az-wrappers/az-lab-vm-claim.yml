@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_lab_vm_claim
+   set_fact: 
+     az_lab_vm_claim:
+       input: 
+         ###  Optional parameter. Name of the lab.  ### 
+        'lab-name': "{{ item['lab-name'] | default('') }}" 
+         ###  Optional parameter. Name of the virtual machine to claim.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Name of lab's resource group.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_lab_vm_claim }}"          
+ - name: "az lab vm claim: Claim a virtual machine from the Lab." 
+   command: |                                      
+     az lab vm claim                            
+                 {%if az_lab_vm_claim.input['lab-name'] %} --lab-name az_lab_vm_claim.input['lab-name'] {%endif %} 
+                 {%if az_lab_vm_claim.input['name'] %} --name az_lab_vm_claim.input['name'] {%endif %} 
+                 {%if az_lab_vm_claim.input['resource-group'] %} --resource-group az_lab_vm_claim.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_lab_vm_claim: "{{ az_lab_vm_claim|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_lab_vm_claim }}" 

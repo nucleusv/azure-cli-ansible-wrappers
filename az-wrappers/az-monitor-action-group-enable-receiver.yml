@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_monitor_action_group_enable_receiver
+   set_fact: 
+     az_monitor_action_group_enable_receiver:
+       input: 
+         ###  Required parameter. The name of the action group.  ### 
+        'action-group': "{{ item['action-group'] | default('') }}" 
+         ###  Required parameter. The name of the receiver to resubscribe.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_monitor_action_group_enable_receiver }}"          
+ - name: "az monitor action-group enable-receiver: Enable a receiver in an action group." 
+   command: |                                      
+     az monitor action-group enable-receiver                            
+                 --action-group {{ az_monitor_action_group_enable_receiver.input['action-group'] }} 
+                 --name {{ az_monitor_action_group_enable_receiver.input['name'] }} 
+                 --resource-group {{ az_monitor_action_group_enable_receiver.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_monitor_action_group_enable_receiver: "{{ az_monitor_action_group_enable_receiver|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_monitor_action_group_enable_receiver }}" 

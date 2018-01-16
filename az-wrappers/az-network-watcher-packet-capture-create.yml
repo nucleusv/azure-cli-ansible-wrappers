@@ -1,0 +1,44 @@
+
+
+ - name: Set input params for az_network_watcher_packet_capture_create
+   set_fact: 
+     az_network_watcher_packet_capture_create:
+       input: 
+         ###  Required parameter. Name of the packet capture session.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the resource group the target VM is in. Do not use when supplying VM ID.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name or ID of the VM to target.  ### 
+        'vm': "{{ item['vm'] | default('') }}" 
+         ###  Optional parameter. The maximum size in bytes of the capture output.  ### 
+        'capture-limit': "{{ item['capture-limit'] | default('') }}" 
+         ###  Optional parameter. Number of bytes captured per packet. Excess bytes are truncated.  ### 
+        'capture-size': "{{ item['capture-size'] | default('') }}" 
+         ###  Optional parameter. JSON encoded list of packet filters. Use `@&lt;file path&gt;` to load from file.  ### 
+        'filters': "{{ item['filters'] | default('') }}" 
+         ###  Optional parameter. Maximum duration of the capture session in seconds.  ### 
+        'time-limit': "{{ item['time-limit'] | default('') }}" 
+         ###  Optional parameter. Local path on the targeted VM at which to save the packet capture. For Linux VMs, the path must start with /var/captures.  ### 
+        'file-path': "{{ item['file-path'] | default('') }}" 
+         ###  Optional parameter. Name or ID of a storage account to save the packet capture to.  ### 
+        'storage-account': "{{ item['storage-account'] | default('') }}" 
+         ###  Optional parameter. Fully qualified URI of an existing storage container in which to store the capture file.  ### 
+        'storage-path': "{{ item['storage-path'] | default('') }}" 
+ - debug: msg="{{ az_network_watcher_packet_capture_create }}"          
+ - name: "az network watcher packet-capture create: Create and start a packet capture session." 
+   command: |                                      
+     az network watcher packet-capture create                            
+                 --name {{ az_network_watcher_packet_capture_create.input['name'] }} 
+                 --resource-group {{ az_network_watcher_packet_capture_create.input['resource-group'] }} 
+                 --vm {{ az_network_watcher_packet_capture_create.input['vm'] }} 
+                 {%if az_network_watcher_packet_capture_create.input['capture-limit'] %} --capture-limit az_network_watcher_packet_capture_create.input['capture-limit'] {%endif %} 
+                 {%if az_network_watcher_packet_capture_create.input['capture-size'] %} --capture-size az_network_watcher_packet_capture_create.input['capture-size'] {%endif %} 
+                 {%if az_network_watcher_packet_capture_create.input['filters'] %} --filters az_network_watcher_packet_capture_create.input['filters'] {%endif %} 
+                 {%if az_network_watcher_packet_capture_create.input['time-limit'] %} --time-limit az_network_watcher_packet_capture_create.input['time-limit'] {%endif %} 
+                 {%if az_network_watcher_packet_capture_create.input['file-path'] %} --file-path az_network_watcher_packet_capture_create.input['file-path'] {%endif %} 
+                 {%if az_network_watcher_packet_capture_create.input['storage-account'] %} --storage-account az_network_watcher_packet_capture_create.input['storage-account'] {%endif %} 
+                 {%if az_network_watcher_packet_capture_create.input['storage-path'] %} --storage-path az_network_watcher_packet_capture_create.input['storage-path'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_watcher_packet_capture_create: "{{ az_network_watcher_packet_capture_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_watcher_packet_capture_create }}" 

@@ -1,0 +1,71 @@
+
+
+ - name: Set input params for az_webapp_deployment_source_config
+   set_fact: 
+     az_webapp_deployment_source_config:
+       input: 
+         ###  Required parameter. Name of the web. You can configure the default using 'az configure --defaults web=<name>'.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Repository url to pull the latest source from, e.g. <a href="https://github.com/foo/foo-web">https://github.com/foo/foo-web</a>.  ### 
+        'repo-url': "{{ item['repo-url'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The branch name of the repository.  ### 
+        'branch': "{{ item['branch'] | default('') }}" 
+         ###  Optional parameter. Git access token required for auto sync.  ### 
+        'git-token': "{{ item['git-token'] | default('') }}" 
+         ###  Optional parameter. Disable automatic sync between source control and web.  ### 
+        'manual-integration': "{{ item['manual-integration'] | default('') }}" 
+         ###  Optional parameter. Repository type.  ### 
+        'repository-type': "{{ item['repository-type'] | default('') }}" 
+         ###  Optional parameter. The name of the slot. Default to the productions slot if not specified.  ### 
+        'slot': "{{ item['slot'] | default('') }}" 
+         ###  Optional parameter. Working directory of the application. Default will be root of the repo.  ### 
+        'app-working-dir': "{{ item['app-working-dir'] | default('') }}" 
+         ###  Optional parameter. To create a new Visual Studio Team Services (VSTS) account if it doesn't exist already.  ### 
+        'cd-account-create': "{{ item['cd-account-create'] | default('') }}" 
+         ###  Optional parameter. Web application framework you used to develop your app. Default is AspNet.  ### 
+        'cd-app-type': "{{ item['cd-app-type'] | default('') }}" 
+         ###  Optional parameter. URL of the Visual Studio Team Services (VSTS) project to use for continuous delivery. URL should be in format https://&lt;accountname&gt;.visualstudio.com/&lt;projectname&gt;.  ### 
+        'cd-project-url': "{{ item['cd-project-url'] | default('') }}" 
+         ###  Optional parameter. Task runner for nodejs. Default is None.  ### 
+        'nodejs-task-runner': "{{ item['nodejs-task-runner'] | default('') }}" 
+         ###  Optional parameter. Password for the private repository.  ### 
+        'private-repo-password': "{{ item['private-repo-password'] | default('') }}" 
+         ###  Optional parameter. Username for the private repository.  ### 
+        'private-repo-username': "{{ item['private-repo-username'] | default('') }}" 
+         ###  Optional parameter. Framework used for Python application. Default is Django.  ### 
+        'python-framework': "{{ item['python-framework'] | default('') }}" 
+         ###  Optional parameter. Python version used for application. Default is Python 3.5.3 x86.  ### 
+        'python-version': "{{ item['python-version'] | default('') }}" 
+         ###  Optional parameter. Name of the slot to be used for deployment and later promote to production. If slot is not available, it will be created. Default: Not configured.  ### 
+        'slot-swap': "{{ item['slot-swap'] | default('') }}" 
+         ###  Optional parameter. Name of the web app to be used for load testing. If web app is not available, it will be created. Default: Disable.  ### 
+        'test': "{{ item['test'] | default('') }}" 
+ - debug: msg="{{ az_webapp_deployment_source_config }}"          
+ - name: "az webapp deployment source config: Manage deployment from git or Mercurial repositories." 
+   command: |                                      
+     az webapp deployment source config                            
+                 --name {{ az_webapp_deployment_source_config.input['name'] }} 
+                 --repo-url {{ az_webapp_deployment_source_config.input['repo-url'] }} 
+                 --resource-group {{ az_webapp_deployment_source_config.input['resource-group'] }} 
+                 {%if az_webapp_deployment_source_config.input['branch'] %} --branch az_webapp_deployment_source_config.input['branch'] {%endif %} 
+                 {%if az_webapp_deployment_source_config.input['git-token'] %} --git-token az_webapp_deployment_source_config.input['git-token'] {%endif %} 
+                 {%if az_webapp_deployment_source_config.input['manual-integration'] %} --manual-integration az_webapp_deployment_source_config.input['manual-integration'] {%endif %} 
+                 {%if az_webapp_deployment_source_config.input['repository-type'] %} --repository-type az_webapp_deployment_source_config.input['repository-type'] {%endif %} 
+                 {%if az_webapp_deployment_source_config.input['slot'] %} --slot az_webapp_deployment_source_config.input['slot'] {%endif %} 
+                 {%if az_webapp_deployment_source_config.input['app-working-dir'] %} --app-working-dir az_webapp_deployment_source_config.input['app-working-dir'] {%endif %} 
+                 {%if az_webapp_deployment_source_config.input['cd-account-create'] %} --cd-account-create az_webapp_deployment_source_config.input['cd-account-create'] {%endif %} 
+                 {%if az_webapp_deployment_source_config.input['cd-app-type'] %} --cd-app-type az_webapp_deployment_source_config.input['cd-app-type'] {%endif %} 
+                 {%if az_webapp_deployment_source_config.input['cd-project-url'] %} --cd-project-url az_webapp_deployment_source_config.input['cd-project-url'] {%endif %} 
+                 {%if az_webapp_deployment_source_config.input['nodejs-task-runner'] %} --nodejs-task-runner az_webapp_deployment_source_config.input['nodejs-task-runner'] {%endif %} 
+                 {%if az_webapp_deployment_source_config.input['private-repo-password'] %} --private-repo-password az_webapp_deployment_source_config.input['private-repo-password'] {%endif %} 
+                 {%if az_webapp_deployment_source_config.input['private-repo-username'] %} --private-repo-username az_webapp_deployment_source_config.input['private-repo-username'] {%endif %} 
+                 {%if az_webapp_deployment_source_config.input['python-framework'] %} --python-framework az_webapp_deployment_source_config.input['python-framework'] {%endif %} 
+                 {%if az_webapp_deployment_source_config.input['python-version'] %} --python-version az_webapp_deployment_source_config.input['python-version'] {%endif %} 
+                 {%if az_webapp_deployment_source_config.input['slot-swap'] %} --slot-swap az_webapp_deployment_source_config.input['slot-swap'] {%endif %} 
+                 {%if az_webapp_deployment_source_config.input['test'] %} --test az_webapp_deployment_source_config.input['test'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_webapp_deployment_source_config: "{{ az_webapp_deployment_source_config|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_webapp_deployment_source_config }}" 

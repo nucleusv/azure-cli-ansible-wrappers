@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_reservations_reservation_list
+   set_fact: 
+     az_reservations_reservation_list:
+       input: 
+         ###  Required parameter. Id of container reservation order.  ### 
+        'reservation-order-id': "{{ item['reservation-order-id'] | default('') }}" 
+ - debug: msg="{{ az_reservations_reservation_list }}"          
+ - name: "az reservations reservation list: Get all reservations." 
+   command: |                                      
+     az reservations reservation list                            
+                 --reservation-order-id {{ az_reservations_reservation_list.input['reservation-order-id'] }} 
+   register: output  
+ - set_fact: 
+    az_reservations_reservation_list: "{{ az_reservations_reservation_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_reservations_reservation_list }}" 

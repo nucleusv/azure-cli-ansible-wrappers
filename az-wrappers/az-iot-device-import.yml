@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_iot_device_import
+   set_fact: 
+     az_iot_device_import:
+       input: 
+         ###  Required parameter. IoT Hub name.  ### 
+        'hub-name': "{{ item['hub-name'] | default('') }}" 
+         ###  Required parameter. Blob Shared Access Signature URI with read access to a blob container.This blob contains the operations to be performed on the identity registry.  ### 
+        'input-blob-container-uri': "{{ item['input-blob-container-uri'] | default('') }}" 
+         ###  Required parameter. Blob Shared Access Signature URI with write access to a blob container.This is used to output the status of the job and the results.  ### 
+        'output-blob-container-uri': "{{ item['output-blob-container-uri'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_iot_device_import }}"          
+ - name: "az iot device import: Import, update, or delete device identities in the IoT hub identity registry from a blob." 
+   command: |                                      
+     az iot device import                            
+                 --hub-name {{ az_iot_device_import.input['hub-name'] }} 
+                 --input-blob-container-uri {{ az_iot_device_import.input['input-blob-container-uri'] }} 
+                 --output-blob-container-uri {{ az_iot_device_import.input['output-blob-container-uri'] }} 
+                 {%if az_iot_device_import.input['resource-group'] %} --resource-group az_iot_device_import.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_device_import: "{{ az_iot_device_import|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_device_import }}" 

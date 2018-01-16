@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_sf_cluster_client_certificate_remove
+   set_fact: 
+     az_sf_cluster_client_certificate_remove:
+       input: 
+         ###  Required parameter. Specify the name of the cluster, if not given it will be same as resource group name.  ### 
+        'cluster-name': "{{ item['cluster-name'] | default('') }}" 
+         ###  Required parameter. The resource group name.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Client certificate common name.  ### 
+        'certificate-common-name': "{{ item['certificate-common-name'] | default('') }}" 
+         ###  Optional parameter. Client certificate issuer thumbprint.  ### 
+        'certificate-issuer-thumbprint': "{{ item['certificate-issuer-thumbprint'] | default('') }}" 
+         ###  Optional parameter. JSON encoded parameters configuration. Use @{file} to load from a file. For example: [{"certificateCommonName": "test.com","certificateIssuerThumbprint": "22B4AE296B504E512DF880A77A2CAE20200FF922"}].  ### 
+        'client-certificate-common-names': "{{ item['client-certificate-common-names'] | default('') }}" 
+         ###  Optional parameter. A single or Space separated list of client certificate thumbprint(s) to be remove.  ### 
+        'thumbprints': "{{ item['thumbprints'] | default('') }}" 
+ - debug: msg="{{ az_sf_cluster_client_certificate_remove }}"          
+ - name: "az sf cluster client-certificate remove: Remove client certificates or subject names used for authentication." 
+   command: |                                      
+     az sf cluster client-certificate remove                            
+                 --cluster-name {{ az_sf_cluster_client_certificate_remove.input['cluster-name'] }} 
+                 --resource-group {{ az_sf_cluster_client_certificate_remove.input['resource-group'] }} 
+                 {%if az_sf_cluster_client_certificate_remove.input['certificate-common-name'] %} --certificate-common-name az_sf_cluster_client_certificate_remove.input['certificate-common-name'] {%endif %} 
+                 {%if az_sf_cluster_client_certificate_remove.input['certificate-issuer-thumbprint'] %} --certificate-issuer-thumbprint az_sf_cluster_client_certificate_remove.input['certificate-issuer-thumbprint'] {%endif %} 
+                 {%if az_sf_cluster_client_certificate_remove.input['client-certificate-common-names'] %} --client-certificate-common-names az_sf_cluster_client_certificate_remove.input['client-certificate-common-names'] {%endif %} 
+                 {%if az_sf_cluster_client_certificate_remove.input['thumbprints'] %} --thumbprints az_sf_cluster_client_certificate_remove.input['thumbprints'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_sf_cluster_client_certificate_remove: "{{ az_sf_cluster_client_certificate_remove|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sf_cluster_client_certificate_remove }}" 

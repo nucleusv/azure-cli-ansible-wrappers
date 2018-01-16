@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_network_application_gateway_address_pool_show
+   set_fact: 
+     az_network_application_gateway_address_pool_show:
+       input: 
+         ###  Required parameter. The name of the application gateway.  ### 
+        'gateway-name': "{{ item['gateway-name'] | default('') }}" 
+         ###  Required parameter. The name of the backend address pool.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_network_application_gateway_address_pool_show }}"          
+ - name: "az network application-gateway address-pool show: Get the details for a backend address pool." 
+   command: |                                      
+     az network application-gateway address-pool show                            
+                 --gateway-name {{ az_network_application_gateway_address_pool_show.input['gateway-name'] }} 
+                 --name {{ az_network_application_gateway_address_pool_show.input['name'] }} 
+                 --resource-group {{ az_network_application_gateway_address_pool_show.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_network_application_gateway_address_pool_show: "{{ az_network_application_gateway_address_pool_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_application_gateway_address_pool_show }}" 

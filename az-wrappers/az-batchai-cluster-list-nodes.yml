@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_batchai_cluster_list_nodes
+   set_fact: 
+     az_batchai_cluster_list_nodes:
+       input: 
+         ###  Required parameter. Name of the cluster.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_batchai_cluster_list_nodes }}"          
+ - name: "az batchai cluster list-nodes: List remote login information for cluster's nodes." 
+   command: |                                      
+     az batchai cluster list-nodes                            
+                 --name {{ az_batchai_cluster_list_nodes.input['name'] }} 
+                 --resource-group {{ az_batchai_cluster_list_nodes.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_batchai_cluster_list_nodes: "{{ az_batchai_cluster_list_nodes|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batchai_cluster_list_nodes }}" 

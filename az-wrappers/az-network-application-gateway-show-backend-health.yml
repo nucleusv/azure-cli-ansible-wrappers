@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_network_application_gateway_show_backend_health
+   set_fact: 
+     az_network_application_gateway_show_backend_health:
+       input: 
+         ###  Required parameter. The name of the application gateway.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Expands BackendAddressPool and BackendHttpSettings referenced in backend health.  ### 
+        'expand': "{{ item['expand'] | default('') }}" 
+ - debug: msg="{{ az_network_application_gateway_show_backend_health }}"          
+ - name: "az network application-gateway show-backend-health: Get information on the backend health of an application gateway." 
+   command: |                                      
+     az network application-gateway show-backend-health                            
+                 --name {{ az_network_application_gateway_show_backend_health.input['name'] }} 
+                 --resource-group {{ az_network_application_gateway_show_backend_health.input['resource-group'] }} 
+                 {%if az_network_application_gateway_show_backend_health.input['expand'] %} --expand az_network_application_gateway_show_backend_health.input['expand'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_application_gateway_show_backend_health: "{{ az_network_application_gateway_show_backend_health|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_application_gateway_show_backend_health }}" 

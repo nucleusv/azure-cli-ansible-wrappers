@@ -1,0 +1,44 @@
+
+
+ - name: Set input params for az_network_vnet_create
+   set_fact: 
+     az_network_vnet_create:
+       input: 
+         ###  Required parameter. The virtual network (VNet) name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Space separated list of IP address prefixes for the VNet.  ### 
+        'address-prefixes': "{{ item['address-prefixes'] | default('') }}" 
+         ###  Optional parameter. Enable DDoS protection for protected resources in the VNet.  ### 
+        'ddos-protection': "{{ item['ddos-protection'] | default('') }}" 
+         ###  Optional parameter. Space separated list of DNS server IP addresses.  ### 
+        'dns-servers': "{{ item['dns-servers'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. Name of a new subnet to create within the VNet.  ### 
+        'subnet-name': "{{ item['subnet-name'] | default('') }}" 
+         ###  Optional parameter. IP address prefix for the new subnet. If omitted, automatically reserves a /24 (or as large as available) block within the VNet address space.  ### 
+        'subnet-prefix': "{{ item['subnet-prefix'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. Enable VM protection for all subnets in the VNet.  ### 
+        'vm-protection': "{{ item['vm-protection'] | default('') }}" 
+ - debug: msg="{{ az_network_vnet_create }}"          
+ - name: "az network vnet create: Create a virtual network." 
+   command: |                                      
+     az network vnet create                            
+                 --name {{ az_network_vnet_create.input['name'] }} 
+                 --resource-group {{ az_network_vnet_create.input['resource-group'] }} 
+                 {%if az_network_vnet_create.input['address-prefixes'] %} --address-prefixes az_network_vnet_create.input['address-prefixes'] {%endif %} 
+                 {%if az_network_vnet_create.input['ddos-protection'] %} --ddos-protection az_network_vnet_create.input['ddos-protection'] {%endif %} 
+                 {%if az_network_vnet_create.input['dns-servers'] %} --dns-servers az_network_vnet_create.input['dns-servers'] {%endif %} 
+                 {%if az_network_vnet_create.input['location'] %} --location az_network_vnet_create.input['location'] {%endif %} 
+                 {%if az_network_vnet_create.input['subnet-name'] %} --subnet-name az_network_vnet_create.input['subnet-name'] {%endif %} 
+                 {%if az_network_vnet_create.input['subnet-prefix'] %} --subnet-prefix az_network_vnet_create.input['subnet-prefix'] {%endif %} 
+                 {%if az_network_vnet_create.input['rtags'] %} --tags az_network_vnet_create.input['rtags'] {%endif %} 
+                 {%if az_network_vnet_create.input['vm-protection'] %} --vm-protection az_network_vnet_create.input['vm-protection'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_vnet_create: "{{ az_network_vnet_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_vnet_create }}" 

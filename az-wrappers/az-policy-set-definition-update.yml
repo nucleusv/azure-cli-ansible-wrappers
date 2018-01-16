@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_policy_set_definition_update
+   set_fact: 
+     az_policy_set_definition_update:
+       input: 
+         ###  Required parameter. The policy set definition name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. JSON formatted string or a path to a file or uri with such content.  ### 
+        'definitions': "{{ item['definitions'] | default('') }}" 
+         ###  Optional parameter. Description of policy set definition.  ### 
+        'description': "{{ item['description'] | default('') }}" 
+         ###  Optional parameter. Display name of policy set definition.  ### 
+        'display-name': "{{ item['display-name'] | default('') }}" 
+         ###  Optional parameter. JSON formatted string or a path to a file or uri with parameter definitions.  ### 
+        'params': "{{ item['params'] | default('') }}" 
+ - debug: msg="{{ az_policy_set_definition_update }}"          
+ - name: "az policy set-definition update: Update a policy set definition." 
+   command: |                                      
+     az policy set-definition update                            
+                 --name {{ az_policy_set_definition_update.input['name'] }} 
+                 {%if az_policy_set_definition_update.input['definitions'] %} --definitions az_policy_set_definition_update.input['definitions'] {%endif %} 
+                 {%if az_policy_set_definition_update.input['description'] %} --description az_policy_set_definition_update.input['description'] {%endif %} 
+                 {%if az_policy_set_definition_update.input['display-name'] %} --display-name az_policy_set_definition_update.input['display-name'] {%endif %} 
+                 {%if az_policy_set_definition_update.input['params'] %} --params az_policy_set_definition_update.input['params'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_policy_set_definition_update: "{{ az_policy_set_definition_update|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_policy_set_definition_update }}" 

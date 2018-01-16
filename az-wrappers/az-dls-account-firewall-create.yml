@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_dls_account_firewall_create
+   set_fact: 
+     az_dls_account_firewall_create:
+       input: 
+         ###  Required parameter. Name of the Data Lake Store account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The end of the valid ip range for the firewall rule.  ### 
+        'end-ip-address': "{{ item['end-ip-address'] | default('') }}" 
+         ###  Required parameter. The name of the firewall rule.  ### 
+        'firewall-rule-name': "{{ item['firewall-rule-name'] | default('') }}" 
+         ###  Required parameter. The start of the valid ip range for the firewall rule.  ### 
+        'start-ip-address': "{{ item['start-ip-address'] | default('') }}" 
+         ###  Optional parameter. If not specified, will attempt to discover the resource group for the specified Data Lake Store account.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_dls_account_firewall_create }}"          
+ - name: "az dls account firewall create: Creates a firewall rule in a Data Lake Store account." 
+   command: |                                      
+     az dls account firewall create                            
+                 --account {{ az_dls_account_firewall_create.input['account'] }} 
+                 --end-ip-address {{ az_dls_account_firewall_create.input['end-ip-address'] }} 
+                 --firewall-rule-name {{ az_dls_account_firewall_create.input['firewall-rule-name'] }} 
+                 --start-ip-address {{ az_dls_account_firewall_create.input['start-ip-address'] }} 
+                 {%if az_dls_account_firewall_create.input['resource-group'] %} --resource-group az_dls_account_firewall_create.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dls_account_firewall_create: "{{ az_dls_account_firewall_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dls_account_firewall_create }}" 

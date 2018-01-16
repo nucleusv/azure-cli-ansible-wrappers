@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_resource_lock_list
+   set_fact: 
+     az_resource_lock_list:
+       input: 
+         ###  Optional parameter. A query filter to use to restrict the results.  ### 
+        'filter-string': "{{ item['filter-string'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Provider namespace (Ex: 'Microsoft.Provider').  ### 
+        'namespace': "{{ item['namespace'] | default('') }}" 
+         ###  Optional parameter. The parent path (Ex: 'resA/myA/resB/myB').  ### 
+        'parent': "{{ item['parent'] | default('') }}" 
+         ###  Optional parameter. If an ID is given, other resource arguments should not be given.  ### 
+        'resource': "{{ item['resource'] | default('') }}" 
+         ###  Optional parameter. The resource type (Ex: 'resC'). Can also accept namespace/type format (Ex: 'Microsoft.Provider/resC').  ### 
+        'resource-type': "{{ item['resource-type'] | default('') }}" 
+ - debug: msg="{{ az_resource_lock_list }}"          
+ - name: "az resource lock list: List lock information in the resource-level." 
+   command: |                                      
+     az resource lock list                            
+                 {%if az_resource_lock_list.input['filter-string'] %} --filter-string az_resource_lock_list.input['filter-string'] {%endif %} 
+                 {%if az_resource_lock_list.input['resource-group'] %} --resource-group az_resource_lock_list.input['resource-group'] {%endif %} 
+                 {%if az_resource_lock_list.input['namespace'] %} --namespace az_resource_lock_list.input['namespace'] {%endif %} 
+                 {%if az_resource_lock_list.input['parent'] %} --parent az_resource_lock_list.input['parent'] {%endif %} 
+                 {%if az_resource_lock_list.input['resource'] %} --resource az_resource_lock_list.input['resource'] {%endif %} 
+                 {%if az_resource_lock_list.input['resource-type'] %} --resource-type az_resource_lock_list.input['resource-type'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_resource_lock_list: "{{ az_resource_lock_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_resource_lock_list }}" 

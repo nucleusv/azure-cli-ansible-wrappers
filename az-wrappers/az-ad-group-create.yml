@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_ad_group_create
+   set_fact: 
+     az_ad_group_create:
+       input: 
+         ###  Required parameter. Object's display name or its prefix.  ### 
+        'display-name': "{{ item['display-name'] | default('') }}" 
+         ###  Required parameter. Mail nickname.  ### 
+        'mail-nickname': "{{ item['mail-nickname'] | default('') }}" 
+ - debug: msg="{{ az_ad_group_create }}"          
+ - name: "az ad group create: Create a group in the directory." 
+   command: |                                      
+     az ad group create                            
+                 --display-name {{ az_ad_group_create.input['display-name'] }} 
+                 --mail-nickname {{ az_ad_group_create.input['mail-nickname'] }} 
+   register: output  
+ - set_fact: 
+    az_ad_group_create: "{{ az_ad_group_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_ad_group_create }}" 

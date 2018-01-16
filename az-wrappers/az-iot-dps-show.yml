@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_iot_dps_show
+   set_fact: 
+     az_iot_dps_show:
+       input: 
+         ###  Required parameter. IoT Provisioning Service name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_iot_dps_show }}"          
+ - name: "az iot dps show: Get the details of an Azure IoT Hub device provisioning service." 
+   command: |                                      
+     az iot dps show                            
+                 --name {{ az_iot_dps_show.input['name'] }} 
+                 {%if az_iot_dps_show.input['resource-group'] %} --resource-group az_iot_dps_show.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_dps_show: "{{ az_iot_dps_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_dps_show }}" 

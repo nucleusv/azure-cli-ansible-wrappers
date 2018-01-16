@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_iot_hub_policy_delete
+   set_fact: 
+     az_iot_hub_policy_delete:
+       input: 
+         ###  Required parameter. IoT Hub name.  ### 
+        'hub-name': "{{ item['hub-name'] | default('') }}" 
+         ###  Required parameter. Shared access policy name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_iot_hub_policy_delete }}"          
+ - name: "az iot hub policy delete: Delete a shared access policy from an IoT hub." 
+   command: |                                      
+     az iot hub policy delete                            
+                 --hub-name {{ az_iot_hub_policy_delete.input['hub-name'] }} 
+                 --name {{ az_iot_hub_policy_delete.input['name'] }} 
+                 {%if az_iot_hub_policy_delete.input['resource-group'] %} --resource-group az_iot_hub_policy_delete.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_hub_policy_delete: "{{ az_iot_hub_policy_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_hub_policy_delete }}" 

@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_provider_show
+   set_fact: 
+     az_provider_show:
+       input: 
+         ###  Required parameter. The resource namespace, aka 'provider'.  ### 
+        'namespace': "{{ item['namespace'] | default('') }}" 
+         ###  Optional parameter. The $expand query parameter. For example, to include property aliases in response, use $expand=resourceTypes/aliases.  ### 
+        'expand': "{{ item['expand'] | default('') }}" 
+ - debug: msg="{{ az_provider_show }}"          
+ - name: "az provider show: Gets the specified resource provider." 
+   command: |                                      
+     az provider show                            
+                 --namespace {{ az_provider_show.input['namespace'] }} 
+                 {%if az_provider_show.input['expand'] %} --expand az_provider_show.input['expand'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_provider_show: "{{ az_provider_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_provider_show }}" 

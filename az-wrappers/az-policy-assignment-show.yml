@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_policy_assignment_show
+   set_fact: 
+     az_policy_assignment_show:
+       input: 
+         ###  Required parameter. Name of the assignment.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. The resource group where the policy will be applied.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Scope at which this policy assignment applies to, e.g., /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333, /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup, or /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup/providers/Microsoft.Compute/virtualMachines/myVM.  ### 
+        'scope': "{{ item['scope'] | default('') }}" 
+ - debug: msg="{{ az_policy_assignment_show }}"          
+ - name: "az policy assignment show: Show a resource policy assignment." 
+   command: |                                      
+     az policy assignment show                            
+                 --name {{ az_policy_assignment_show.input['name'] }} 
+                 {%if az_policy_assignment_show.input['resource-group'] %} --resource-group az_policy_assignment_show.input['resource-group'] {%endif %} 
+                 {%if az_policy_assignment_show.input['scope'] %} --scope az_policy_assignment_show.input['scope'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_policy_assignment_show: "{{ az_policy_assignment_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_policy_assignment_show }}" 

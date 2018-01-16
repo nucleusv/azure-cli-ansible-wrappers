@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_identity_create
+   set_fact: 
+     az_identity_create:
+       input: 
+         ###  Required parameter. The name of the identity resource.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Optional parameter. Resource tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+ - debug: msg="{{ az_identity_create }}"          
+ - name: "az identity create: Create or update an identity in the specified subscription and resource group." 
+   command: |                                      
+     az identity create                            
+                 --name {{ az_identity_create.input['name'] }} 
+                 --resource-group {{ az_identity_create.input['resource-group'] }} 
+                 {%if az_identity_create.input['location'] %} --location az_identity_create.input['location'] {%endif %} 
+                 {%if az_identity_create.input['rtags'] %} --tags az_identity_create.input['rtags'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_identity_create: "{{ az_identity_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_identity_create }}" 

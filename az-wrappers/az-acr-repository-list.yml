@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_acr_repository_list
+   set_fact: 
+     az_acr_repository_list:
+       input: 
+         ###  Required parameter. The name of the container registry. You can configure the default registry name using `az configure --defaults acr=&lt;registry name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. The password used to log into a container registry.  ### 
+        'password': "{{ item['password'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The username used to log into a container registry.  ### 
+        'username': "{{ item['username'] | default('') }}" 
+ - debug: msg="{{ az_acr_repository_list }}"          
+ - name: "az acr repository list: List repositories in a container registry." 
+   command: |                                      
+     az acr repository list                            
+                 --name {{ az_acr_repository_list.input['name'] }} 
+                 {%if az_acr_repository_list.input['password'] %} --password az_acr_repository_list.input['password'] {%endif %} 
+                 {%if az_acr_repository_list.input['resource-group'] %} --resource-group az_acr_repository_list.input['resource-group'] {%endif %} 
+                 {%if az_acr_repository_list.input['username'] %} --username az_acr_repository_list.input['username'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_acr_repository_list: "{{ az_acr_repository_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_acr_repository_list }}" 

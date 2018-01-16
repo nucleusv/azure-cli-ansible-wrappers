@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_ad_user_show
+   set_fact: 
+     az_ad_user_show:
+       input: 
+         ###  Required parameter. The object ID or principal name of the user for which to get information.  ### 
+        'upn-or-object-id': "{{ item['upn-or-object-id'] | default('') }}" 
+ - debug: msg="{{ az_ad_user_show }}"          
+ - name: "az ad user show: Gets user information from the directory." 
+   command: |                                      
+     az ad user show                            
+                 --upn-or-object-id {{ az_ad_user_show.input['upn-or-object-id'] }} 
+   register: output  
+ - set_fact: 
+    az_ad_user_show: "{{ az_ad_user_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_ad_user_show }}" 

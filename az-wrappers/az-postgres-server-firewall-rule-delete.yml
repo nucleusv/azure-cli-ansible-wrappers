@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_postgres_server_firewall_rule_delete
+   set_fact: 
+     az_postgres_server_firewall_rule_delete:
+       input: 
+         ###  Required parameter. The name of the firewall rule.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the server.  ### 
+        'server-name': "{{ item['server-name'] | default('') }}" 
+         ###  Optional parameter. Do not prompt for confirmation.  ### 
+        'yes': "{{ item['yes'] | default('') }}" 
+ - debug: msg="{{ az_postgres_server_firewall_rule_delete }}"          
+ - name: "az postgres server firewall-rule delete: Delete a firewall rule." 
+   command: |                                      
+     az postgres server firewall-rule delete                            
+                 --name {{ az_postgres_server_firewall_rule_delete.input['name'] }} 
+                 --resource-group {{ az_postgres_server_firewall_rule_delete.input['resource-group'] }} 
+                 --server-name {{ az_postgres_server_firewall_rule_delete.input['server-name'] }} 
+                 {%if az_postgres_server_firewall_rule_delete.input['yes'] %} --yes {%endif %} 
+   register: output  
+ - set_fact: 
+    az_postgres_server_firewall_rule_delete: "{{ az_postgres_server_firewall_rule_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_postgres_server_firewall_rule_delete }}" 

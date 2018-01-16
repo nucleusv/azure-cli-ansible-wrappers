@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_iot_device_delete
+   set_fact: 
+     az_iot_device_delete:
+       input: 
+         ###  Required parameter. Device Id.  ### 
+        'device-id': "{{ item['device-id'] | default('') }}" 
+         ###  Required parameter. IoT Hub name.  ### 
+        'hub-name': "{{ item['hub-name'] | default('') }}" 
+         ###  Optional parameter. ETag of the target device. It is used for the purpose of optimistic concurrency. Delete operation will be performed only if the specified ETag matches the value maintained by the server, indicating that the device identity has not been modified since it was retrieved. Default value is set to wildcard character (*) to force an unconditional delete.  ### 
+        'etag': "{{ item['etag'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_iot_device_delete }}"          
+ - name: "az iot device delete: Delete a device from an IoT hub." 
+   command: |                                      
+     az iot device delete                            
+                 --device-id {{ az_iot_device_delete.input['device-id'] }} 
+                 --hub-name {{ az_iot_device_delete.input['hub-name'] }} 
+                 {%if az_iot_device_delete.input['etag'] %} --etag az_iot_device_delete.input['etag'] {%endif %} 
+                 {%if az_iot_device_delete.input['resource-group'] %} --resource-group az_iot_device_delete.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_device_delete: "{{ az_iot_device_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_device_delete }}" 

@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_network_watcher_configure
+   set_fact: 
+     az_network_watcher_configure:
+       input: 
+         ###  Required parameter. Space separated list of locations to configure.  ### 
+        'locations': "{{ item['locations'] | default('') }}" 
+         ###  Optional parameter. Enabled status of Network Watch in the specified regions.  ### 
+        'enabled': "{{ item['enabled'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. Required when enabling new regions.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+ - debug: msg="{{ az_network_watcher_configure }}"          
+ - name: "az network watcher configure: Configure the Network Watcher service for different regions." 
+   command: |                                      
+     az network watcher configure                            
+                 --locations {{ az_network_watcher_configure.input['locations'] }} 
+                 {%if az_network_watcher_configure.input['enabled'] %} --enabled az_network_watcher_configure.input['enabled'] {%endif %} 
+                 {%if az_network_watcher_configure.input['resource-group'] %} --resource-group az_network_watcher_configure.input['resource-group'] {%endif %} 
+                 {%if az_network_watcher_configure.input['rtags'] %} --tags az_network_watcher_configure.input['rtags'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_watcher_configure: "{{ az_network_watcher_configure|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_watcher_configure }}" 

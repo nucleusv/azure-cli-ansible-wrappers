@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_group_create
+   set_fact: 
+     az_group_create:
+       input: 
+         ###  Required parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Required parameter. Name of the new resource group.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in 'key[=value]' format. Use "" to clear existing tags.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+ - debug: msg="{{ az_group_create }}"          
+ - name: "az group create: Create a new resource group." 
+   command: |                                      
+     az group create                            
+                 --location {{ az_group_create.input['location'] }} 
+                 --name {{ az_group_create.input['name'] }} 
+                 {%if az_group_create.input['rtags'] %} --tags az_group_create.input['rtags'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_group_create: "{{ az_group_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_group_create }}" 

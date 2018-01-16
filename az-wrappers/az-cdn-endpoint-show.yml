@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_cdn_endpoint_show
+   set_fact: 
+     az_cdn_endpoint_show:
+       input: 
+         ###  Required parameter. Name of the CDN endpoint.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the CDN profile which is unique within the resource group.  ### 
+        'profile-name': "{{ item['profile-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_cdn_endpoint_show }}"          
+ - name: "az cdn endpoint show: Gets an existing CDN endpoint with the specified endpoint name under the specified subscription, resource group and profile." 
+   command: |                                      
+     az cdn endpoint show                            
+                 --name {{ az_cdn_endpoint_show.input['name'] }} 
+                 --profile-name {{ az_cdn_endpoint_show.input['profile-name'] }} 
+                 --resource-group {{ az_cdn_endpoint_show.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_cdn_endpoint_show: "{{ az_cdn_endpoint_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cdn_endpoint_show }}" 

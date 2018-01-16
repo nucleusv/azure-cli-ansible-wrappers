@@ -1,0 +1,62 @@
+
+
+ - name: Set input params for az_storage_file_copy_start_batch
+   set_fact: 
+     az_storage_file_copy_start_batch:
+       input: 
+         ###  Optional parameter. The directory where the source data is copied to. If omitted, data is copied to the root directory.  ### 
+        'destination-path': "{{ item['destination-path'] | default('') }}" 
+         ###  Optional parameter. The file share where the source data is copied to.  ### 
+        'destination-share': "{{ item['destination-share'] | default('') }}" 
+         ###  Optional parameter. List the files and blobs to be copied. No actual data transfer will occur.  ### 
+        'dryrun': "{{ item['dryrun'] | default('') }}" 
+         ###  Optional parameter. Metadata in space-separated key=value pairs. This overwrites any existing metadata.  ### 
+        'metadata': "{{ item['metadata'] | default('') }}" 
+         ###  Optional parameter. The pattern used for globbing files and blobs. The supported patterns are '*', '?', '[seq', and '[!seq]'.  ### 
+        'pattern': "{{ item['pattern'] | default('') }}" 
+         ###  Optional parameter. Request timeout in seconds. Applies to each call to the service.  ### 
+        'timeout': "{{ item['timeout'] | default('') }}" 
+         ###  Optional parameter. The account key for the source storage account. If omitted, the active login is used to determine the account key.  ### 
+        'source-account-key': "{{ item['source-account-key'] | default('') }}" 
+         ###  Optional parameter. The source storage account to copy the data from. If omitted, the destination account is used.  ### 
+        'source-account-name': "{{ item['source-account-name'] | default('') }}" 
+         ###  Optional parameter. The source container blobs are copied from.  ### 
+        'source-container': "{{ item['source-container'] | default('') }}" 
+         ###  Optional parameter. The shared access signature for the source storage account.  ### 
+        'source-sas': "{{ item['source-sas'] | default('') }}" 
+         ###  Optional parameter. The source share files are copied from.  ### 
+        'source-share': "{{ item['source-share'] | default('') }}" 
+         ###  Optional parameter. A URI that specifies a the source file share or blob container.  ### 
+        'source-uri': "{{ item['source-uri'] | default('') }}" 
+         ###  Optional parameter. Storage account key. Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Storage account name. Related environment variable: AZURE_STORAGE_ACCOUNT. Must be used in conjunction with either storage account key or a SAS token. If neither are present, the command will try to query the storage account key using the authenticated Azure account. If a large number of storage commands are executed the API quota may be hit.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+         ###  Optional parameter. Storage account connection string. Environment variable: AZURE_STORAGE_CONNECTION_STRING.  ### 
+        'connection-string': "{{ item['connection-string'] | default('') }}" 
+         ###  Optional parameter. A Shared Access Signature (SAS). Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_SAS_TOKEN.  ### 
+        'sas-token': "{{ item['sas-token'] | default('') }}" 
+ - debug: msg="{{ az_storage_file_copy_start_batch }}"          
+ - name: "az storage file copy start-batch: Copy multiple files or blobs to a file share." 
+   command: |                                      
+     az storage file copy start-batch                            
+                 {%if az_storage_file_copy_start_batch.input['destination-path'] %} --destination-path az_storage_file_copy_start_batch.input['destination-path'] {%endif %} 
+                 {%if az_storage_file_copy_start_batch.input['destination-share'] %} --destination-share az_storage_file_copy_start_batch.input['destination-share'] {%endif %} 
+                 {%if az_storage_file_copy_start_batch.input['dryrun'] %} --dryrun az_storage_file_copy_start_batch.input['dryrun'] {%endif %} 
+                 {%if az_storage_file_copy_start_batch.input['metadata'] %} --metadata az_storage_file_copy_start_batch.input['metadata'] {%endif %} 
+                 {%if az_storage_file_copy_start_batch.input['pattern'] %} --pattern az_storage_file_copy_start_batch.input['pattern'] {%endif %} 
+                 {%if az_storage_file_copy_start_batch.input['timeout'] %} --timeout az_storage_file_copy_start_batch.input['timeout'] {%endif %} 
+                 {%if az_storage_file_copy_start_batch.input['source-account-key'] %} --source-account-key az_storage_file_copy_start_batch.input['source-account-key'] {%endif %} 
+                 {%if az_storage_file_copy_start_batch.input['source-account-name'] %} --source-account-name az_storage_file_copy_start_batch.input['source-account-name'] {%endif %} 
+                 {%if az_storage_file_copy_start_batch.input['source-container'] %} --source-container az_storage_file_copy_start_batch.input['source-container'] {%endif %} 
+                 {%if az_storage_file_copy_start_batch.input['source-sas'] %} --source-sas az_storage_file_copy_start_batch.input['source-sas'] {%endif %} 
+                 {%if az_storage_file_copy_start_batch.input['source-share'] %} --source-share az_storage_file_copy_start_batch.input['source-share'] {%endif %} 
+                 {%if az_storage_file_copy_start_batch.input['source-uri'] %} --source-uri az_storage_file_copy_start_batch.input['source-uri'] {%endif %} 
+                 {%if az_storage_file_copy_start_batch.input['account-key'] %} --account-key az_storage_file_copy_start_batch.input['account-key'] {%endif %} 
+                 {%if az_storage_file_copy_start_batch.input['account-name'] %} --account-name az_storage_file_copy_start_batch.input['account-name'] {%endif %} 
+                 {%if az_storage_file_copy_start_batch.input['connection-string'] %} --connection-string az_storage_file_copy_start_batch.input['connection-string'] {%endif %} 
+                 {%if az_storage_file_copy_start_batch.input['sas-token'] %} --sas-token az_storage_file_copy_start_batch.input['sas-token'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_storage_file_copy_start_batch: "{{ az_storage_file_copy_start_batch|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_storage_file_copy_start_batch }}" 

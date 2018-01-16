@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_network_route_filter_delete
+   set_fact: 
+     az_network_route_filter_delete:
+       input: 
+         ###  Required parameter. Name of the route filter.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_network_route_filter_delete }}"          
+ - name: "az network route-filter delete: Delete a route filter." 
+   command: |                                      
+     az network route-filter delete                            
+                 --name {{ az_network_route_filter_delete.input['name'] }} 
+                 --resource-group {{ az_network_route_filter_delete.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_network_route_filter_delete: "{{ az_network_route_filter_delete|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_route_filter_delete }}" 

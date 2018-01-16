@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_batch_certificate_create
+   set_fact: 
+     az_batch_certificate_create:
+       input: 
+         ###  Required parameter. The certificate file: cer file or pfx file.  ### 
+        'certificate-file': "{{ item['certificate-file'] | default('') }}" 
+         ###  Required parameter. The certificate thumbprint.  ### 
+        'thumbprint': "{{ item['thumbprint'] | default('') }}" 
+         ###  Optional parameter. The password to access the certificate's private key.  ### 
+        'password': "{{ item['password'] | default('') }}" 
+         ###  Optional parameter. Batch service endpoint. Alternatively, set by environment variable: AZURE_BATCH_ENDPOINT.  ### 
+        'account-endpoint': "{{ item['account-endpoint'] | default('') }}" 
+         ###  Optional parameter. The Batch account key. Alternatively, set by environment variable: AZURE_BATCH_ACCESS_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. The Batch account name. Alternatively, set by environment variable: AZURE_BATCH_ACCOUNT.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+ - debug: msg="{{ az_batch_certificate_create }}"          
+ - name: "az batch certificate create: Add a certificate to a Batch account." 
+   command: |                                      
+     az batch certificate create                            
+                 --certificate-file {{ az_batch_certificate_create.input['certificate-file'] }} 
+                 --thumbprint {{ az_batch_certificate_create.input['thumbprint'] }} 
+                 {%if az_batch_certificate_create.input['password'] %} --password az_batch_certificate_create.input['password'] {%endif %} 
+                 {%if az_batch_certificate_create.input['account-endpoint'] %} --account-endpoint az_batch_certificate_create.input['account-endpoint'] {%endif %} 
+                 {%if az_batch_certificate_create.input['account-key'] %} --account-key az_batch_certificate_create.input['account-key'] {%endif %} 
+                 {%if az_batch_certificate_create.input['account-name'] %} --account-name az_batch_certificate_create.input['account-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_certificate_create: "{{ az_batch_certificate_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_certificate_create }}" 

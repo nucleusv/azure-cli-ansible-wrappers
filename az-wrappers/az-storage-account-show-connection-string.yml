@@ -1,0 +1,38 @@
+
+
+ - name: Set input params for az_storage_account_show_connection_string
+   set_fact: 
+     az_storage_account_show_connection_string:
+       input: 
+         ###  Required parameter. The storage account name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Custom endpoint for blobs.  ### 
+        'blob-endpoint': "{{ item['blob-endpoint'] | default('') }}" 
+         ###  Optional parameter. Custom endpoint for files.  ### 
+        'file-endpoint': "{{ item['file-endpoint'] | default('') }}" 
+         ###  Optional parameter. The key to use.  ### 
+        'key': "{{ item['key'] | default('') }}" 
+         ###  Optional parameter. The default endpoint protocol.  ### 
+        'protocol': "{{ item['protocol'] | default('') }}" 
+         ###  Optional parameter. Custom endpoint for queues.  ### 
+        'queue-endpoint': "{{ item['queue-endpoint'] | default('') }}" 
+         ###  Optional parameter. Custom endpoint for tables.  ### 
+        'table-endpoint': "{{ item['table-endpoint'] | default('') }}" 
+ - debug: msg="{{ az_storage_account_show_connection_string }}"          
+ - name: "az storage account show-connection-string: Get the connection string for a storage account." 
+   command: |                                      
+     az storage account show-connection-string                            
+                 --name {{ az_storage_account_show_connection_string.input['name'] }} 
+                 --resource-group {{ az_storage_account_show_connection_string.input['resource-group'] }} 
+                 {%if az_storage_account_show_connection_string.input['blob-endpoint'] %} --blob-endpoint az_storage_account_show_connection_string.input['blob-endpoint'] {%endif %} 
+                 {%if az_storage_account_show_connection_string.input['file-endpoint'] %} --file-endpoint az_storage_account_show_connection_string.input['file-endpoint'] {%endif %} 
+                 {%if az_storage_account_show_connection_string.input['key'] %} --key az_storage_account_show_connection_string.input['key'] {%endif %} 
+                 {%if az_storage_account_show_connection_string.input['protocol'] %} --protocol az_storage_account_show_connection_string.input['protocol'] {%endif %} 
+                 {%if az_storage_account_show_connection_string.input['queue-endpoint'] %} --queue-endpoint az_storage_account_show_connection_string.input['queue-endpoint'] {%endif %} 
+                 {%if az_storage_account_show_connection_string.input['table-endpoint'] %} --table-endpoint az_storage_account_show_connection_string.input['table-endpoint'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_storage_account_show_connection_string: "{{ az_storage_account_show_connection_string|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_storage_account_show_connection_string }}" 

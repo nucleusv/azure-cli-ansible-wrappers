@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_cdn_origin_show
+   set_fact: 
+     az_cdn_origin_show:
+       input: 
+         ###  Required parameter. Name of the endpoint under the profile which is unique globally.  ### 
+        'endpoint-name': "{{ item['endpoint-name'] | default('') }}" 
+         ###  Required parameter. Name of the origin which is unique within the endpoint.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the CDN profile which is unique within the resource group.  ### 
+        'profile-name': "{{ item['profile-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_cdn_origin_show }}"          
+ - name: "az cdn origin show: Gets an existing origin within an endpoint." 
+   command: |                                      
+     az cdn origin show                            
+                 --endpoint-name {{ az_cdn_origin_show.input['endpoint-name'] }} 
+                 --name {{ az_cdn_origin_show.input['name'] }} 
+                 --profile-name {{ az_cdn_origin_show.input['profile-name'] }} 
+                 --resource-group {{ az_cdn_origin_show.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_cdn_origin_show: "{{ az_cdn_origin_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cdn_origin_show }}" 

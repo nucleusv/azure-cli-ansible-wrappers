@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_network_nic_ip_config_inbound_nat_rule_add
+   set_fact: 
+     az_network_nic_ip_config_inbound_nat_rule_add:
+       input: 
+         ###  Required parameter. The name or ID of an existing inbound NAT rule.  ### 
+        'inbound-nat-rule': "{{ item['inbound-nat-rule'] | default('') }}" 
+         ###  Required parameter. The name of the IP configuration.  ### 
+        'ip-config-name': "{{ item['ip-config-name'] | default('') }}" 
+         ###  Required parameter. The network interface (NIC).  ### 
+        'nic-name': "{{ item['nic-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The name of the load balancer associated with the NAT rule (Omit if suppying a NAT rule ID).  ### 
+        'lb-name': "{{ item['lb-name'] | default('') }}" 
+ - debug: msg="{{ az_network_nic_ip_config_inbound_nat_rule_add }}"          
+ - name: "az network nic ip-config inbound-nat-rule add: Add an inbound NAT rule." 
+   command: |                                      
+     az network nic ip-config inbound-nat-rule add                            
+                 --inbound-nat-rule {{ az_network_nic_ip_config_inbound_nat_rule_add.input['inbound-nat-rule'] }} 
+                 --ip-config-name {{ az_network_nic_ip_config_inbound_nat_rule_add.input['ip-config-name'] }} 
+                 --nic-name {{ az_network_nic_ip_config_inbound_nat_rule_add.input['nic-name'] }} 
+                 --resource-group {{ az_network_nic_ip_config_inbound_nat_rule_add.input['resource-group'] }} 
+                 {%if az_network_nic_ip_config_inbound_nat_rule_add.input['lb-name'] %} --lb-name az_network_nic_ip_config_inbound_nat_rule_add.input['lb-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_nic_ip_config_inbound_nat_rule_add: "{{ az_network_nic_ip_config_inbound_nat_rule_add|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_nic_ip_config_inbound_nat_rule_add }}" 

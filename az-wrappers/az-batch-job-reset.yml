@@ -1,0 +1,59 @@
+
+
+ - name: Set input params for az_batch_job_reset
+   set_fact: 
+     az_batch_job_reset:
+       input: 
+         ###  Required parameter. The ID of the job whose properties you want to update.  ### 
+        'job-id': "{{ item['job-id'] | default('') }}" 
+         ###  Optional parameter. A file containing the job update parameter specification in JSON format. If this parameter is specified, all 'Job Arguments' are ignored.  ### 
+        'json-file': "{{ item['json-file'] | default('') }}" 
+         ###  Optional parameter. Batch service endpoint. Alternatively, set by environment variable: AZURE_BATCH_ENDPOINT.  ### 
+        'account-endpoint': "{{ item['account-endpoint'] | default('') }}" 
+         ###  Optional parameter. Batch account key. Alternatively, set by environment variable: AZURE_BATCH_ACCESS_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Batch account name. Alternatively, set by environment variable: AZURE_BATCH_ACCOUNT.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+         ###  Optional parameter. A list of name-value pairs associated with the job as metadata. If omitted, it takes the default value of an empty list; in effect, any existing metadata is deleted. Space separated values in 'key=value' format.  ### 
+        'metadata': "{{ item['metadata'] | default('') }}" 
+         ###  Optional parameter. The action the Batch service should take when all tasks in the job are in the completed state. If omitted, the completion behavior is set to noAction. If the current value is terminateJob, this is an error because a job's completion behavior may not be changed from terminateJob to noAction. You may not change the value from terminatejob to noaction - that is, once you have engaged automatic job termination, you cannot turn it off again. If you try to do this, the request fails and Batch returns status code 400 (Bad Request) and an 'invalid property value' error response. If you do not specify this element in a PUT request, it is equivalent to passing noaction. This is an error if the current value is terminatejob.  ### 
+        'on-all-tasks-complete': "{{ item['on-all-tasks-complete'] | default('') }}" 
+         ###  Optional parameter. The priority of the job. Priority values can range from -1000 to 1000, with -1000 being the lowest priority and 1000 being the highest priority. If omitted, it is set to the default value 0.  ### 
+        'priority': "{{ item['priority'] | default('') }}" 
+         ###  Optional parameter. The maximum number of times each task may be retried. The Batch service retries a task if its exit code is nonzero. Note that this value specifically controls the number of retries. The Batch service will try each task once, and may then retry up to this limit. For example, if the maximum retry count is 3, Batch tries a task up to 4 times (one initial try and 3 retries). If the maximum retry count is 0, the Batch service does not retry tasks. If the maximum retry count is -1, the Batch service retries tasks without limit. The default value is 0 (no retries).  ### 
+        'job-max-task-retry-count': "{{ item['job-max-task-retry-count'] | default('') }}" 
+         ###  Optional parameter. The maximum elapsed time that the job may run, measured from the time the job is created. If the job does not complete within the time limit, the Batch service terminates it and any tasks that are still running. In this case, the termination reason will be MaxWallClockTimeExpiry. If this property is not specified, there is no time limit on how long the job may run. Expected format is an ISO-8601 duration.  ### 
+        'job-max-wall-clock-time': "{{ item['job-max-wall-clock-time'] | default('') }}" 
+         ###  Optional parameter. The id of an existing pool. All the tasks of the job will run on the specified pool.  ### 
+        'pool-id': "{{ item['pool-id'] | default('') }}" 
+         ###  Optional parameter. An ETag value associated with the version of the resource known to the client. The operation will be performed only if the resource's current ETag on the service exactly matches the value specified by the client.  ### 
+        'if-match': "{{ item['if-match'] | default('') }}" 
+         ###  Optional parameter. A timestamp indicating the last modified time of the resource known to the client. The operation will be performed only if the resource on the service has been modified since the specified time.  ### 
+        'if-modified-since': "{{ item['if-modified-since'] | default('') }}" 
+         ###  Optional parameter. An ETag value associated with the version of the resource known to the client. The operation will be performed only if the resource's current ETag on the service does not match the value specified by the client.  ### 
+        'if-none-match': "{{ item['if-none-match'] | default('') }}" 
+         ###  Optional parameter. A timestamp indicating the last modified time of the resource known to the client. The operation will be performed only if the resource on the service has not been modified since the specified time.  ### 
+        'if-unmodified-since': "{{ item['if-unmodified-since'] | default('') }}" 
+ - debug: msg="{{ az_batch_job_reset }}"          
+ - name: "az batch job reset: Update the properties of a Batch job. Unspecified properties which can be updated are reset to their defaults." 
+   command: |                                      
+     az batch job reset                            
+                 --job-id {{ az_batch_job_reset.input['job-id'] }} 
+                 {%if az_batch_job_reset.input['json-file'] %} --json-file az_batch_job_reset.input['json-file'] {%endif %} 
+                 {%if az_batch_job_reset.input['account-endpoint'] %} --account-endpoint az_batch_job_reset.input['account-endpoint'] {%endif %} 
+                 {%if az_batch_job_reset.input['account-key'] %} --account-key az_batch_job_reset.input['account-key'] {%endif %} 
+                 {%if az_batch_job_reset.input['account-name'] %} --account-name az_batch_job_reset.input['account-name'] {%endif %} 
+                 {%if az_batch_job_reset.input['metadata'] %} --metadata az_batch_job_reset.input['metadata'] {%endif %} 
+                 {%if az_batch_job_reset.input['on-all-tasks-complete'] %} --on-all-tasks-complete az_batch_job_reset.input['on-all-tasks-complete'] {%endif %} 
+                 {%if az_batch_job_reset.input['priority'] %} --priority az_batch_job_reset.input['priority'] {%endif %} 
+                 {%if az_batch_job_reset.input['job-max-task-retry-count'] %} --job-max-task-retry-count az_batch_job_reset.input['job-max-task-retry-count'] {%endif %} 
+                 {%if az_batch_job_reset.input['job-max-wall-clock-time'] %} --job-max-wall-clock-time az_batch_job_reset.input['job-max-wall-clock-time'] {%endif %} 
+                 {%if az_batch_job_reset.input['pool-id'] %} --pool-id az_batch_job_reset.input['pool-id'] {%endif %} 
+                 {%if az_batch_job_reset.input['if-match'] %} --if-match az_batch_job_reset.input['if-match'] {%endif %} 
+                 {%if az_batch_job_reset.input['if-modified-since'] %} --if-modified-since az_batch_job_reset.input['if-modified-since'] {%endif %} 
+                 {%if az_batch_job_reset.input['if-none-match'] %} --if-none-match az_batch_job_reset.input['if-none-match'] {%endif %} 
+                 {%if az_batch_job_reset.input['if-unmodified-since'] %} --if-unmodified-since az_batch_job_reset.input['if-unmodified-since'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_job_reset: "{{ az_batch_job_reset|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_job_reset }}" 

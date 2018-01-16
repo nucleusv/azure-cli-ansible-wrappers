@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_dls_fs_move
+   set_fact: 
+     az_dls_fs_move:
+       input: 
+         ###  Required parameter. Name of the Data Lake Store account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The destination path in the Data Lake Store account.  ### 
+        'destination-path': "{{ item['destination-path'] | default('') }}" 
+         ###  Required parameter. The file or folder to move.  ### 
+        'source-path': "{{ item['source-path'] | default('') }}" 
+         ###  Optional parameter. Indicates that, if the destination file or folder already exists, it should be overwritten and replaced with the file or folder being moved.  ### 
+        'force': "{{ item['force'] | default('') }}" 
+ - debug: msg="{{ az_dls_fs_move }}"          
+ - name: "az dls fs move: Move a file or folder in a Data Lake Store account." 
+   command: |                                      
+     az dls fs move                            
+                 --account {{ az_dls_fs_move.input['account'] }} 
+                 --destination-path {{ az_dls_fs_move.input['destination-path'] }} 
+                 --source-path {{ az_dls_fs_move.input['source-path'] }} 
+                 {%if az_dls_fs_move.input['force'] %} --force az_dls_fs_move.input['force'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dls_fs_move: "{{ az_dls_fs_move|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dls_fs_move }}" 

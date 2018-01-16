@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_ad_user_create
+   set_fact: 
+     az_ad_user_create:
+       input: 
+         ###  Required parameter. Object's display name or its prefix.  ### 
+        'display-name': "{{ item['display-name'] | default('') }}" 
+         ###  Required parameter.   ### 
+        'password': "{{ item['password'] | default('') }}" 
+         ###  Required parameter. The user principal name (someuser@contoso.com). It must contain one of the verified domains for the tenant.  ### 
+        'user-principal-name': "{{ item['user-principal-name'] | default('') }}" 
+         ###  Optional parameter.   ### 
+        'force-change-password-next-login': "{{ item['force-change-password-next-login'] | default('') }}" 
+         ###  Optional parameter. This must be specified if you are using a federated domain for the user's userPrincipalName (UPN) property when creating a new user account. It is used to associate an on-premises Active Directory user account with their Azure AD user object.  ### 
+        'immutable-id': "{{ item['immutable-id'] | default('') }}" 
+         ###  Optional parameter. Mail alias. Defaults to user principal name.  ### 
+        'mail-nickname': "{{ item['mail-nickname'] | default('') }}" 
+ - debug: msg="{{ az_ad_user_create }}"          
+ - name: "az ad user create: Request parameters for creating a new work or school account user." 
+   command: |                                      
+     az ad user create                            
+                 --display-name {{ az_ad_user_create.input['display-name'] }} 
+                 --password {{ az_ad_user_create.input['password'] }} 
+                 --user-principal-name {{ az_ad_user_create.input['user-principal-name'] }} 
+                 {%if az_ad_user_create.input['force-change-password-next-login'] %} --force-change-password-next-login az_ad_user_create.input['force-change-password-next-login'] {%endif %} 
+                 {%if az_ad_user_create.input['immutable-id'] %} --immutable-id az_ad_user_create.input['immutable-id'] {%endif %} 
+                 {%if az_ad_user_create.input['mail-nickname'] %} --mail-nickname az_ad_user_create.input['mail-nickname'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_ad_user_create: "{{ az_ad_user_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_ad_user_create }}" 

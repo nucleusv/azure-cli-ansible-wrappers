@@ -1,0 +1,17 @@
+
+
+ - name: Set input params for az_resource_link_show
+   set_fact: 
+     az_resource_link_show:
+       input: 
+         ###  Required parameter. The fully qualified Id of the resource link. For example, /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/myGroup/Microsoft.Web/sites/mySite/Microsoft.Resources/links/myLink.  ### 
+        'link-id': "{{ item['link-id'] | default('') }}" 
+ - debug: msg="{{ az_resource_link_show }}"          
+ - name: "az resource link show: Get details for a resource link." 
+   command: |                                      
+     az resource link show                            
+                 --link-id {{ az_resource_link_show.input['link-id'] }} 
+   register: output  
+ - set_fact: 
+    az_resource_link_show: "{{ az_resource_link_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_resource_link_show }}" 

@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_network_watcher_show_next_hop
+   set_fact: 
+     az_network_watcher_show_next_hop:
+       input: 
+         ###  Required parameter. Destination IPv4 address.  ### 
+        'dest-ip': "{{ item['dest-ip'] | default('') }}" 
+         ###  Required parameter. Name of the resource group the target VM is in. Do not use when supplying VM ID.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Source IPv4 address.  ### 
+        'source-ip': "{{ item['source-ip'] | default('') }}" 
+         ###  Required parameter. Name or ID of the VM to target.  ### 
+        'vm': "{{ item['vm'] | default('') }}" 
+         ###  Optional parameter. Name or ID of the NIC resource to test. If the VM has multiple NICs and IP forwarding is enabled on any of them, this parameter is required.  ### 
+        'nic': "{{ item['nic'] | default('') }}" 
+ - debug: msg="{{ az_network_watcher_show_next_hop }}"          
+ - name: "az network watcher show-next-hop: Get information on the 'next hop' for a VM." 
+   command: |                                      
+     az network watcher show-next-hop                            
+                 --dest-ip {{ az_network_watcher_show_next_hop.input['dest-ip'] }} 
+                 --resource-group {{ az_network_watcher_show_next_hop.input['resource-group'] }} 
+                 --source-ip {{ az_network_watcher_show_next_hop.input['source-ip'] }} 
+                 --vm {{ az_network_watcher_show_next_hop.input['vm'] }} 
+                 {%if az_network_watcher_show_next_hop.input['nic'] %} --nic az_network_watcher_show_next_hop.input['nic'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_watcher_show_next_hop: "{{ az_network_watcher_show_next_hop|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_watcher_show_next_hop }}" 

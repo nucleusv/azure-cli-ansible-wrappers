@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_sf_cluster_node_remove
+   set_fact: 
+     az_sf_cluster_node_remove:
+       input: 
+         ###  Required parameter. Specify the name of the cluster, if not given it will be same as resource group name.  ### 
+        'cluster-name': "{{ item['cluster-name'] | default('') }}" 
+         ###  Required parameter. The Node type name.  ### 
+        'node-type': "{{ item['node-type'] | default('') }}" 
+         ###  Required parameter. Number of nodes to remove.  ### 
+        'number-of-nodes-to-remove': "{{ item['number-of-nodes-to-remove'] | default('') }}" 
+         ###  Required parameter. The resource group name.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_sf_cluster_node_remove }}"          
+ - name: "az sf cluster node remove: Remove nodes from a node type in a cluster." 
+   command: |                                      
+     az sf cluster node remove                            
+                 --cluster-name {{ az_sf_cluster_node_remove.input['cluster-name'] }} 
+                 --node-type {{ az_sf_cluster_node_remove.input['node-type'] }} 
+                 --number-of-nodes-to-remove {{ az_sf_cluster_node_remove.input['number-of-nodes-to-remove'] }} 
+                 --resource-group {{ az_sf_cluster_node_remove.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_sf_cluster_node_remove: "{{ az_sf_cluster_node_remove|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sf_cluster_node_remove }}" 

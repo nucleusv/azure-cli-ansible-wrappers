@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_dla_account_data_lake_store_add
+   set_fact: 
+     az_dla_account_data_lake_store_add:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The name of the Data Lake Store account to add.  ### 
+        'data-lake-store-account-name': "{{ item['data-lake-store-account-name'] | default('') }}" 
+         ###  Optional parameter. If not specified, will attempt to discover the resource group for the specified Data Lake Analytics account.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The optional suffix for the Data Lake Store account.  ### 
+        'suffix': "{{ item['suffix'] | default('') }}" 
+ - debug: msg="{{ az_dla_account_data_lake_store_add }}"          
+ - name: "az dla account data-lake-store add: Updates the specified Data Lake Analytics account to include the additional Data Lake Store account." 
+   command: |                                      
+     az dla account data-lake-store add                            
+                 --account {{ az_dla_account_data_lake_store_add.input['account'] }} 
+                 --data-lake-store-account-name {{ az_dla_account_data_lake_store_add.input['data-lake-store-account-name'] }} 
+                 {%if az_dla_account_data_lake_store_add.input['resource-group'] %} --resource-group az_dla_account_data_lake_store_add.input['resource-group'] {%endif %} 
+                 {%if az_dla_account_data_lake_store_add.input['suffix'] %} --suffix az_dla_account_data_lake_store_add.input['suffix'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dla_account_data_lake_store_add: "{{ az_dla_account_data_lake_store_add|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_account_data_lake_store_add }}" 

@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_vm_list_ip_addresses
+   set_fact: 
+     az_vm_list_ip_addresses:
+       input: 
+         ###  Optional parameter. The name of the Virtual Machine. You can configure the default using `az configure --defaults vm=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_vm_list_ip_addresses }}"          
+ - name: "az vm list-ip-addresses: List IP addresses associated with a VM." 
+   command: |                                      
+     az vm list-ip-addresses                            
+                 {%if az_vm_list_ip_addresses.input['name'] %} --name az_vm_list_ip_addresses.input['name'] {%endif %} 
+                 {%if az_vm_list_ip_addresses.input['resource-group'] %} --resource-group az_vm_list_ip_addresses.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_vm_list_ip_addresses: "{{ az_vm_list_ip_addresses|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_list_ip_addresses }}" 

@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_vm_run_command_invoke
+   set_fact: 
+     az_vm_run_command_invoke:
+       input: 
+         ###  Required parameter. The run command ID.  ### 
+        'command-id': "{{ item['command-id'] | default('') }}" 
+         ###  Required parameter. The name of the Virtual Machine. You can configure the default using `az configure --defaults vm=&lt;name&gt;`.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Space separated parameters in the format of '[name=]value'.  ### 
+        'parameters': "{{ item['parameters'] | default('') }}" 
+         ###  Optional parameter. Script lines separated by whites spaces. Use @{file} to load from a file.  ### 
+        'scripts': "{{ item['scripts'] | default('') }}" 
+ - debug: msg="{{ az_vm_run_command_invoke }}"          
+ - name: "az vm run-command invoke: Run command on a vm." 
+   command: |                                      
+     az vm run-command invoke                            
+                 --command-id {{ az_vm_run_command_invoke.input['command-id'] }} 
+                 --name {{ az_vm_run_command_invoke.input['name'] }} 
+                 --resource-group {{ az_vm_run_command_invoke.input['resource-group'] }} 
+                 {%if az_vm_run_command_invoke.input['parameters'] %} --parameters az_vm_run_command_invoke.input['parameters'] {%endif %} 
+                 {%if az_vm_run_command_invoke.input['scripts'] %} --scripts az_vm_run_command_invoke.input['scripts'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_vm_run_command_invoke: "{{ az_vm_run_command_invoke|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_run_command_invoke }}" 

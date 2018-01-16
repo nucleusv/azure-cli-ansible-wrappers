@@ -1,0 +1,47 @@
+
+
+ - name: Set input params for az_webapp_config_backup_restore
+   set_fact: 
+     az_webapp_config_backup_restore:
+       input: 
+         ###  Required parameter. Name of the backup to restore.  ### 
+        'backup-name': "{{ item['backup-name'] | default('') }}" 
+         ###  Required parameter. URL with SAS token to the blob storage container.  ### 
+        'container-url': "{{ item['container-url'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. The name of the webapp.  ### 
+        'webapp-name': "{{ item['webapp-name'] | default('') }}" 
+         ###  Optional parameter. Ignores custom hostnames stored in the backup.  ### 
+        'ignore-hostname-conflict': "{{ item['ignore-hostname-conflict'] | default('') }}" 
+         ###  Optional parameter. Overwrite the source webapp, if --target-name is not specified.  ### 
+        'overwrite': "{{ item['overwrite'] | default('') }}" 
+         ###  Optional parameter. The name of the slot. Default to the productions slot if not specified.  ### 
+        'slot': "{{ item['slot'] | default('') }}" 
+         ###  Optional parameter. The name to use for the restored webapp. If unspecified, will default to the name that was used when the backup was created.  ### 
+        'target-name': "{{ item['target-name'] | default('') }}" 
+         ###  Optional parameter. Connection string for the database in the backup.  ### 
+        'db-connection-string': "{{ item['db-connection-string'] | default('') }}" 
+         ###  Optional parameter. Name of the database in the backup.  ### 
+        'db-name': "{{ item['db-name'] | default('') }}" 
+         ###  Optional parameter. Type of database in the backup.  ### 
+        'db-type': "{{ item['db-type'] | default('') }}" 
+ - debug: msg="{{ az_webapp_config_backup_restore }}"          
+ - name: "az webapp config backup restore: Restore a web app from a backup." 
+   command: |                                      
+     az webapp config backup restore                            
+                 --backup-name {{ az_webapp_config_backup_restore.input['backup-name'] }} 
+                 --container-url {{ az_webapp_config_backup_restore.input['container-url'] }} 
+                 --resource-group {{ az_webapp_config_backup_restore.input['resource-group'] }} 
+                 --webapp-name {{ az_webapp_config_backup_restore.input['webapp-name'] }} 
+                 {%if az_webapp_config_backup_restore.input['ignore-hostname-conflict'] %} --ignore-hostname-conflict az_webapp_config_backup_restore.input['ignore-hostname-conflict'] {%endif %} 
+                 {%if az_webapp_config_backup_restore.input['overwrite'] %} --overwrite az_webapp_config_backup_restore.input['overwrite'] {%endif %} 
+                 {%if az_webapp_config_backup_restore.input['slot'] %} --slot az_webapp_config_backup_restore.input['slot'] {%endif %} 
+                 {%if az_webapp_config_backup_restore.input['target-name'] %} --target-name az_webapp_config_backup_restore.input['target-name'] {%endif %} 
+                 {%if az_webapp_config_backup_restore.input['db-connection-string'] %} --db-connection-string az_webapp_config_backup_restore.input['db-connection-string'] {%endif %} 
+                 {%if az_webapp_config_backup_restore.input['db-name'] %} --db-name az_webapp_config_backup_restore.input['db-name'] {%endif %} 
+                 {%if az_webapp_config_backup_restore.input['db-type'] %} --db-type az_webapp_config_backup_restore.input['db-type'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_webapp_config_backup_restore: "{{ az_webapp_config_backup_restore|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_webapp_config_backup_restore }}" 

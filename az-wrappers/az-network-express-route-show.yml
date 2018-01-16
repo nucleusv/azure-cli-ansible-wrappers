@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_network_express_route_show
+   set_fact: 
+     az_network_express_route_show:
+       input: 
+         ###  Required parameter. ExpressRoute circuit name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_network_express_route_show }}"          
+ - name: "az network express-route show: Get the details for an ExpressRoute circuit." 
+   command: |                                      
+     az network express-route show                            
+                 --name {{ az_network_express_route_show.input['name'] }} 
+                 --resource-group {{ az_network_express_route_show.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_network_express_route_show: "{{ az_network_express_route_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_express_route_show }}" 

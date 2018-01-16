@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_cosmosdb_create
+   set_fact: 
+     az_cosmosdb_create:
+       input: 
+         ###  Required parameter. Name of the Cosmos DB database account.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Default consistency level of the Cosmos DB database account.  ### 
+        'default-consistency-level': "{{ item['default-consistency-level'] | default('') }}" 
+         ###  Optional parameter. Enables automatic failover of the write region in the rare event that the region is unavailable due to an outage. Automatic failover will result in a new write region for the account and is chosen based on the failover priorities configured for the account.  ### 
+        'enable-automatic-failover': "{{ item['enable-automatic-failover'] | default('') }}" 
+         ###  Optional parameter. Firewall support. Specifies the set of IP addresses or IP address ranges in CIDR form to be included as the allowed list of client IPs for a given database account. IP addresses/ranges must be comma separated and must not contain any spaces.  ### 
+        'ip-range-filter': "{{ item['ip-range-filter'] | default('') }}" 
+         ###  Optional parameter. The type of Cosmos DB database account to create.  ### 
+        'kind': "{{ item['kind'] | default('') }}" 
+         ###  Optional parameter. Space separated locations in 'regionName=failoverPriority' format. E.g "East US"=0 "West US"=1. Failover priority values are 0 for write regions and greater than 0 for read regions. A failover priority value must be unique and less than the total number of regions. Default: single region account in the location of the specified resource group.  ### 
+        'locations': "{{ item['locations'] | default('') }}" 
+         ###  Optional parameter. When used with Bounded Staleness consistency, this value represents the time amount of staleness (in seconds) tolerated. Accepted range for this value is 1 - 100.  ### 
+        'max-interval': "{{ item['max-interval'] | default('') }}" 
+         ###  Optional parameter. When used with Bounded Staleness consistency, this value represents the number of stale requests tolerated. Accepted range for this value is 1 - 2,147,483,647.  ### 
+        'max-staleness-prefix': "{{ item['max-staleness-prefix'] | default('') }}" 
+ - debug: msg="{{ az_cosmosdb_create }}"          
+ - name: "az cosmosdb create: Creates a new Azure Cosmos DB database account." 
+   command: |                                      
+     az cosmosdb create                            
+                 --name {{ az_cosmosdb_create.input['name'] }} 
+                 --resource-group {{ az_cosmosdb_create.input['resource-group'] }} 
+                 {%if az_cosmosdb_create.input['default-consistency-level'] %} --default-consistency-level az_cosmosdb_create.input['default-consistency-level'] {%endif %} 
+                 {%if az_cosmosdb_create.input['enable-automatic-failover'] %} --enable-automatic-failover az_cosmosdb_create.input['enable-automatic-failover'] {%endif %} 
+                 {%if az_cosmosdb_create.input['ip-range-filter'] %} --ip-range-filter az_cosmosdb_create.input['ip-range-filter'] {%endif %} 
+                 {%if az_cosmosdb_create.input['kind'] %} --kind az_cosmosdb_create.input['kind'] {%endif %} 
+                 {%if az_cosmosdb_create.input['locations'] %} --locations az_cosmosdb_create.input['locations'] {%endif %} 
+                 {%if az_cosmosdb_create.input['max-interval'] %} --max-interval az_cosmosdb_create.input['max-interval'] {%endif %} 
+                 {%if az_cosmosdb_create.input['max-staleness-prefix'] %} --max-staleness-prefix az_cosmosdb_create.input['max-staleness-prefix'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_cosmosdb_create: "{{ az_cosmosdb_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_cosmosdb_create }}" 

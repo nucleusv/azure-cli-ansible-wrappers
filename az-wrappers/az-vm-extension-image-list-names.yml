@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_vm_extension_image_list_names
+   set_fact: 
+     az_vm_extension_image_list_names:
+       input: 
+         ###  Required parameter. Location. You can configure the default location using `az configure --defaults location=&lt;location&gt;`.  ### 
+        'location': "{{ item['location'] | default('') }}" 
+         ###  Required parameter. Image publisher name.  ### 
+        'publisher': "{{ item['publisher'] | default('') }}" 
+ - debug: msg="{{ az_vm_extension_image_list_names }}"          
+ - name: "az vm extension image list-names: List the names of available extensions." 
+   command: |                                      
+     az vm extension image list-names                            
+                 --location {{ az_vm_extension_image_list_names.input['location'] }} 
+                 --publisher {{ az_vm_extension_image_list_names.input['publisher'] }} 
+   register: output  
+ - set_fact: 
+    az_vm_extension_image_list_names: "{{ az_vm_extension_image_list_names|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_vm_extension_image_list_names }}" 

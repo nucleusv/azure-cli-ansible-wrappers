@@ -1,0 +1,14 @@
+
+
+ - name: Set input params for az_network_application_gateway_ssl_policy_predefined_list
+   set_fact: 
+     az_network_application_gateway_ssl_policy_predefined_list:
+       input: 
+ - debug: msg="{{ az_network_application_gateway_ssl_policy_predefined_list }}"          
+ - name: "az network application-gateway ssl-policy predefined list: Lists all SSL predefined policies for configuring Ssl policy." 
+   command: |                                      
+     az network application-gateway ssl-policy predefined list                            
+   register: output  
+ - set_fact: 
+    az_network_application_gateway_ssl_policy_predefined_list: "{{ az_network_application_gateway_ssl_policy_predefined_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_application_gateway_ssl_policy_predefined_list }}" 

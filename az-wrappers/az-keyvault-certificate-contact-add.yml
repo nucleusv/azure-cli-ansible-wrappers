@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_keyvault_certificate_contact_add
+   set_fact: 
+     az_keyvault_certificate_contact_add:
+       input: 
+         ###  Required parameter. Contact e-mail address. Must be unique.  ### 
+        'email': "{{ item['email'] | default('') }}" 
+         ###  Required parameter. Name of the key vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+         ###  Optional parameter. Full contact name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Contact phone number.  ### 
+        'phone': "{{ item['phone'] | default('') }}" 
+ - debug: msg="{{ az_keyvault_certificate_contact_add }}"          
+ - name: "az keyvault certificate contact add: Add a contact to the specified vault to receive notifications of certificate operations." 
+   command: |                                      
+     az keyvault certificate contact add                            
+                 --email {{ az_keyvault_certificate_contact_add.input['email'] }} 
+                 --vault-name {{ az_keyvault_certificate_contact_add.input['vault-name'] }} 
+                 {%if az_keyvault_certificate_contact_add.input['name'] %} --name az_keyvault_certificate_contact_add.input['name'] {%endif %} 
+                 {%if az_keyvault_certificate_contact_add.input['phone'] %} --phone az_keyvault_certificate_contact_add.input['phone'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_keyvault_certificate_contact_add: "{{ az_keyvault_certificate_contact_add|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_keyvault_certificate_contact_add }}" 

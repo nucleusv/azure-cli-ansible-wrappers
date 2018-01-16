@@ -1,0 +1,14 @@
+
+
+ - name: Set input params for az_feedback
+   set_fact: 
+     az_feedback:
+       input: 
+ - debug: msg="{{ az_feedback }}"          
+ - name: "az feedback: Loving or hating the CLI?  Let us know!" 
+   command: |                                      
+     az feedback                            
+   register: output  
+ - set_fact: 
+    az_feedback: "{{ az_feedback|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_feedback }}" 

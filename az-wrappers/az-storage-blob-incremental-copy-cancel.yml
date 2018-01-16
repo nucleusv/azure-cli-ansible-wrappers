@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_storage_blob_incremental_copy_cancel
+   set_fact: 
+     az_storage_blob_incremental_copy_cancel:
+       input: 
+         ###  Required parameter. The container name.  ### 
+        'container-name': "{{ item['container-name'] | default('') }}" 
+         ###  Required parameter. Copy identifier provided in the copy.id of the original copy_blob operation.  ### 
+        'copy-id': "{{ item['copy-id'] | default('') }}" 
+         ###  Required parameter. The blob name.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Optional parameter. Required if the destination blob has an active infinite lease.  ### 
+        'lease-id': "{{ item['lease-id'] | default('') }}" 
+         ###  Optional parameter. Request timeout in seconds. Applies to each call to the service.  ### 
+        'timeout': "{{ item['timeout'] | default('') }}" 
+         ###  Optional parameter. Storage account key. Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Storage account name. Related environment variable: AZURE_STORAGE_ACCOUNT. Must be used in conjunction with either storage account key or a SAS token. If neither are present, the command will try to query the storage account key using the authenticated Azure account. If a large number of storage commands are executed the API quota may be hit.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+         ###  Optional parameter. Storage account connection string. Environment variable: AZURE_STORAGE_CONNECTION_STRING.  ### 
+        'connection-string': "{{ item['connection-string'] | default('') }}" 
+         ###  Optional parameter. A Shared Access Signature (SAS). Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_SAS_TOKEN.  ### 
+        'sas-token': "{{ item['sas-token'] | default('') }}" 
+ - debug: msg="{{ az_storage_blob_incremental_copy_cancel }}"          
+ - name: "az storage blob incremental-copy cancel: Aborts a pending copy_blob operation, and leaves a destination blob with zero length and full metadata." 
+   command: |                                      
+     az storage blob incremental-copy cancel                            
+                 --container-name {{ az_storage_blob_incremental_copy_cancel.input['container-name'] }} 
+                 --copy-id {{ az_storage_blob_incremental_copy_cancel.input['copy-id'] }} 
+                 --name {{ az_storage_blob_incremental_copy_cancel.input['name'] }} 
+                 {%if az_storage_blob_incremental_copy_cancel.input['lease-id'] %} --lease-id az_storage_blob_incremental_copy_cancel.input['lease-id'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_cancel.input['timeout'] %} --timeout az_storage_blob_incremental_copy_cancel.input['timeout'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_cancel.input['account-key'] %} --account-key az_storage_blob_incremental_copy_cancel.input['account-key'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_cancel.input['account-name'] %} --account-name az_storage_blob_incremental_copy_cancel.input['account-name'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_cancel.input['connection-string'] %} --connection-string az_storage_blob_incremental_copy_cancel.input['connection-string'] {%endif %} 
+                 {%if az_storage_blob_incremental_copy_cancel.input['sas-token'] %} --sas-token az_storage_blob_incremental_copy_cancel.input['sas-token'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_storage_blob_incremental_copy_cancel: "{{ az_storage_blob_incremental_copy_cancel|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_storage_blob_incremental_copy_cancel }}" 

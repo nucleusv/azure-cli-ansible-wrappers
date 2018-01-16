@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_dla_account_data_lake_store_show
+   set_fact: 
+     az_dla_account_data_lake_store_show:
+       input: 
+         ###  Required parameter. Name of the Data Lake Analytics account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The name of the Data Lake Store account to retrieve.  ### 
+        'data-lake-store-account-name': "{{ item['data-lake-store-account-name'] | default('') }}" 
+         ###  Optional parameter. If not specified, will attempt to discover the resource group for the specified Data Lake Analytics account.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_dla_account_data_lake_store_show }}"          
+ - name: "az dla account data-lake-store show: Gets the specified Data Lake Store account details in the specified Data Lake Analytics account." 
+   command: |                                      
+     az dla account data-lake-store show                            
+                 --account {{ az_dla_account_data_lake_store_show.input['account'] }} 
+                 --data-lake-store-account-name {{ az_dla_account_data_lake_store_show.input['data-lake-store-account-name'] }} 
+                 {%if az_dla_account_data_lake_store_show.input['resource-group'] %} --resource-group az_dla_account_data_lake_store_show.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_dla_account_data_lake_store_show: "{{ az_dla_account_data_lake_store_show|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dla_account_data_lake_store_show }}" 

@@ -1,0 +1,26 @@
+
+
+ - name: Set input params for az_advisor_configuration_set
+   set_fact: 
+     az_advisor_configuration_set:
+       input: 
+         ###  Optional parameter. Exclude from recommendation generation.  ### 
+        'exclude': "{{ item['exclude'] | default('') }}" 
+         ###  Optional parameter. Include in recommendation generation.  ### 
+        'include': "{{ item['include'] | default('') }}" 
+         ###  Optional parameter. Value for low CPU threshold.  ### 
+        'low-cpu-threshold': "{{ item['low-cpu-threshold'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_advisor_configuration_set }}"          
+ - name: "az advisor configuration set: Set Azure Advisor configuration." 
+   command: |                                      
+     az advisor configuration set                            
+                 {%if az_advisor_configuration_set.input['exclude'] %} --exclude az_advisor_configuration_set.input['exclude'] {%endif %} 
+                 {%if az_advisor_configuration_set.input['include'] %} --include az_advisor_configuration_set.input['include'] {%endif %} 
+                 {%if az_advisor_configuration_set.input['low-cpu-threshold'] %} --low-cpu-threshold az_advisor_configuration_set.input['low-cpu-threshold'] {%endif %} 
+                 {%if az_advisor_configuration_set.input['resource-group'] %} --resource-group az_advisor_configuration_set.input['resource-group'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_advisor_configuration_set: "{{ az_advisor_configuration_set|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_advisor_configuration_set }}" 

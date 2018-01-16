@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_network_application_gateway_url_path_map_rule_create
+   set_fact: 
+     az_network_application_gateway_url_path_map_rule_create:
+       input: 
+         ###  Required parameter. The name of the application gateway.  ### 
+        'gateway-name': "{{ item['gateway-name'] | default('') }}" 
+         ###  Required parameter. The name of the url-path-map rule.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. The name of the URL path map.  ### 
+        'path-map-name': "{{ item['path-map-name'] | default('') }}" 
+         ###  Required parameter. Space separated list of paths to associate with the rule. Valid paths start and end with "/" (ex: "/bar/").  ### 
+        'paths': "{{ item['paths'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. The name or ID of the backend address pool to use with the created rule.  ### 
+        'address-pool': "{{ item['address-pool'] | default('') }}" 
+         ###  Optional parameter. The name or ID of the HTTP settings to use with the created rule.  ### 
+        'http-settings': "{{ item['http-settings'] | default('') }}" 
+         ###  Optional parameter. Do not wait for the long-running operation to finish.  ### 
+        'no-wait': "{{ item['no-wait'] | default('') }}" 
+         ###  Optional parameter. The name or ID of the redirect configuration to use with the created rule.  ### 
+        'redirect-config': "{{ item['redirect-config'] | default('') }}" 
+ - debug: msg="{{ az_network_application_gateway_url_path_map_rule_create }}"          
+ - name: "az network application-gateway url-path-map rule create: Create a rule for a URL path map." 
+   command: |                                      
+     az network application-gateway url-path-map rule create                            
+                 --gateway-name {{ az_network_application_gateway_url_path_map_rule_create.input['gateway-name'] }} 
+                 --name {{ az_network_application_gateway_url_path_map_rule_create.input['name'] }} 
+                 --path-map-name {{ az_network_application_gateway_url_path_map_rule_create.input['path-map-name'] }} 
+                 --paths {{ az_network_application_gateway_url_path_map_rule_create.input['paths'] }} 
+                 --resource-group {{ az_network_application_gateway_url_path_map_rule_create.input['resource-group'] }} 
+                 {%if az_network_application_gateway_url_path_map_rule_create.input['address-pool'] %} --address-pool az_network_application_gateway_url_path_map_rule_create.input['address-pool'] {%endif %} 
+                 {%if az_network_application_gateway_url_path_map_rule_create.input['http-settings'] %} --http-settings az_network_application_gateway_url_path_map_rule_create.input['http-settings'] {%endif %} 
+                 {%if az_network_application_gateway_url_path_map_rule_create.input['no-wait'] %} --no-wait az_network_application_gateway_url_path_map_rule_create.input['no-wait'] {%endif %} 
+                 {%if az_network_application_gateway_url_path_map_rule_create.input['redirect-config'] %} --redirect-config az_network_application_gateway_url_path_map_rule_create.input['redirect-config'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_network_application_gateway_url_path_map_rule_create: "{{ az_network_application_gateway_url_path_map_rule_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_network_application_gateway_url_path_map_rule_create }}" 

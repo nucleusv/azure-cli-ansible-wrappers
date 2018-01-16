@@ -1,0 +1,65 @@
+
+
+ - name: Set input params for az_storage_file_copy_start
+   set_fact: 
+     az_storage_file_copy_start:
+       input: 
+         ###  Required parameter. The path to the file within the file share.  ### 
+        'destination-path': "{{ item['destination-path'] | default('') }}" 
+         ###  Required parameter. Name of the destination share. The share must exist.  ### 
+        'destination-share': "{{ item['destination-share'] | default('') }}" 
+         ###  Optional parameter. Metadata in space-separated key=value pairs. This overwrites any existing metadata.  ### 
+        'metadata': "{{ item['metadata'] | default('') }}" 
+         ###  Optional parameter. Request timeout in seconds. Applies to each call to the service.  ### 
+        'timeout': "{{ item['timeout'] | default('') }}" 
+         ###  Optional parameter. The storage account key of the source blob.  ### 
+        'source-account-key': "{{ item['source-account-key'] | default('') }}" 
+         ###  Optional parameter. The storage account name of the source blob.  ### 
+        'source-account-name': "{{ item['source-account-name'] | default('') }}" 
+         ###  Optional parameter. The blob name for the source storage account.  ### 
+        'source-blob': "{{ item['source-blob'] | default('') }}" 
+         ###  Optional parameter. The container name for the source storage account.  ### 
+        'source-container': "{{ item['source-container'] | default('') }}" 
+         ###  Optional parameter. The file path for the source storage account.  ### 
+        'source-path': "{{ item['source-path'] | default('') }}" 
+         ###  Optional parameter. The shared access signature for the source storage account.  ### 
+        'source-sas': "{{ item['source-sas'] | default('') }}" 
+         ###  Optional parameter. The share name for the source storage account.  ### 
+        'source-share': "{{ item['source-share'] | default('') }}" 
+         ###  Optional parameter. The blob snapshot for the source storage account.  ### 
+        'source-snapshot': "{{ item['source-snapshot'] | default('') }}" 
+         ###  Optional parameter. A URL of up to 2 KB in length that specifies an Azure file or blob. The value should be URL-encoded as it would appear in a request URI. If the source is in another account, the source must either be public or must be authenticated via a shared access signature. If the source is public, no authentication is required. Examples: <a href="https://myaccount.file.core.windows.net/myshare/mydir/myfile">https://myaccount.file.core.windows.net/myshare/mydir/myfile</a> <a href="https://otheraccount.file.core.windows.net/myshare/mydir/myfile?sastoken">https://otheraccount.file.core.windows.net/myshare/mydir/myfile?sastoken</a>.  ### 
+        'source-uri': "{{ item['source-uri'] | default('') }}" 
+         ###  Optional parameter. Storage account key. Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Storage account name. Related environment variable: AZURE_STORAGE_ACCOUNT. Must be used in conjunction with either storage account key or a SAS token. If neither are present, the command will try to query the storage account key using the authenticated Azure account. If a large number of storage commands are executed the API quota may be hit.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+         ###  Optional parameter. Storage account connection string. Environment variable: AZURE_STORAGE_CONNECTION_STRING.  ### 
+        'connection-string': "{{ item['connection-string'] | default('') }}" 
+         ###  Optional parameter. A Shared Access Signature (SAS). Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_SAS_TOKEN.  ### 
+        'sas-token': "{{ item['sas-token'] | default('') }}" 
+ - debug: msg="{{ az_storage_file_copy_start }}"          
+ - name: "az storage file copy start: Copies a file asynchronously." 
+   command: |                                      
+     az storage file copy start                            
+                 --destination-path {{ az_storage_file_copy_start.input['destination-path'] }} 
+                 --destination-share {{ az_storage_file_copy_start.input['destination-share'] }} 
+                 {%if az_storage_file_copy_start.input['metadata'] %} --metadata az_storage_file_copy_start.input['metadata'] {%endif %} 
+                 {%if az_storage_file_copy_start.input['timeout'] %} --timeout az_storage_file_copy_start.input['timeout'] {%endif %} 
+                 {%if az_storage_file_copy_start.input['source-account-key'] %} --source-account-key az_storage_file_copy_start.input['source-account-key'] {%endif %} 
+                 {%if az_storage_file_copy_start.input['source-account-name'] %} --source-account-name az_storage_file_copy_start.input['source-account-name'] {%endif %} 
+                 {%if az_storage_file_copy_start.input['source-blob'] %} --source-blob az_storage_file_copy_start.input['source-blob'] {%endif %} 
+                 {%if az_storage_file_copy_start.input['source-container'] %} --source-container az_storage_file_copy_start.input['source-container'] {%endif %} 
+                 {%if az_storage_file_copy_start.input['source-path'] %} --source-path az_storage_file_copy_start.input['source-path'] {%endif %} 
+                 {%if az_storage_file_copy_start.input['source-sas'] %} --source-sas az_storage_file_copy_start.input['source-sas'] {%endif %} 
+                 {%if az_storage_file_copy_start.input['source-share'] %} --source-share az_storage_file_copy_start.input['source-share'] {%endif %} 
+                 {%if az_storage_file_copy_start.input['source-snapshot'] %} --source-snapshot az_storage_file_copy_start.input['source-snapshot'] {%endif %} 
+                 {%if az_storage_file_copy_start.input['source-uri'] %} --source-uri az_storage_file_copy_start.input['source-uri'] {%endif %} 
+                 {%if az_storage_file_copy_start.input['account-key'] %} --account-key az_storage_file_copy_start.input['account-key'] {%endif %} 
+                 {%if az_storage_file_copy_start.input['account-name'] %} --account-name az_storage_file_copy_start.input['account-name'] {%endif %} 
+                 {%if az_storage_file_copy_start.input['connection-string'] %} --connection-string az_storage_file_copy_start.input['connection-string'] {%endif %} 
+                 {%if az_storage_file_copy_start.input['sas-token'] %} --sas-token az_storage_file_copy_start.input['sas-token'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_storage_file_copy_start: "{{ az_storage_file_copy_start|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_storage_file_copy_start }}" 

@@ -1,0 +1,20 @@
+
+
+ - name: Set input params for az_batch_account_keys_list
+   set_fact: 
+     az_batch_account_keys_list:
+       input: 
+         ###  Required parameter. Name of the Batch account.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of the resource group.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+ - debug: msg="{{ az_batch_account_keys_list }}"          
+ - name: "az batch account keys list: Gets the account keys for the specified Batch account." 
+   command: |                                      
+     az batch account keys list                            
+                 --name {{ az_batch_account_keys_list.input['name'] }} 
+                 --resource-group {{ az_batch_account_keys_list.input['resource-group'] }} 
+   register: output  
+ - set_fact: 
+    az_batch_account_keys_list: "{{ az_batch_account_keys_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_account_keys_list }}" 

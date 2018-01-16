@@ -1,0 +1,23 @@
+
+
+ - name: Set input params for az_dls_fs_access_set_entry
+   set_fact: 
+     az_dls_fs_access_set_entry:
+       input: 
+         ###  Required parameter. Name of the Data Lake Store account.  ### 
+        'account': "{{ item['account'] | default('') }}" 
+         ###  Required parameter. The ACL specification to set on the path in the format '[default:]user|group|other:[entity id or UPN]:r|-w|-x|-,[default:]user|group|other:[entity id or UPN]:r|-w|-x|-,...'.  ### 
+        'acl-spec': "{{ item['acl-spec'] | default('') }}" 
+         ###  Required parameter. The path in the specified Data Lake Store account where the action should take place. In the format '/folder/file.txt', where the first '/' after the DNS indicates the root of the file system.  ### 
+        'path': "{{ item['path'] | default('') }}" 
+ - debug: msg="{{ az_dls_fs_access_set_entry }}"          
+ - name: "az dls fs access set-entry: Update the access control list for a file or folder." 
+   command: |                                      
+     az dls fs access set-entry                            
+                 --account {{ az_dls_fs_access_set_entry.input['account'] }} 
+                 --acl-spec {{ az_dls_fs_access_set_entry.input['acl-spec'] }} 
+                 --path {{ az_dls_fs_access_set_entry.input['path'] }} 
+   register: output  
+ - set_fact: 
+    az_dls_fs_access_set_entry: "{{ az_dls_fs_access_set_entry|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_dls_fs_access_set_entry }}" 

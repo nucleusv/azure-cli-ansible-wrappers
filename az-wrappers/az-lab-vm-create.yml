@@ -1,0 +1,80 @@
+
+
+ - name: Set input params for az_lab_vm_create
+   set_fact: 
+     az_lab_vm_create:
+       input: 
+         ###  Required parameter. Name of the lab.  ### 
+        'lab-name': "{{ item['lab-name'] | default('') }}" 
+         ###  Required parameter. Name of the virtual machine.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Flag indicating if the VM should be created as claimable.  ### 
+        'allow-claim': "{{ item['allow-claim'] | default('') }}" 
+         ###  Optional parameter. JSON encoded array of artifacts to be applied. Use '@{file}' to load from a file.  ### 
+        'artifacts': "{{ item['artifacts'] | default('') }}" 
+         ###  Optional parameter. Storage type to use for virtual machine.  ### 
+        'disk-type': "{{ item['disk-type'] | default('') }}" 
+         ###  Optional parameter. The expiration date in UTC(YYYY-mm-dd) for the VM.  ### 
+        'expiration-date': "{{ item['expiration-date'] | default('') }}" 
+         ###  Optional parameter. Name of the formula. Use `az lab formula list` for available formulas.  ### 
+        'formula': "{{ item['formula'] | default('') }}" 
+         ###  Optional parameter. Generate SSH public and private key files if missing.  ### 
+        'generate-ssh-keys': "{{ item['generate-ssh-keys'] | default('') }}" 
+         ###  Optional parameter. The name of the operating system image (gallery image name or custom image name/ID).  ### 
+        'image': "{{ item['image'] | default('') }}" 
+         ###  Optional parameter. Type of the image. Allowed values are: gallery, custom.  ### 
+        'image-type': "{{ item['image-type'] | default('') }}" 
+         ###  Optional parameter. Notes for the virtual machine.  ### 
+        'notes': "{{ item['notes'] | default('') }}" 
+         ###  Optional parameter. The size of the VM to be created. See <a href="https://azure.microsoft.com/en-us/pricing/details/virtual-machines/">https://azure.microsoft.com/en-us/pricing/details/virtual-machines/</a> for size info.  ### 
+        'size': "{{ item['size'] | default('') }}" 
+         ###  Optional parameter. Space separated tags in `key[=value]` format.  ### 
+        'rtags': "{{ item['rtags'] | default('') }}" 
+         ###  Optional parameter. Password for the VM admin.  ### 
+        'admin-password': "{{ item['admin-password'] | default('') }}" 
+         ###  Optional parameter. Username for the VM admin.  ### 
+        'admin-username': "{{ item['admin-username'] | default('') }}" 
+         ###  Optional parameter. Type of authentication allowed for the VM. Allowed values are: password, ssh.  ### 
+        'authentication-type': "{{ item['authentication-type'] | default('') }}" 
+         ###  Optional parameter. Name of the saved secret to be used for authentication.  ### 
+        'saved-secret': "{{ item['saved-secret'] | default('') }}" 
+         ###  Optional parameter. The SSH public key or public key file path. Use `--generate-ssh-keys` to generate SSH keys.  ### 
+        'ssh-key': "{{ item['ssh-key'] | default('') }}" 
+         ###  Optional parameter. Type of IP configuration to use for the VM. Allowed values are: shared, public, private.  ### 
+        'ip-configuration': "{{ item['ip-configuration'] | default('') }}" 
+         ###  Optional parameter. Name of the subnet to add the VM to.  ### 
+        'subnet': "{{ item['subnet'] | default('') }}" 
+         ###  Optional parameter. Name of the virtual network to add the VM to.  ### 
+        'vnet-name': "{{ item['vnet-name'] | default('') }}" 
+ - debug: msg="{{ az_lab_vm_create }}"          
+ - name: "az lab vm create: Create a VM in a lab." 
+   command: |                                      
+     az lab vm create                            
+                 --lab-name {{ az_lab_vm_create.input['lab-name'] }} 
+                 --name {{ az_lab_vm_create.input['name'] }} 
+                 --resource-group {{ az_lab_vm_create.input['resource-group'] }} 
+                 {%if az_lab_vm_create.input['allow-claim'] %} --allow-claim az_lab_vm_create.input['allow-claim'] {%endif %} 
+                 {%if az_lab_vm_create.input['artifacts'] %} --artifacts az_lab_vm_create.input['artifacts'] {%endif %} 
+                 {%if az_lab_vm_create.input['disk-type'] %} --disk-type az_lab_vm_create.input['disk-type'] {%endif %} 
+                 {%if az_lab_vm_create.input['expiration-date'] %} --expiration-date az_lab_vm_create.input['expiration-date'] {%endif %} 
+                 {%if az_lab_vm_create.input['formula'] %} --formula az_lab_vm_create.input['formula'] {%endif %} 
+                 {%if az_lab_vm_create.input['generate-ssh-keys'] %} --generate-ssh-keys az_lab_vm_create.input['generate-ssh-keys'] {%endif %} 
+                 {%if az_lab_vm_create.input['image'] %} --image az_lab_vm_create.input['image'] {%endif %} 
+                 {%if az_lab_vm_create.input['image-type'] %} --image-type az_lab_vm_create.input['image-type'] {%endif %} 
+                 {%if az_lab_vm_create.input['notes'] %} --notes az_lab_vm_create.input['notes'] {%endif %} 
+                 {%if az_lab_vm_create.input['size'] %} --size az_lab_vm_create.input['size'] {%endif %} 
+                 {%if az_lab_vm_create.input['rtags'] %} --tags az_lab_vm_create.input['rtags'] {%endif %} 
+                 {%if az_lab_vm_create.input['admin-password'] %} --admin-password az_lab_vm_create.input['admin-password'] {%endif %} 
+                 {%if az_lab_vm_create.input['admin-username'] %} --admin-username az_lab_vm_create.input['admin-username'] {%endif %} 
+                 {%if az_lab_vm_create.input['authentication-type'] %} --authentication-type az_lab_vm_create.input['authentication-type'] {%endif %} 
+                 {%if az_lab_vm_create.input['saved-secret'] %} --saved-secret az_lab_vm_create.input['saved-secret'] {%endif %} 
+                 {%if az_lab_vm_create.input['ssh-key'] %} --ssh-key az_lab_vm_create.input['ssh-key'] {%endif %} 
+                 {%if az_lab_vm_create.input['ip-configuration'] %} --ip-configuration az_lab_vm_create.input['ip-configuration'] {%endif %} 
+                 {%if az_lab_vm_create.input['subnet'] %} --subnet az_lab_vm_create.input['subnet'] {%endif %} 
+                 {%if az_lab_vm_create.input['vnet-name'] %} --vnet-name az_lab_vm_create.input['vnet-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_lab_vm_create: "{{ az_lab_vm_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_lab_vm_create }}" 

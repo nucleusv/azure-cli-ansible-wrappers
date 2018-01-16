@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_batch_node_scheduling_enable
+   set_fact: 
+     az_batch_node_scheduling_enable:
+       input: 
+         ###  Required parameter. The ID of the compute node on which you want to enable task scheduling.  ### 
+        'node-id': "{{ item['node-id'] | default('') }}" 
+         ###  Required parameter. The ID of the pool that contains the compute node.  ### 
+        'pool-id': "{{ item['pool-id'] | default('') }}" 
+         ###  Optional parameter. Batch service endpoint. Alternatively, set by environment variable: AZURE_BATCH_ENDPOINT.  ### 
+        'account-endpoint': "{{ item['account-endpoint'] | default('') }}" 
+         ###  Optional parameter. Batch account key. Alternatively, set by environment variable: AZURE_BATCH_ACCESS_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Batch account name. Alternatively, set by environment variable: AZURE_BATCH_ACCOUNT.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+ - debug: msg="{{ az_batch_node_scheduling_enable }}"          
+ - name: "az batch node scheduling enable: Enables task scheduling on the specified compute node." 
+   command: |                                      
+     az batch node scheduling enable                            
+                 --node-id {{ az_batch_node_scheduling_enable.input['node-id'] }} 
+                 --pool-id {{ az_batch_node_scheduling_enable.input['pool-id'] }} 
+                 {%if az_batch_node_scheduling_enable.input['account-endpoint'] %} --account-endpoint az_batch_node_scheduling_enable.input['account-endpoint'] {%endif %} 
+                 {%if az_batch_node_scheduling_enable.input['account-key'] %} --account-key az_batch_node_scheduling_enable.input['account-key'] {%endif %} 
+                 {%if az_batch_node_scheduling_enable.input['account-name'] %} --account-name az_batch_node_scheduling_enable.input['account-name'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_batch_node_scheduling_enable: "{{ az_batch_node_scheduling_enable|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_batch_node_scheduling_enable }}" 

@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_sf_cluster_setting_remove
+   set_fact: 
+     az_sf_cluster_setting_remove:
+       input: 
+         ###  Required parameter. Specify the name of the cluster, if not given it will be same as resource group name.  ### 
+        'cluster-name': "{{ item['cluster-name'] | default('') }}" 
+         ###  Required parameter. The resource group name.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Parameter name.  ### 
+        'parameter': "{{ item['parameter'] | default('') }}" 
+         ###  Optional parameter. Section name.  ### 
+        'section': "{{ item['section'] | default('') }}" 
+         ###  Optional parameter. JSON encoded parameters configuration. Use @{file} to load from a file. For example: [{"section": "NamingService","parameter": "MaxOperationTimeout"}].  ### 
+        'settings-section-description': "{{ item['settings-section-description'] | default('') }}" 
+ - debug: msg="{{ az_sf_cluster_setting_remove }}"          
+ - name: "az sf cluster setting remove: Remove settings from a cluster." 
+   command: |                                      
+     az sf cluster setting remove                            
+                 --cluster-name {{ az_sf_cluster_setting_remove.input['cluster-name'] }} 
+                 --resource-group {{ az_sf_cluster_setting_remove.input['resource-group'] }} 
+                 {%if az_sf_cluster_setting_remove.input['parameter'] %} --parameter az_sf_cluster_setting_remove.input['parameter'] {%endif %} 
+                 {%if az_sf_cluster_setting_remove.input['section'] %} --section az_sf_cluster_setting_remove.input['section'] {%endif %} 
+                 {%if az_sf_cluster_setting_remove.input['settings-section-description'] %} --settings-section-description az_sf_cluster_setting_remove.input['settings-section-description'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_sf_cluster_setting_remove: "{{ az_sf_cluster_setting_remove|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_sf_cluster_setting_remove }}" 

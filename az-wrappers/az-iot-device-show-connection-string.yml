@@ -1,0 +1,29 @@
+
+
+ - name: Set input params for az_iot_device_show_connection_string
+   set_fact: 
+     az_iot_device_show_connection_string:
+       input: 
+         ###  Required parameter. IoT Hub name.  ### 
+        'hub-name': "{{ item['hub-name'] | default('') }}" 
+         ###  Optional parameter. Device Id.  ### 
+        'device-id': "{{ item['device-id'] | default('') }}" 
+         ###  Optional parameter. The key to use.  ### 
+        'key': "{{ item['key'] | default('') }}" 
+         ###  Optional parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Maximum number of connection strings to return.  ### 
+        'top': "{{ item['top'] | default('') }}" 
+ - debug: msg="{{ az_iot_device_show_connection_string }}"          
+ - name: "az iot device show-connection-string: Show the connection strings for devices in an IoT hub." 
+   command: |                                      
+     az iot device show-connection-string                            
+                 --hub-name {{ az_iot_device_show_connection_string.input['hub-name'] }} 
+                 {%if az_iot_device_show_connection_string.input['device-id'] %} --device-id az_iot_device_show_connection_string.input['device-id'] {%endif %} 
+                 {%if az_iot_device_show_connection_string.input['key'] %} --key az_iot_device_show_connection_string.input['key'] {%endif %} 
+                 {%if az_iot_device_show_connection_string.input['resource-group'] %} --resource-group az_iot_device_show_connection_string.input['resource-group'] {%endif %} 
+                 {%if az_iot_device_show_connection_string.input['top'] %} --top az_iot_device_show_connection_string.input['top'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_iot_device_show_connection_string: "{{ az_iot_device_show_connection_string|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_iot_device_show_connection_string }}" 

@@ -1,0 +1,32 @@
+
+
+ - name: Set input params for az_backup_recoverypoint_list
+   set_fact: 
+     az_backup_recoverypoint_list:
+       input: 
+         ###  Required parameter. Name of the container.  ### 
+        'container-name': "{{ item['container-name'] | default('') }}" 
+         ###  Required parameter. Name of the backed up item.  ### 
+        'item-name': "{{ item['item-name'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Required parameter. Name of the Recovery services vault.  ### 
+        'vault-name': "{{ item['vault-name'] | default('') }}" 
+         ###  Optional parameter. The end date of the range in UTC (d-m-Y).  ### 
+        'end-date': "{{ item['end-date'] | default('') }}" 
+         ###  Optional parameter. The start date of the range in UTC (d-m-Y).  ### 
+        'start-date': "{{ item['start-date'] | default('') }}" 
+ - debug: msg="{{ az_backup_recoverypoint_list }}"          
+ - name: "az backup recoverypoint list: List all recovery points of a backed up item." 
+   command: |                                      
+     az backup recoverypoint list                            
+                 --container-name {{ az_backup_recoverypoint_list.input['container-name'] }} 
+                 --item-name {{ az_backup_recoverypoint_list.input['item-name'] }} 
+                 --resource-group {{ az_backup_recoverypoint_list.input['resource-group'] }} 
+                 --vault-name {{ az_backup_recoverypoint_list.input['vault-name'] }} 
+                 {%if az_backup_recoverypoint_list.input['end-date'] %} --end-date az_backup_recoverypoint_list.input['end-date'] {%endif %} 
+                 {%if az_backup_recoverypoint_list.input['start-date'] %} --start-date az_backup_recoverypoint_list.input['start-date'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_backup_recoverypoint_list: "{{ az_backup_recoverypoint_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_backup_recoverypoint_list }}" 

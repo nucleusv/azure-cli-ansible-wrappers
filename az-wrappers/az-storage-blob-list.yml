@@ -1,0 +1,44 @@
+
+
+ - name: Set input params for az_storage_blob_list
+   set_fact: 
+     az_storage_blob_list:
+       input: 
+         ###  Required parameter. The container name.  ### 
+        'container-name': "{{ item['container-name'] | default('') }}" 
+         ###  Optional parameter. When the request includes this parameter, the operation returns a BlobPrefix element in the result list that acts as a placeholder for all blobs whose names begin with the same substring up to the appearance of the delimiter character. The delimiter may be a single character or a string.  ### 
+        'delimiter': "{{ item['delimiter'] | default('') }}" 
+         ###  Optional parameter. Specifies additional datasets to include: (c)opy-info, (m)etadata, (s)napshots. Can be combined.  ### 
+        'include': "{{ item['include'] | default('') }}" 
+         ###  Optional parameter. Specifies the maximum number of blobs to return, including all BlobPrefix elements. If the request does not specify num_results or specifies a value greater than 5,000, the server will return up to 5,000 items. Setting num_results to a value less than or equal to zero results in error response code 400 (Bad Request).  ### 
+        'num-results': "{{ item['num-results'] | default('') }}" 
+         ###  Optional parameter. Filters the results to return only blobs whose names begin with the specified prefix.  ### 
+        'prefix': "{{ item['prefix'] | default('') }}" 
+         ###  Optional parameter. Request timeout in seconds. Applies to each call to the service.  ### 
+        'timeout': "{{ item['timeout'] | default('') }}" 
+         ###  Optional parameter. Storage account key. Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_KEY.  ### 
+        'account-key': "{{ item['account-key'] | default('') }}" 
+         ###  Optional parameter. Storage account name. Related environment variable: AZURE_STORAGE_ACCOUNT. Must be used in conjunction with either storage account key or a SAS token. If neither are present, the command will try to query the storage account key using the authenticated Azure account. If a large number of storage commands are executed the API quota may be hit.  ### 
+        'account-name': "{{ item['account-name'] | default('') }}" 
+         ###  Optional parameter. Storage account connection string. Environment variable: AZURE_STORAGE_CONNECTION_STRING.  ### 
+        'connection-string': "{{ item['connection-string'] | default('') }}" 
+         ###  Optional parameter. A Shared Access Signature (SAS). Must be used in conjunction with storage account name. Environment variable: AZURE_STORAGE_SAS_TOKEN.  ### 
+        'sas-token': "{{ item['sas-token'] | default('') }}" 
+ - debug: msg="{{ az_storage_blob_list }}"          
+ - name: "az storage blob list: List blobs in a given container." 
+   command: |                                      
+     az storage blob list                            
+                 --container-name {{ az_storage_blob_list.input['container-name'] }} 
+                 {%if az_storage_blob_list.input['delimiter'] %} --delimiter az_storage_blob_list.input['delimiter'] {%endif %} 
+                 {%if az_storage_blob_list.input['include'] %} --include az_storage_blob_list.input['include'] {%endif %} 
+                 {%if az_storage_blob_list.input['num-results'] %} --num-results az_storage_blob_list.input['num-results'] {%endif %} 
+                 {%if az_storage_blob_list.input['prefix'] %} --prefix az_storage_blob_list.input['prefix'] {%endif %} 
+                 {%if az_storage_blob_list.input['timeout'] %} --timeout az_storage_blob_list.input['timeout'] {%endif %} 
+                 {%if az_storage_blob_list.input['account-key'] %} --account-key az_storage_blob_list.input['account-key'] {%endif %} 
+                 {%if az_storage_blob_list.input['account-name'] %} --account-name az_storage_blob_list.input['account-name'] {%endif %} 
+                 {%if az_storage_blob_list.input['connection-string'] %} --connection-string az_storage_blob_list.input['connection-string'] {%endif %} 
+                 {%if az_storage_blob_list.input['sas-token'] %} --sas-token az_storage_blob_list.input['sas-token'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_storage_blob_list: "{{ az_storage_blob_list|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_storage_blob_list }}" 

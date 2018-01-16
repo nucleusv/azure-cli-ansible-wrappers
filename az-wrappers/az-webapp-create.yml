@@ -1,0 +1,41 @@
+
+
+ - name: Set input params for az_webapp_create
+   set_fact: 
+     az_webapp_create:
+       input: 
+         ###  Required parameter. Name of the new webapp.  ### 
+        'name': "{{ item['name'] | default('') }}" 
+         ###  Required parameter. Name or resource id of the app service plan. Use 'appservice plan create' to get one.  ### 
+        'plan': "{{ item['plan'] | default('') }}" 
+         ###  Required parameter. Name of resource group. You can configure the default group using `az configure --defaults group=&lt;name&gt;`.  ### 
+        'resource-group': "{{ item['resource-group'] | default('') }}" 
+         ###  Optional parameter. Linux only. Container image name from Docker Hub, e.g. publisher/image-name:tag.  ### 
+        'deployment-container-image-name': "{{ item['deployment-container-image-name'] | default('') }}" 
+         ###  Optional parameter. Enable local git.  ### 
+        'deployment-local-git': "{{ item['deployment-local-git'] | default('') }}" 
+         ###  Optional parameter. The branch to deploy.  ### 
+        'deployment-source-branch': "{{ item['deployment-source-branch'] | default('') }}" 
+         ###  Optional parameter. Git repository URL to link with manual integration.  ### 
+        'deployment-source-url': "{{ item['deployment-source-url'] | default('') }}" 
+         ###  Optional parameter. Canonicalized web runtime in the format of Framework|Version, e.g. "PHP|5.6". Use 'az webapp list-runtimes' for available list.  ### 
+        'runtime': "{{ item['runtime'] | default('') }}" 
+         ###  Optional parameter. Linux only. The web's startup file.  ### 
+        'startup-file': "{{ item['startup-file'] | default('') }}" 
+ - debug: msg="{{ az_webapp_create }}"          
+ - name: "az webapp create: Create a web app." 
+   command: |                                      
+     az webapp create                            
+                 --name {{ az_webapp_create.input['name'] }} 
+                 --plan {{ az_webapp_create.input['plan'] }} 
+                 --resource-group {{ az_webapp_create.input['resource-group'] }} 
+                 {%if az_webapp_create.input['deployment-container-image-name'] %} --deployment-container-image-name az_webapp_create.input['deployment-container-image-name'] {%endif %} 
+                 {%if az_webapp_create.input['deployment-local-git'] %} --deployment-local-git az_webapp_create.input['deployment-local-git'] {%endif %} 
+                 {%if az_webapp_create.input['deployment-source-branch'] %} --deployment-source-branch az_webapp_create.input['deployment-source-branch'] {%endif %} 
+                 {%if az_webapp_create.input['deployment-source-url'] %} --deployment-source-url az_webapp_create.input['deployment-source-url'] {%endif %} 
+                 {%if az_webapp_create.input['runtime'] %} --runtime az_webapp_create.input['runtime'] {%endif %} 
+                 {%if az_webapp_create.input['startup-file'] %} --startup-file az_webapp_create.input['startup-file'] {%endif %} 
+   register: output  
+ - set_fact: 
+    az_webapp_create: "{{ az_webapp_create|combine({'output':output.stdout|from_json}) }}"  
+ - debug: msg="{{ az_webapp_create }}" 
